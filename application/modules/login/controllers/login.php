@@ -33,13 +33,11 @@ class Login extends MX_Controller {
     // function untuk memeriksa input user dari form sebagai admin
     function login_process()
     {
-        $this->form_validation->set_rules('username', 'Username', 'required');
-        $this->form_validation->set_rules('password', 'Password', 'required');
+        
+        $datax = (array)json_decode(file_get_contents('php://input')); 
 
-        if ($this->form_validation->run($this) == TRUE)
-        {
-            $username = $this->input->post('username');
-            $password = $this->input->post('password');
+        $username = $datax['user'];
+        $password = $datax['pass'];
 
             if ($this->Login_model->check_user($username,$password) == TRUE)
             {
@@ -55,20 +53,26 @@ class Login extends MX_Controller {
 
                 $data = array('username' => $username, 'role' => $role, 'rules' => $rules, 'log' => $logid, 'login' => TRUE, 'waktu' => $waktu);
                 $this->session->set_userdata($data);
-
-                //memanggil controller main utama
-                redirect('main');
+                
+                $response = array(
+                  'Success' => true,
+		  'User' => $datax['user'],
+                  'Info' => 'Login Success'); 
             }
             else
             {
-                $this->session->set_flashdata('message', 'Sorry, wrong username or password');
-                redirect('login');
+                $response = array(
+                'Success' => false,
+                'Info' => 'Invalid Login..!!');
             }
-        }
-        else // else untuk form valdation
-        {
-            $this->load->view('login_view');
-        }
+            
+        $this->output
+        ->set_status_header(201)
+        ->set_content_type('application/json', 'utf-8')
+        ->set_output(json_encode($response, JSON_PRETTY_PRINT))
+        ->_display();
+        exit;
+
     }
 
     // function untuk logout

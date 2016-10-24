@@ -6,45 +6,58 @@
 	<title> Login </title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
 	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,300' rel='stylesheet' type='text/css'>
+        
     <style type="text/css">@import url("<?php echo base_url() . 'css/login.css'; ?>");</style>
+    <script type="text/javascript" src="<?php echo base_url().'js/jquery.min.js'; ?>"></script>
     
     <!-- sweet alert js -->
     <script type="text/javascript" src="<?php echo base_url().'js/sweetalert/sweetalert.min.js'; ?>"></script>
     <style type="text/css">@import url("<?php echo base_url() . 'js/sweetalert/sweetalert.css'; ?>");</style>
     
-    
 </head>
 
 <script type="text/javascript">
 
-	function login()
-	{	
-		var user = document.getElementById("user");
-		var pass = document.getElementById("pass");
+$(document).ready(function (e) {
+	
+	$('#loginbutton').click(function() 
+	{
+		var user = $("#user").val();
+		var pass = $("#pass").val();
 		
-		  if (user.value == "")
-		  {
-			 alert("Username must be filled");
-			 user.focus();
-			 return false;
-		  }
-		  
-		  else if (pass.value == "")
-		  {
-			 alert("Password must be filled");
-			 pass.focus();
-			 return false;
-		  }
-		  
-		  else{ return false; }
-	}
+		if (user != "" && pass != "")
+		{
+			var nilai = '{ "user":"'+user+'", "pass": "'+pass+'"}';
+				
+			$.ajax({
+				type: 'POST',
+                url: '<?php echo site_url('login/login_process'); ?>',
+				data : nilai,
+			    contentType: "application/json",
+                dataType: 'json',
+				success: function(data) 
+			    {
+					if (data.Success == true){ window.location = "<?php echo site_url('main'); ?>"; }
+					else{ swal(data.Info, "", "error"); }
+				}
+			}) 
+			return false;
+			
+		}
+		else{ swal("Invalid Username Or Password..!!", "", "error"); }
+		
+	});
+
+
+// document ready end	
+});
 
 </script>
 
 <body>
 
 
-<form action="<?php echo $form_action; ?>" name="login_form" id="login_form" method="post" onsubmit="return login();">
+<form action="<?php echo $form_action; ?>" name="login_form" id="loginform" method="post">
 <div class="containerx">
 <img src="<?php echo $logo; ?>" alt="<?php echo $pname; ?>" class="logo">
 
@@ -52,20 +65,20 @@
 <div class="txt_field">
 	<i class="fa fa-user"></i>
 	<input type="text" name="username" id="user" class="txt" required placeholder="username">
-	<div class="clr">	</div>
+	<div class="clr"> </div>
 </div>
-
-
 
 <div class="txt_field">
 	<i class="fa fa-lock"></i>
 	<input type="password" name="password" id="pass" class="txt" required placeholder="password">
-	<div class="clr">	</div>
+    <input type="hidden" id="agent" name="agent" value="web">
+	<div class="clr"> </div>
 </div>
 
 <div class="btn">
-	<button type="submit">Login&nbsp;&nbsp;<i class="fa fa-arrow-circle-o-right"></i></button>
-	<button type="reset" class="fr">Cancel&nbsp;&nbsp;<i class="fa fa-undo"></i></button><p>&copy; Copyrights <?php echo $pname.'&nbsp;'.date('Y'); ?>.    <br>All rights reserved.</p>
+	<button type="button" id="loginbutton">Login&nbsp;&nbsp;<i class="fa fa-arrow-circle-o-right"></i></button>
+	<button type="reset" class="fr">Cancel&nbsp;&nbsp;<i class="fa fa-undo"></i></button>
+    <p>&copy; Copyrights <?php echo $pname.'&nbsp;'.date('Y'); ?>. <br>All rights reserved.</p>
 </div>
 	
 </div>

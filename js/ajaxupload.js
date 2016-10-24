@@ -155,6 +155,30 @@ $(document).ready(function (e) {
 	   });
 	   
 	}));
+	
+	// ajax form
+	
+	$('#ajaxform,#ajaxform2,#ajaxform3,#ajaxform4').submit(function() {
+		$.ajax({
+			type: 'POST',
+			url: $(this).attr('action'),
+			data: $(this).serialize(),
+			success: function(data) {
+				// $('#result').html(data);
+				if (data == "true")
+				{
+					location.reload(true);
+				}
+				else
+				{
+					// alert(data);
+					document.getElementById("errorbox").innerHTML = data;
+				}
+				
+			}
+		})
+		return false;
+	});
 
 // document ready end	
 });
