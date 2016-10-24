@@ -7,6 +7,12 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
 	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,300' rel='stylesheet' type='text/css'>
     <style type="text/css">@import url("<?php echo base_url() . 'css/login.css'; ?>");</style>
+    
+    <!-- sweet alert js -->
+    <script type="text/javascript" src="<?php echo base_url().'js/sweetalert/sweetalert.min.js'; ?>"></script>
+    <style type="text/css">@import url("<?php echo base_url() . 'js/sweetalert/sweetalert.css'; ?>");</style>
+    
+    
 </head>
 
 <script type="text/javascript">
@@ -30,7 +36,7 @@
 			 return false;
 		  }
 		  
-		  else{ return true; }
+		  else{ return false; }
 	}
 
 </script>
