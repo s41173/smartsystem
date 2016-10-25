@@ -1,13 +1,18 @@
 <?php
 
-class Admin_model extends CI_Model
+class Admin_model extends Custom_Model
 {
     function __construct()
     {
        parent::__construct();
     }
     
-    var $table = 'user';
+    protected $table = 'user';
+    
+    protected $field = array('userid', 'username', 'password', 'name', 'address', 'phone1', 'phone2',
+                             'city', 'email', 'yahooid', 'role', 'status', 'lastlogin', 
+                             'created', 'updated', 'deleted'
+                            );
     
     function count_all_num_rows()
     {
@@ -17,9 +22,10 @@ class Admin_model extends CI_Model
     
     function get_last_user($limit, $offset)
     {
-        $this->db->select('userid, username, password, name, address, phone1, phone2, city, email, yahooid, role, status'); // select kolom yang mau di tampilkan
+        $this->db->select($this->field);
         $this->db->from($this->table); // from table dengan join nya
         $this->db->order_by('username', 'asc'); // query order
+        $this->db->where('deleted', $this->deleted);
         $this->db->limit($limit, $offset);
         return $this->db->get(); // mengembalikan isi dari db
     }
@@ -43,14 +49,14 @@ class Admin_model extends CI_Model
     
     function get_user_by_id($uid)
     {
-        $this->db->select('userid, username, password, name, address, phone1, phone2, city, email, yahooid, role, status');
+        $this->db->select($this->field);
         $this->db->where('userid', $uid);
         return $this->db->get($this->table);
     }
 
     function get_userid($name)
     {
-        $this->db->select('userid, username, password, name, address, phone1, phone2, city, email, yahooid, role, status');
+        $this->db->select($this->field);
         $this->db->where('username', $name);
         return $this->db->get($this->table);
     }
@@ -63,8 +69,8 @@ class Admin_model extends CI_Model
     
     function update($uid, $users)
     {
-            $this->db->where('userid', $uid);
-            $this->db->update($this->table, $users);
+        $this->db->where('userid', $uid);
+        $this->db->update($this->table, $users);
     }
     
     function valid_name($uid)
@@ -72,14 +78,7 @@ class Admin_model extends CI_Model
         $this->db->where('username', $uid);
         $query = $this->db->get($this->table)->num_rows();
                                         
-        if($query > 0)
-        {
-                return FALSE;
-        }
-        else
-        {
-                return TRUE;
-        }
+        if($query > 0){ return FALSE; } else{ return TRUE; }
     }
 
     function validation_username($name ,$id)
@@ -88,14 +87,7 @@ class Admin_model extends CI_Model
         $this->db->where_not_in('userid', $id);
         $query = $this->db->get($this->table)->num_rows();
 
-        if($query > 0)
-        {
-                return FALSE;
-        }
-        else
-        {
-                return TRUE;
-        }
+        if($query > 0){ return FALSE; } else{ return TRUE; }
     }
 }
 

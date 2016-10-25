@@ -1,13 +1,14 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Category_model extends CI_Model
+class Category_model extends Custom_Model
 {
     function __construct()
     {
         parent::__construct();
     }
     
-    var $table = 'category';
+    protected $table = 'category';
+    protected $field = array('id', 'name', 'parent_id', 'image');
     
     function count_all_num_rows()
     {
@@ -17,7 +18,7 @@ class Category_model extends CI_Model
     
     function get_last_category($limit, $offset)
     {
-        $this->db->select('id, name, parent_id, image');
+        $this->db->select($this->field);
         $this->db->from($this->table); 
         $this->db->order_by('name', 'asc'); 
         $this->db->limit($limit, $offset);
@@ -37,7 +38,7 @@ class Category_model extends CI_Model
     
     function get_category_by_id($uid)
     {
-        $this->db->select('id, name, parent_id, image');
+        $this->db->select($this->field);
         $this->db->where('id', $uid);
         return $this->db->get($this->table);
     }

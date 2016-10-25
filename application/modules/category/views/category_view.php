@@ -67,10 +67,10 @@
                        <span class="glyphicon glyphicon-trash"></span>
                     </button>
                   </div>
+                  <!-- Check All Function -->
                   
                 </form>
-                 <!-- Check All Function -->
-                  
+                 
                 </div>
                 <div class="pagination"> <?php echo ! empty($pagination) ? $pagination : ''; ?> </div>
                <!-- Trigger the modal with a button --> 

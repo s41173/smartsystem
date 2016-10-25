@@ -18,6 +18,10 @@
 
   <script src="<?php echo base_url();?>js/jquery.min.js"></script>
   <script type='text/javascript' src='<?php echo base_url();?>js/liveclock_lite.js'></script> 
+  
+  <!-- sweet alert js -->
+  <script type="text/javascript" src="<?php echo base_url().'js/sweetalert/sweetalert.min.js'; ?>"></script>
+  <style type="text/css">@import url("<?php echo base_url() . 'js/sweetalert/sweetalert.css'; ?>");</style>
 
   <!--[if lt IE 9]>
         <script src="../assets/js/ie8-responsive-file-warning.js"></script>
@@ -81,7 +85,7 @@
         <!-- footer content -->
         <footer>
           <div class="pull-right">
-            Admin Template by <a target="blank" href="http://www.com.net.id/"> <b> Comtronic System </b> </a>
+            Admin Template by <a target="blank" href="http://www.dswip.com"> <b> Dswip Kreasindo </b> </a>
           </div>
           <div class="clearfix"></div>
         </footer>

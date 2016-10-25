@@ -12,21 +12,51 @@ $(document).ready(function (e) {
 	var element = $(this);
 	var del_id = element.attr("id");
 	var info = 'id=' + del_id;
-	if(confirm("Are you sure you want to delete this?"))
-	{
-		//alert(sites_del +"/"+ del_id);
-		$.ajax({
-			type: 'POST',
-			url: sites_del +"/"+ del_id,
-			data: $(this).serialize(),
-			success: function(data)
-			{
-			   window.location.reload(true);
+	
+	 swal({
+		title: "Are you sure?",
+		text: "You will not be able to recover this imaginary file!",
+		type: "warning",
+		showCancelButton: true,
+		confirmButtonColor: '#DD6B55',
+		confirmButtonText: 'Yes, I am sure!',
+		cancelButtonText: "No, cancel it!",
+		closeOnConfirm: false,
+		closeOnCancel: false
+	   },
+	   function(isConfirm)
+	   {
+	
+		   if (isConfirm){
+			 swal("Shortlisted!", "Candidates are successfully shortlisted!", "success");
+		
+			} else {
+			  swal("Cancelled", "Your imaginary file is safe :)", "error");
+				 e.preventDefault();
 			}
-			})
-			return false;
-	}
-	return false;
+	   });
+	
+	
+	
+	
+		/*if(confirm("Are you sure you want to delete this?"))
+		{
+			//alert(sites_del +"/"+ del_id);
+			$.ajax({
+				type: 'POST',
+				url: sites_del +"/"+ del_id,
+				data: $(this).serialize(),
+				success: function(data)
+				{
+				   window.location.reload(true);
+				}
+				})
+				return false;
+		}
+		return false;*/
+		
+	
+	
 	});
 	
 	
