@@ -15,7 +15,7 @@ class Categoryproduct {
         $this->ci->db->order_by('name', 'asc');
         $val = $this->ci->db->get('category')->result();
         $data['options'][0] = 'Top';
-        foreach($val as $row){ $data['options'][$row->id] = $row->name; }
+        foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->name); }
         return $data;
     }
 
@@ -24,7 +24,7 @@ class Categoryproduct {
         $this->ci->db->select('id, name');
         $this->ci->db->order_by('name', 'asc');
         $val = $this->ci->db->get('category')->result();
-        foreach($val as $row){ $data['options'][$row->id] = $row->name; }
+        foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->name); }
         return $data;
     }
 
@@ -35,7 +35,7 @@ class Categoryproduct {
         $this->ci->db->where_not_in('id', $id);
         $val = $this->ci->db->get('category')->result();
         $data['options'][0] = 'Top';
-        foreach($val as $row){ $data['options'][$row->id] = $row->name; }
+        foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->name); }
         return $data;
     }
 

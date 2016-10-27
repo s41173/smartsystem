@@ -16,7 +16,7 @@ class Category_model extends Custom_Model
         return $this->db->count_all($this->table);
     }
     
-    function get_last_category($limit, $offset)
+    function get_last_category($limit, $offset=null)
     {
         $this->db->select($this->field);
         $this->db->from($this->table); 

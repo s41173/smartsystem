@@ -12,11 +12,7 @@
 			// $('.flexme').flexigrid({height:'auto',width:845,striped:true});
 			
 			
-			$('#loading').ajaxStart(function(){
-				$(this).fadeIn();
-			}).ajaxStop(function(){
-				$(this).fadeOut();
-			});
+			
 			
 			// tabs
 			$(".tab_content").hide(); //Hide all content

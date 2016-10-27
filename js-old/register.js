@@ -1,25 +1,5 @@
-var xmlHttp = buatObjekXmlHttp();
-// var uri = 'http://admin/ekspedisi/';
-
-function buatObjekXmlHttp()
-{
-   var obj = null;
-   if (window.ActiveXObject)
-   obj = new ActiveXObject("Microsoft.XMLHTTP");
-   else
-   if (window.XMLHttpRequest)
-   obj = new XMLHttpRequest();
-
-   // Cek isi xmlHttp
-   if (obj == null)
-   document.write(
-   "Browser tidak mendukung XMLHttpRequest");
-   return obj;
-}
-
 function cekall(val)
 {
-	
 	if (document.getElementById('chkselect').checked)
 	{
 		for (i=0;i<val;i++)
@@ -27,7 +7,7 @@ function cekall(val)
 		  document.getElementById("cek"+i).checked=true;
 	    }
 	}
-	else { for (i=0;i<val;i++){document.getElementById("cek"+i).checked=false;} }
+	else {	for (i=0;i<val;i++){document.getElementById("cek"+i).checked=false;} }
 	
 }
 
@@ -54,46 +34,6 @@ function setpermalink(permalink)
 }
 
 // - ----------------------------------------------------------------------------ajax ----------------------------------------------------------------------
-
-function setordertype(value, id_element)
-{
-  if (value == "ereceipt")
-  {
-	document.getElementById(id_element).value = "EO-0";
-  }
-  else
-  {
-	document.getElementById(id_element).value = "IO-0";
-  }
-}
-
-function exportcosttype(val)
-{
-	if (val == "general")
-	{
-		document.getElementById("cgeneral").disabled = false;
-		document.getElementById("cexport").disabled = true;
-	}
-	else
-	{
-		document.getElementById("cgeneral").disabled = true;
-		document.getElementById("cexport").disabled = false;
-	}
-}
-
-function importcosttype(val)
-{
-	if (val == "general")
-	{
-		document.getElementById("cgeneral").disabled = false;
-		document.getElementById("cimport").disabled = true;
-	}
-	else
-	{
-		document.getElementById("cgeneral").disabled = true;
-		document.getElementById("cimport").disabled = false;
-	}
-}
 
 function checkdigit(sText, nid)
 {
@@ -142,72 +82,5 @@ function checknumeric(sText, nid)
          document.getElementById(nid).value = "";
       }
    }
-}
-
-
-function calculatepayment()
-{
-	var bill = parseFloat(document.getElementById("tbill").value);
-    var p1 = parseFloat(document.getElementById("tp1").value);
-    var p2 = parseFloat(document.getElementById("tp2").value);
-	
-    if (isNaN(bill) != true & isNaN(p1) != true)
-    {
-       var g = parseFloat( bill - p1);
-       document.getElementById("tp2").value = g;
-	   
-	   var h = parseFloat( p1 + p2);
-	   document.getElementById("ttotal").value = g;
-    }
-	else
-	{
-	   alert("Value can't null");
-	}
-}
-
-function calculate()
-{
-    if (check() == true)
-    {
-       var a = parseFloat(document.getElementById("ubangun").value);
-       var b = parseFloat(document.getElementById("udaftar").value);
-       var c = parseFloat(document.getElementById("uskul").value);
-       var d = parseFloat(document.getElementById("uosis").value);
-       var e = parseFloat(document.getElementById("upraktek").value);
-       var f = parseFloat(document.getElementById("udll").value);
-    
-       var g = parseFloat(a + b + c + d + e + f);
-       document.getElementById("jumlah").value = g;
-       document.getElementById("tmblp").disabled = false;
-    }
-}
-
-//------------------------------------------------------------export_view-------------------------------------------------------------------
-
-//------------------------------------------------------------login_view-------------------------------------------------------------------
-
-function login()
-{	
-    var user = document.getElementById("user");
-    var pass = document.getElementById("pass");
-    
-      if (user.value == "")
-      {
-         alert("Username must be filled");
-         user.focus();
-         return false;
-      }
-      
-      else if (pass.value == "")
-      {
-         alert("Password must be filled");
-         pass.focus();
-         return false;
-      }
-      
-      else
-      {
-        return true;
-      }
 }
 

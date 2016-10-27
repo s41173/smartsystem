@@ -13,7 +13,7 @@
       </button>
       <span style="color:#fff !important;">IP Adress : <strong> <?php echo $this->input->ip_address(); ?> </strong> 
       - <?php echo $user_agent; ?> | Last Login : <?php echo $this->session->userdata('waktu'); ?> </span> 
-      </div>
+    </div>
     
     
     </div>

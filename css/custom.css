@@ -5334,4 +5334,5 @@ ul.notifications {
 /* Custom CSS */
 
 .message{ background-color:#2A3F54; color:#fff; margin:0 0 10px 0; padding:2px 2px 2px 5px;}
-#error p, #error { color:#F40004; font-weight:bold; }
+.error p, .error { font-weight:bold; }
+#cekallbutton{ float:right; margin:2px; }

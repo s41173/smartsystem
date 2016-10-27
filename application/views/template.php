@@ -22,6 +22,8 @@
   <!-- sweet alert js -->
   <script type="text/javascript" src="<?php echo base_url().'js/sweetalert/sweetalert.min.js'; ?>"></script>
   <style type="text/css">@import url("<?php echo base_url() . 'js/sweetalert/sweetalert.css'; ?>");</style>
+  
+  <script src="<?php echo base_url(); ?>js/moduljs/main.js"></script>
 
   <!--[if lt IE 9]>
         <script src="../assets/js/ie8-responsive-file-warning.js"></script>
@@ -39,6 +41,7 @@
 <body class="nav-md" onLoad="show_time()">
 
   <div class="container body">
+  <div id="loading" style="display:none">Loading...</div>
 
     <div class="main_container">
 
@@ -72,7 +75,24 @@
           <div class="clearfix"></div>
 
           <div class="row">
-          
+          		
+             <!-- error message -->
+              <div> <?php $flashmessage = $this->session->flashdata('message'); ?> </div>
+              <div id="error" class="alert alert-danger alert-dismissible fade in" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span>
+                    </button>
+              </div>
+              
+              <div id="success" class="alert alert-success alert-dismissible fade in" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+              </div>
+              
+              <div id="warning" class="alert alert-warning alert-dismissible fade in" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+              </div>
+              
+              <!-- error message -->   
+                
              <!-- pure content -->
               <?php $this->load->view($main_view); ?>
              <!-- pure content -->

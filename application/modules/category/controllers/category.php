@@ -23,7 +23,7 @@ class Category extends MX_Controller
 
     function index()
     {
-        $this->get_last_category(); 
+       $this->get_last_category(); 
     }
     
     function chart()
@@ -34,6 +34,23 @@ class Category extends MX_Controller
         
         print json_encode($result); 
     }
+    
+    public function getdatatable($search=null)
+    {
+        if(!$search){ $result = $this->Category_model->get_last_category($this->modul['limit'])->result(); }
+	
+	foreach($result as $res)
+	{
+	   $output[] = array ($res->id, $res->name, $this->category->get_name($res->parent_id), base_url().'images/category/'.$res->image);
+	}
+	
+	 $this->output
+      ->set_status_header(200)
+      ->set_content_type('application/json', 'utf-8')
+      ->set_output(json_encode($output, JSON_PRETTY_PRINT))
+      ->_display();
+      exit; 
+    }
 
     function get_last_category()
     {
@@ -43,70 +60,31 @@ class Category extends MX_Controller
         $data['h2title'] = $this->modul['title'];
         $data['main_view'] = 'category_view';
 	$data['form_action'] = site_url($this->title.'/add_process');
+        $data['form_action_update'] = site_url($this->title.'/update_process');
         $data['form_action_del'] = site_url($this->title.'/delete_all');
         $data['link'] = array('link_back' => anchor('main/','Back', array('class' => 'btn btn-danger')));
 
         $data['parent'] = $this->category->combo();
-        
-	$uri_segment = 3;
-        $offset = $this->uri->segment($uri_segment);
-
 	// ---------------------------------------- //
-        $categorys = $this->Category_model->get_last_category($this->modul['limit'], $offset)->result();
-        $num_rows  = $this->Category_model->count_all_num_rows();
+ 
+        $config['first_tag_open'] = $config['last_tag_open']= $config['next_tag_open']= $config['prev_tag_open'] = $config['num_tag_open'] = '<li>';
+        $config['first_tag_close'] = $config['last_tag_close']= $config['next_tag_close']= $config['prev_tag_close'] = $config['num_tag_close'] = '</li>';
 
-        if ($num_rows > 0)
-        {
-	    $config['base_url'] = site_url($this->title.'/get_last_category');
-            $config['total_rows'] = $num_rows;
-            $config['per_page'] = $this->modul['limit'];
-            $config['uri_segment'] = $uri_segment;
+        $config['cur_tag_open'] = "<li><span><b>";
+        $config['cur_tag_close'] = "</b></span></li>";
+
+        // library HTML table untuk membuat template table class zebra
+        $tmpl = array('table_open' => '<table id="datatable-buttons" class="table table-striped table-bordered">');
+
+        $this->table->set_template($tmpl);
+        $this->table->set_empty("&nbsp;");
+
+        //Set heading untuk table
+        $this->table->set_heading('#','No', 'Name', 'Parent', 'Action');
+
+        $data['table'] = $this->table->generate();
+        $data['source'] = site_url('category/getdatatable');
             
-            $config['first_tag_open'] = $config['last_tag_open']= $config['next_tag_open']= $config['prev_tag_open'] = $config['num_tag_open'] = '<li>';
-            $config['first_tag_close'] = $config['last_tag_close']= $config['next_tag_close']= $config['prev_tag_close'] = $config['num_tag_close'] = '</li>';
-         
-            $config['cur_tag_open'] = "<li><span><b>";
-            $config['cur_tag_close'] = "</b></span></li>";
-            
-            $this->pagination->initialize($config);
-            $data['pagination'] = $this->pagination->create_links(); //array menampilkan link untuk pagination.
-            // akhir dari config untuk pagination
-
-            // library HTML table untuk membuat template table class zebra
-            $tmpl = array('table_open' => '<table id="datatable-buttons" class="table table-striped table-bordered">');
-
-            $this->table->set_template($tmpl);
-            $this->table->set_empty("&nbsp;");
-
-            //Set heading untuk table
-            $this->table->set_heading('#','No', 'Name', 'Parent', 'Action');
-
-            $i = 0 + $offset;
-            foreach ($categorys as $category)
-            {
-                $datax = array('name'=> 'cek[]','id'=> 'cek'.$i,'value'=> $category->id,'checked'=> FALSE, 'style'=> 'margin:0px');
-                
-                $this->table->add_row
-                (
-                    form_checkbox($datax), ++$i, $category->name, $this->category->get_name($category->parent_id),
-                    anchor('#','<i class="fa fas-2x fa-edit"></i>',array('class' => 'text-primary', 'data-id' => $category->id, 'title' => '')).'  '.
-                    anchor('#','<i class="fa fa-trash fa-s2x"></i>',array('class'=> 'text-danger', 'id' => $category->id, 'title' => 'delete' ,'onclick'=>""))
-                );
-            }
-
-            $data['table'] = $this->table->generate();
-            
-            //          fasilitas check all
-            $js = "onClick='cekall($i)', id='chkselect'";
-            $sj = "onClick='uncekall($i)'";
-            
-            $data['checkbox'] = form_checkbox('newsletter', 'accept1', FALSE, $js);
-        }
-        else
-        {
-            $data['message'] = "No $this->title data was found!";
-        }
-
         // Load absen view dengan melewatkan var $data sbgai parameter
 	$this->load->view('template', $data);
     }
@@ -115,7 +93,6 @@ class Category extends MX_Controller
     {
       $this->acl->otentikasi_admin($this->title);
       
-     
       $cek = $this->input->post('cek');
       $jumlah = count($cek);
 
@@ -135,13 +112,18 @@ class Category extends MX_Controller
            }
            else { $x=$x+1; }
            
-           $res = intval($jumlah-$x);
-           $this->session->set_flashdata('message', "$res $this->title successfully removed &nbsp; - &nbsp; $x related to another component..!!");
         }
+        $res = intval($jumlah-$x);
+        //$this->session->set_flashdata('message', "$res $this->title successfully removed &nbsp; - &nbsp; $x related to another component..!!");
+        $mess = "$res $this->title successfully removed &nbsp; - &nbsp; $x related to another component..!!";
+        echo 'true|'.$mess;
       }
       else
-      { $this->session->set_flashdata('message', "No $this->title Selected..!!"); }
-      redirect($this->title);
+      { //$this->session->set_flashdata('message', "No $this->title Selected..!!"); 
+        $mess = "No $this->title Selected..!!";
+        echo 'false|'.$mess;
+      }
+   //   redirect($this->title);
     }
 
     function delete($uid)
@@ -200,12 +182,12 @@ class Category extends MX_Controller
             {
                 $info['file_name'] = null;
                 $data['error'] = $this->upload->display_errors();
-                $category = array('name' => $this->input->post('tname'),'parent_id' => $this->input->post('cparent'), 'image' => null);
+                $category = array('name' => strtolower($this->input->post('tname')),'parent_id' => $this->input->post('cparent'), 'image' => null);
             }
             else
             {
                 $info = $this->upload->data();
-                $category = array('name' => $this->input->post('tname'),'parent_id' => $this->input->post('cparent'), 'image' => $info['file_name']);
+                $category = array('name' => strtolower($this->input->post('tname')),'parent_id' => $this->input->post('cparent'), 'image' => $info['file_name']);
             }
 
             $this->Category_model->add($category);
@@ -232,16 +214,7 @@ class Category extends MX_Controller
 
     // Fungsi update untuk menset texfield dengan nilai dari database
     function update($uid=null)
-    {
-//        $this->acl->otentikasi2($this->title);
-//
-//        $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
-//        $data['h2title'] = $this->modul['title'];
-//        $data['main_view'] = 'category_update';
-//	  $data['form_action'] = site_url($this->title.'/update_process');
-//	  $data['link'] = array('link_back' => anchor('category/','<span>back</span>', array('class' => 'back')));
-        
-        $uid = $this->input->post('id'); 
+    {        
         $data['parent'] = $this->category->combo_update($uid);
         $category = $this->Category_model->get_category_by_id($uid)->row();
         $data['default']['name'] = $category->name;
@@ -251,7 +224,7 @@ class Category extends MX_Controller
 	$this->session->set_userdata('langid', $category->id);
 //        $this->load->view('category_update', $data);
         
-        echo $uid.'|'.$data['parent'].'|'.$category->name.'|'.$category->parent_id.'|'.base_url().'images/category/'.$category->image;
+        echo $uid.'|'.$category->name.'|'.$category->parent_id.'|'.base_url().'images/category/'.$category->image;
     }
 
 
@@ -289,48 +262,44 @@ class Category extends MX_Controller
         $data['parent'] = $this->category->combo_update($this->session->userdata('langid'));
 
 	// Form validation
-        $this->form_validation->set_rules('tname', 'Name', 'required|max_length[100]|callback_validation_category');
-        $this->form_validation->set_rules('cparent', 'Parent Category', 'required');
+        $this->form_validation->set_rules('tname_update', 'Name', 'required|max_length[100]|callback_validation_category');
+        $this->form_validation->set_rules('cparent_update', 'Parent Category', 'required');
 
         if ($this->form_validation->run($this) == TRUE)
         {
             $config['upload_path'] = './images/category/';
-            $config['file_name'] = $this->input->post('tname');
+            $config['file_name'] = $this->input->post('tname_update');
             $config['allowed_types'] = 'gif|jpg|png';
             $config['overwrite'] = true;
-            $config['max_size']	= '1000';
-            $config['max_width']  = '3000';
-            $config['max_height']  = '3000';
+            $config['max_size']	= '10000';
+            $config['max_width']  = '10000';
+            $config['max_height']  = '10000';
             $config['remove_spaces'] = TRUE;
 
             $this->load->library('upload', $config);
 
-            if ( !$this->upload->do_upload("userfile")) // if upload failure
+            if ( !$this->upload->do_upload("userfile_update")) // if upload failure
             {
                 $data['error'] = $this->upload->display_errors();
-                $category = array('name' => $this->input->post('tname'),'parent_id' => $this->input->post('cparent'));
+                $category = array('name' => strtolower($this->input->post('tname_update')),'parent_id' => $this->input->post('cparent_update'));
                 $img = null;
             }
             else
             {
                 $info = $this->upload->data();
-                $category = array('name' => $this->input->post('tname'),'parent_id' => $this->input->post('cparent'), 'image' => $info['file_name']);
+                $category = array('name' => strtolower($this->input->post('tname_update')),'parent_id' => $this->input->post('cparent_update'), 'image' => $info['file_name']);
                 $img = base_url().'images/category/'.$info['file_name'];
             }
 
 	    $this->Category_model->update($this->session->userdata('langid'), $category);
             $this->session->set_flashdata('message', "One $this->title has successfully updated!");
-//            redirect($this->title.'/update/'.$this->session->userdata('langid'));
-            $this->session->unset_userdata('langid');
-          //  echo "<img src='$img' />";
-         //   echo $img;
-            echo "<img src='$img' />";
+          //  $this->session->unset_userdata('langid');
+            echo "true|".$img;
 
         }
         else
         {
-//            $this->load->view('category_update', $data);
-            echo 'invalid';
+            echo 'invalid|'.validation_errors();
         }
     }
 
