@@ -22,7 +22,7 @@ $(document).ready(function (e) {
 				{
 					location.reload(true);
 				}
-				else{ document.getElementById("errorbox").innerHTML = data; }
+				else{ error_mess(3,data); }
 			}
 		})
 		return false;

@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Log {
+class Log_lib {
 
     public function __construct($params=null)
     {
@@ -19,9 +19,9 @@ class Log {
         return $val;
     }
 
-    public function insert($userid=null, $date=null, $time=null, $activity=null)
+    public function insert($userid=null, $date=null, $time=null, $activity=null, $com=0)
     {
-        $logs = array('userid' => $userid, 'date' => $date, 'time' => $time, 'activity' => $activity);
+        $logs = array('userid' => $userid, 'date' => $date, 'time' => $time, 'activity' => $activity, 'component_id' => $com);
         $this->ci->db->insert($this->table, $logs);
     }
 }

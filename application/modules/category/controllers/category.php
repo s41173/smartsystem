@@ -13,13 +13,14 @@ class Category extends MX_Controller
 
         $this->modul = $this->components->get(strtolower(get_class($this)));
         $this->title = strtolower(get_class($this));
-        $this->product = $this->load->library('products');
-        $this->category = $this->load->library('categoryproduct');
+        $this->product = new Products();
+        $this->category = new Categoryproduct();
+        $this->model = new Categorys();
 
     }
 
     private $properti, $modul, $title;
-    private $product,$category;
+    private $product,$category,$model;
 
     function index()
     {
@@ -126,9 +127,17 @@ class Category extends MX_Controller
    //   redirect($this->title);
     }
 
-    function delete($uid)
+    function delete($uid,$type='soft')
     {
         $this->acl->otentikasi_admin($this->title);
+        if ($type == 'soft'){
+           $this->Category_model->delete($uid);
+           $this->session->set_flashdata('message', "1 $this->title successfully removed..!");
+           
+           echo 'true';
+       }
+       else
+       {
         if ( $this->cek_relation($uid) == TRUE )
         {
            $img = $this->Category_model->get_category_by_id($uid)->row();
@@ -141,7 +150,8 @@ class Category extends MX_Controller
            echo 'true';
         }
         else { $this->session->set_flashdata('message', "$this->title related to another component..!"); 
-        echo  "$this->title related to another component..!";}
+        echo  "$this->title related to another component..!";} 
+       }
        // redirect($this->title);
     }
 

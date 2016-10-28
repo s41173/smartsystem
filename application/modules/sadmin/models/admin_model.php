@@ -1,55 +1,51 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 
 class Admin_model extends Custom_Model
 {
-    private $logs;
-    
     function __construct()
     {
-        parent::__construct();
-        $this->logs = new Log_lib();
-        $this->com = new Components();
-        $this->com = $this->com->get_id('admin');
+       parent::__construct();
     }
     
-    
     protected $table = 'user';
+    
     protected $field = array('userid', 'username', 'password', 'name', 'address', 'phone1', 'phone2',
                              'city', 'email', 'yahooid', 'role', 'status', 'lastlogin', 
                              'created', 'updated', 'deleted'
                             );
-    protected $com;
-            
+    
     function count_all_num_rows()
     {
         //method untuk mengembalikan nilai jumlah baris dari database.
         return $this->db->count_all($this->table);
     }
     
-    function get_last_user($limit, $offset=null)
+    function get_last_user($limit, $offset)
     {
         $this->db->select($this->field);
-        $this->db->from($this->table); 
+        $this->db->from($this->table); // from table dengan join nya
+        $this->db->order_by('username', 'asc'); // query order
         $this->db->where('deleted', $this->deleted);
-        $this->db->order_by('name', 'asc'); 
         $this->db->limit($limit, $offset);
-        return $this->db->get(); 
+        return $this->db->get(); // mengembalikan isi dari db
     }
     
     function delete($uid)
     {
-        $this->db->where('id', $uid);
-        $this->db->delete($this->table);
-        
-        $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'delete', $this->com);
+        $this->db->where('userid', $uid);
+        $this->db->delete($this->table); // perintah untuk delete data dari db
+    }
+
+    function get_user()
+    {
+        $this->db->order_by('name', 'asc'); // query order
+        return $this->db->get($this->table);
     }
     
     function add($users)
     {
         $this->db->insert($this->table, $users);
-        $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'create', $this->com);
     }
-    
     
     function get_user_by_id($uid)
     {
@@ -65,12 +61,6 @@ class Admin_model extends Custom_Model
         return $this->db->get($this->table);
     }
     
-    function get_user()
-    {
-        $this->db->order_by('name', 'asc'); // query order
-        return $this->db->get($this->table);
-    }
-    
     function counter()
     {
         $this->db->select_max('userid');
@@ -79,9 +69,8 @@ class Admin_model extends Custom_Model
     
     function update($uid, $users)
     {
-        $this->db->where('id', $uid);
+        $this->db->where('userid', $uid);
         $this->db->update($this->table, $users);
-        $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'update', $this->com);
     }
     
     function valid_name($uid)
@@ -100,7 +89,6 @@ class Admin_model extends Custom_Model
 
         if($query > 0){ return FALSE; } else{ return TRUE; }
     }
-
 }
 
 ?>

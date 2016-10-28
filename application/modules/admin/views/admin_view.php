@@ -1,77 +1,154 @@
-<div id="webadmin">
-	
-	<div class="title"> <?php $flashmessage = $this->session->flashdata('message'); ?> </div>
-	<p class="message"> <?php echo ! empty($message) ? $message : '' . ! empty($flashmessage) ? $flashmessage : ''; ?> </p>
-	
-	<div id="errorbox" class="errorbox"> <?php echo validation_errors(); ?> </div>
-	
-<form name="admin_form" id="ajaxform" class="myform" method="post" action="<?php echo $form_action; ?>">
 
-		<ul class="tabs">
-			<li><a href="#tab1"> Main Details </a></li>
-			<li><a href="#tab2"> Login Area</a></li>
-		</ul>
-		
-		  <div class="tab_container">
-			<div id="tab1" class="tab_content">
-				<fieldset class="field">
-					<table border="0">
-					
-						<tr> <td> <span class="label"> Name </span> </td> <td>: &nbsp;</td> 
-						<td> <input type="text" class="input-large" name="tname" title="Name" maxlength="50" required /> <br />  </td></tr>
-						
-						<tr> <td> <span class="label">Address</label> </td> <td>:</td> 
-						<td> <textarea name="taddress" class="input-large" title="Address" cols="45" rows="3" required ><?php echo set_value('taddress', isset($default['address']) ? $default['address'] : ''); ?></textarea> <br /> </td></tr>	
-								
-						<tr> <td> <span class="label">Phone</span> </td> <td>:</td> 
-						<td> <input type="text" class="input-medium" name="tphone" id="tphone" size="15" maxlength="15" /> <br />  </td> </tr>
-						
-						<tr> <td> <span class="label">City</span> </td> <td>:</td> 
-						<td> <?php $js = 'class="input-medium"'; echo form_dropdown('ccity', $city, isset($default['city']) ? $default['city'] : '', $js); ?> <br/> </td> </tr>
-						
-						<tr> <td> <span class="label">Email</span></td> <td>:</td> 
-						     <td><input type="email" class="input-large" name="tmail" title="Type mail" /> <br /> </td> </tr>
-						
-						<tr> <td> <span class="label"> Yahoo Id </span></td> <td>:</td> 
-						<td><input type="text" class="input-small" name="tid" title="Type id" /> <br /> </td> </tr>
-						
-					</table>
-				</fieldset>
-			</div>
+ <!-- Datatables CSS -->
+<link href="<?php echo base_url(); ?>js/datatables/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>js/datatables/buttons.bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>js/datatables/fixedHeader.bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>js/datatables/responsive.bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>js/datatables/scroller.bootstrap.min.css" rel="stylesheet" type="text/css" />
+
+<link href="<?php echo base_url(); ?>css/icheck/flat/green.css" rel="stylesheet">
+<script src="<?php echo base_url(); ?>js/moduljs/admin.js"></script>
+<script src="<?php echo base_url(); ?>js-old/register.js"></script>
+
+<script type="text/javascript">
+
+    var site = "<?php echo site_url();?>";
+	var sites_add  = "<?php echo site_url('category/add_process/');?>";
+	var sites_edit = "<?php echo site_url('category/update_process/');?>";
+	var sites_del  = "<?php echo site_url('category/delete/');?>";
+	var sites_get  = "<?php echo site_url('category/update/');?>";
+	var source = "<?php echo $source;?>";
+	
+	$(document).ready(function (e) {	 
+		   
 			
-			<div id="tab2" class="tab_content"> 
-				<fieldset class="field"> 
-					<table border="0">
-					
-						<tr> <td><span class="label">Username</span></td> <td>: &nbsp;</td> 
-						     <td><input type="text" class="input-medium" name="tusername" title="Username" required /> <br />  </td>  </tr>
-						
-					    <tr> <td><span class="label">Password</span></td> <td>:</td> 
-						     <td> <input type="password" class="input-medium" name="tpassword" size="25" title="Password" required /> <br /> </td> </tr>
-						
-						<tr> <td><span class="label">Role</span></td> <td>:</td> 
-						<td>  <?php $js = 'class="input-medium"'; echo form_dropdown('crole', $roles, isset($default['role']) ? $default['role'] : '', $js); ?> <br/> </td> </tr>
-						
-					    <tr> <td> <span class="label"> Status </span> </td> <td>:</td> 
-						     <td> TRUE <input name="rstatus" class="required" type="radio" value="1" /> 
-							      FALSE <input name="rstatus" class="required" type="radio" value="0" />  
-						  <br/> </td> </tr>
-						  
-						<tr> <td> <br /> <input type="submit" name="submit" class="btn" value="Save" /> 
-						          <input type="reset" name="reset" class="btn" value=" Cancel " /> </td> </tr>
-					</table>
-				</fieldset>
-			</div>
-		  </div>	
-	</form>
-</div>
-
-<div id="webadmin2">
+		// end document ready	
+        });
 	
-    <?php echo ! empty($table) ? $table : ''; ?>
-	<div class="paging"> <?php echo ! empty($pagination) ? $pagination : ''; ?> </div>
-	
-	<!-- links -->
-	<div class="buttonplace"> <?php if (!empty($link)){foreach($link as $links){echo $links . '';}} ?> </div>
-</div>
+</script>
 
+          <div class="row"> 
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div class="x_panel" >
+              
+              <!-- xtitle -->
+              <div class="x_title">
+              
+                <ul class="nav navbar-right panel_toolbox">
+                  <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a> </li>
+                  <li><a class="close-link"><i class="fa fa-close"></i></a> </li>
+                </ul>
+                
+                <div class="clearfix"></div>
+              </div>
+              <!-- xtitle -->
+                
+                <div class="x_content">
+                  
+          <form class="form-inline" id="cekallform" method="post" action="<?php echo ! empty($form_action_del) ? $form_action_del : ''; ?>">
+                  <!-- table -->
+                  <?php echo ! empty($table) ? $table : ''; ?>
+                  <!-- table -->
+                  
+                  <!-- Check All Function -->
+                  <div class="form-group" id="chkbox">
+                    Check All : 
+                    <button type="submit" id="cekallbutton" class="btn btn-danger btn-xs">
+                       <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                  </div>
+                  <!-- Check All Function -->
+                  
+          </form>       
+             </div>
+
+               <!-- Trigger the modal with a button --> 
+               <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal"> <i class="fa fa-plus"></i>&nbsp;Add New </button>
+               <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal3"> Report  </button>-->
+               
+               <!-- links -->
+	           <?php if (!empty($link)){foreach($link as $links){echo $links . '';}} ?>
+               <!-- links -->
+                             
+            </div>
+          </div>
+      
+    
+      <!-- Modal - Add Form -->
+      <div class="modal fade" id="myModal" role="dialog">
+         <?php $this->load->view('category_form'); ?>      
+      </div>
+      <!-- Modal - Add Form -->
+      
+      <!-- Modal Edit Form -->
+      <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	     <?php $this->load->view('category_update'); ?> 
+      </div>
+      <!-- Modal Edit Form -->
+      
+      <!-- Modal - Report Form -->
+      <div class="modal fade" id="myModal3" role="dialog">
+         <?php /*$this->load->view('category_report');*/ ?>    
+      </div>
+      <!-- Modal - Report Form -->
+      
+      <script src="<?php echo base_url(); ?>js/icheck/icheck.min.js"></script>
+      
+       <!-- Datatables JS -->
+        <script src="<?php echo base_url(); ?>js/datatables/jquery.dataTables.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/dataTables.bootstrap.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/dataTables.buttons.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/buttons.bootstrap.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/jszip.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/pdfmake.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/vfs_fonts.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/buttons.html5.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/buttons.print.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/dataTables.fixedHeader.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/dataTables.keyTable.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/dataTables.responsive.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/responsive.bootstrap.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/dataTables.scroller.min.js"></script>
+
+       <!-- pace -->
+        <script src="<?php echo base_url(); ?>js/pace/pace.min.js"></script>
+        <script>
+          var handleDataTableButtons = function() {
+              "use strict";
+              0 !== $("#datatable-buttons").length && $("#datatable-buttons").DataTable({
+                dom: "Bfrtip",
+                "order": [[ 1, "asc" ]],     
+                buttons: [{
+                  extend: "copy",
+                  className: "btn-sm"
+                }, {
+                  extend: "csv",
+                  className: "btn-sm"
+                }, {
+                  extend: "excel",
+                  className: "btn-sm"
+                }, {
+                  extend: "pdf",
+                  className: "btn-sm"
+                }, {
+                  extend: "print",
+                  className: "btn-sm"
+                }],
+                responsive: !0
+              })
+            },
+            TableManageButtons = function() {
+              "use strict";
+              return {
+                init: function() {
+                  handleDataTableButtons()
+                }
+              }
+            }();
+        </script>
+        <!-- pace -->
+        
+		<script type="text/javascript">
+             TableManageButtons.init();
+        </script>
+        

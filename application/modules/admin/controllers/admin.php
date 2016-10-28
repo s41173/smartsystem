@@ -2,273 +2,298 @@
 
 class Admin extends MX_Controller
 {
-    public function __construct()
+    function __construct()
     {
         parent::__construct();
         
         $this->load->model('Admin_model', '', TRUE);
-        $this->role = $this->load->library('role');
 
         $this->properti = $this->property->get();
         $this->acl->otentikasi();
 
         $this->modul = $this->components->get(strtolower(get_class($this)));
         $this->title = strtolower(get_class($this));
+        $this->product = new Products();
+        $this->admin = new Categoryproduct();
 
-        $this->city = $this->load->library('city');
     }
-    
 
-    private $properti, $role, $modul, $title;
-    private $city;
-    
+    private $properti, $modul, $title;
+    private $product,$admin;
+
     function index()
-    { $this->get_last_user(); }
-   
-    
-    function get_last_user()
     {
-        $this->acl->otentikasi_admin($this->title);
+       $this->get_last(); 
+    }
+     
+    public function getdatatable($search=null)
+    {
+        if(!$search){ $result = $this->Admin_model->get_last_user($this->modul['limit'])->result(); }
+	
+	foreach($result as $res)
+	{
+           if ($res->status == 1){ $stts = 'TRUE'; }else { $stts = 'FALSE'; }
+	   $output[] = array ($res->userid, $res->username, $res->name, $res->address, $res->phone1, $res->phone2,
+                              $res->city, $res->email, $res->yahooid, $res->role, $stts, $res->lastlogin,
+                              $res->created, $res->updated, $res->deleted
+                             );
+	}
+	
+      $this->output
+      ->set_status_header(200)
+      ->set_content_type('application/json', 'utf-8')
+      ->set_output(json_encode($output, JSON_PRETTY_PRINT))
+      ->_display();
+      exit; 
+    }
+
+    function get_last()
+    {
+        $this->acl->otentikasi1($this->title);
 
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'];
         $data['main_view'] = 'admin_view';
 	$data['form_action'] = site_url($this->title.'/add_process');
-        $data['link'] = array('link_back' => anchor('main/','<span>back</span>', array('class' => 'back')));
+        $data['form_action_update'] = site_url($this->title.'/update_process');
+        $data['form_action_del'] = site_url($this->title.'/delete_all');
+        $data['link'] = array('link_back' => anchor('main/','Back', array('class' => 'btn btn-danger')));
 
-        $data['roles'] = $this->role->combo();
-        $data['city'] = $this->city->combo();
-
-	$uri_segment = 3;
-        $offset = $this->uri->segment($uri_segment);
+        $data['parent'] = $this->admin->combo();
+	// ---------------------------------------- //
  
-        $users = $this->Admin_model->get_last_user($this->modul['limit'], $offset)->result(); // ambil data dari db
-        $num_rows = $this->Admin_model->count_all_num_rows(); // hitung jumlah baris
-        
-        if ($num_rows > 0)
-        {
-	    $config['base_url'] = site_url($this->title.'/get_last_user');
-            $config['total_rows'] = $num_rows;
-            $config['per_page'] = $this->modul['limit'];
-            $config['uri_segment'] = $uri_segment;
-            $this->pagination->initialize($config);
-            $data['pagination'] = $this->pagination->create_links(); //array menampilkan link untuk pagination.
-            // akhir dari config untuk pagination
+        $config['first_tag_open'] = $config['last_tag_open']= $config['next_tag_open']= $config['prev_tag_open'] = $config['num_tag_open'] = '<li>';
+        $config['first_tag_close'] = $config['last_tag_close']= $config['next_tag_close']= $config['prev_tag_close'] = $config['num_tag_close'] = '</li>';
 
-            $atts = array(
-              'class'      => 'update',
-              'title'      => 'edit / update',
-              'width'      => '600',
-              'height'     => '600',
-              'scrollbars' => 'no',
-              'status'     => 'yes',
-              'resizable'  => 'yes',
-              'screenx'    =>  '\'+((parseInt(screen.width) - 600)/2)+\'',
-              'screeny'    =>  '\'+((parseInt(screen.height) - 600)/2)+\'',
-            );
+        $config['cur_tag_open'] = "<li><span><b>";
+        $config['cur_tag_close'] = "</b></span></li>";
 
-            // library HTML table untuk membuat template table class zebra
-            $tmpl = array( 'table_open' => '<table class="tablemaster table table-bordered">');
+        // library HTML table untuk membuat template table class zebra
+        $tmpl = array('table_open' => '<table id="datatable-buttons" class="table table-striped table-bordered">');
+
+        $this->table->set_template($tmpl);
+        $this->table->set_empty("&nbsp;");
+
+        //Set heading untuk table
+        $this->table->set_heading('#','No', 'Username', 'E-mail', 'Role', 'Status', 'Action');
+
+        $data['table'] = $this->table->generate();
+        $data['source'] = site_url('admin/getdatatable');
             
-            $this->table->set_template($tmpl);
-            $this->table->set_empty("&nbsp;");
-            
-            //Set heading untuk table
-	    $this->table->set_heading('No', 'Username', 'E-mail', 'Role', 'Status', 'Action');
-            
-            $i = 0;
-            foreach ($users as $user)
-            {
-                $this->table->add_row
-                (
-                    ++$i, $user->username, mailto($user->email), $user->role, $this->status($user->status),
-//                    anchor_popup($this->title.'/update/'.$user->userid, '<span>update</span>', $atts).' '.
-                    anchor($this->title.'/update/'.$user->userid,'<span>update</span>',array('class' => 'update')).' '.
-                    anchor($this->title.'/delete/'.$user->userid,'<span>delete</span>',array('class'=> 'delete', 'title' => 'delete' ,'onclick'=>"return confirm('Are you sure you will delete this data?')"))
-                );
-            }
-            
-            // table di generate 
-            $data['table'] = $this->table->generate();
-        }
-        else
-        {
-            $data['message'] = 'Not found any '.$this->modul['title'].' of data!';
-        }
-	
         // Load absen view dengan melewatkan var $data sbgai parameter
 	$this->load->view('template', $data);
     }
     
-    function status($val)
-    {if ($val == 1){return "TRUE";} else{return "FALSE";}}
-
-
-    private function cek_admin($id)
+    function delete_all()
     {
-        $user = $this->Admin_model->get_user_by_id($id)->row();
-        $user = $user->username;
+      $this->acl->otentikasi_admin($this->title);
+      
+      $cek = $this->input->post('cek');
+      $jumlah = count($cek);
 
-        if ($user == 'admin')
+      if($cek)
+      {
+        $jumlah = count($cek);
+        $x = 0;
+        for ($i=0; $i<$jumlah; $i++)
         {
-           $this->session->set_flashdata('message', 'admin can not edit / remove..!!');
-           redirect($this->title);
+           if ( $this->cek_relation($cek[$i]) == TRUE ) 
+           {
+              $this->Admin_model->delete($cek[$i]); 
+           }
+           else { $x=$x+1; }
+           
         }
+        $res = intval($jumlah-$x);
+        //$this->session->set_flashdata('message', "$res $this->title successfully removed &nbsp; - &nbsp; $x related to another component..!!");
+        $mess = "$res $this->title successfully removed &nbsp; - &nbsp; $x related to another component..!!";
+        echo 'true|'.$mess;
+      }
+      else
+      { //$this->session->set_flashdata('message', "No $this->title Selected..!!"); 
+        $mess = "No $this->title Selected..!!";
+        echo 'false|'.$mess;
+      }
+   //   redirect($this->title);
     }
-    
+
     function delete($uid)
     {
         $this->acl->otentikasi_admin($this->title);
-        $this->cek_admin($uid);
-        $this->Admin_model->delete($uid); // memanggil model untuk mendelete data
-        $this->session->set_flashdata('message', '1 users successfully removed..!!'); // set flash data message dengan session
-        redirect($this->title);
+        if ( $this->cek_relation($uid) == TRUE )
+        {
+           $img = $this->Admin_model->get_admin_by_id($uid)->row();
+           $img = $img->image;
+           if ($img){ $img = "./images/admin/".$img; unlink("$img"); }
+
+           $this->Admin_model->delete($uid);
+           $this->session->set_flashdata('message', "1 $this->title successfully removed..!");
+           
+           echo 'true';
+        }
+        else { $this->session->set_flashdata('message', "$this->title related to another component..!"); 
+        echo  "$this->title related to another component..!";}
+       // redirect($this->title);
     }
-    
+
+    private function cek_relation($id)
+    {
+        $product = $this->product->cek_relation($id, $this->title);
+        if ($product == TRUE) { return TRUE; } else { return FALSE; }
+    }
+
     function add_process()
     {
-        $this->acl->otentikasi_admin($this->title);
+        $this->acl->otentikasi2($this->title);
 
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'];
         $data['main_view'] = 'admin_view';
 	$data['form_action'] = site_url($this->title.'/add_process');
-        $data['link'] = array('link_back' => anchor($this->title,'<span>back</span>', array('class' => 'back')));
+	$data['link'] = array('link_back' => anchor('admin/','<span>back</span>', array('class' => 'back')));
 
-        $data['roles'] = $this->role->combo();
-        $data['city'] = $this->city->combo();
-         
-        $this->form_validation->set_rules('tusername', 'UserName', 'required|callback_valid_username');
-	$this->form_validation->set_rules('tpassword', 'Password', 'required');
-        $this->form_validation->set_rules('tname', 'Name', 'required');
-        $this->form_validation->set_rules('taddress', 'Address', 'required');
-        $this->form_validation->set_rules('tphone', 'Phone', 'required');
-        $this->form_validation->set_rules('ccity', 'City', 'required');
-        $this->form_validation->set_rules('tmail', 'Email', 'required|valid_email');
-        $this->form_validation->set_rules('crole', 'Role', 'required');
-        $this->form_validation->set_rules('tid', 'Yahoo Id', '');
-        $this->form_validation->set_rules('rstatus', 'Status', 'required');
-        
+	// Form validation
+        $this->form_validation->set_rules('tname', 'Name', 'required|callback_valid_admin');
+        $this->form_validation->set_rules('cparent', 'Parent Category', 'required');
+
         if ($this->form_validation->run($this) == TRUE)
         {
-            $users = array('username' => $this->input->post('tusername'),'password' => $this->input->post('tpassword'),'name' => $this->input->post('tname'),
-                           'address' => $this->input->post('taddress'), 'phone1' => $this->input->post('tphone'), 'city' => $this->input->post('ccity'),
-                           'email' => $this->input->post('tmail'), 'yahooid' => setnull($this->input->post('tid')), 'role' => $this->input->post('crole'), 'status' => $this->input->post('rstatus'));
+            $config['upload_path'] = './images/admin/';
+            $config['file_name'] = $this->input->post('tname');
+            $config['allowed_types'] = 'jpg|gif|png';
+            $config['overwrite'] = true;
+            $config['max_size']	= '1000';
+            $config['max_width']  = '3000';
+            $config['max_height']  = '3000';
+            $config['remove_spaces'] = TRUE;
 
-            $this->Admin_model->add($users);
-            $this->session->set_flashdata('message', "One data ".$this->title." successfully saved!");
-//            redirect($this->title);  ========= fungsi untuk ajax ============
-            echo 'true';
+            $this->load->library('upload', $config);
+//
+            if ( !$this->upload->do_upload("userfile")) // if upload failure
+            {
+                $info['file_name'] = null;
+                $data['error'] = $this->upload->display_errors();
+                $admin = array('name' => strtolower($this->input->post('tname')),'parent_id' => $this->input->post('cparent'), 'image' => null);
+            }
+            else
+            {
+                $info = $this->upload->data();
+                $admin = array('name' => strtolower($this->input->post('tname')),'parent_id' => $this->input->post('cparent'), 'image' => $info['file_name']);
+            }
+
+            $this->Admin_model->add($admin);
+            $this->session->set_flashdata('message', "One $this->title data successfully saved!");
+//            redirect($this->title);
+            
+            if ($info['file_name'])
+            {
+              $img = base_url().'images/admin/'.$info['file_name'];
+              echo "<img width='200' src='$img' />";
+            }
+            else { echo '<p style="color:#FD080C; font-size:12px; font-weight:bold;"> '.$this->title.' Successfully Saved...! </p>'; }
+            
+          //  echo 'true';
         }
         else
         {
-//            $this->load->view('template', $data); ========= fungsi untuk ajax ============
-            echo validation_errors();
+//               $this->load->view('template', $data);
+//            echo validation_errors();
+            echo 'invalid';
         }
-    }
-    
-    function valid_username()
-    {
-        $uname = $this->input->post('tusername');
-        
-        if ($this->Admin_model->valid_name($uname) == FALSE)
-        {
-            $this->form_validation->set_message('valid_username', 'User ini sudah ada.!');
-            return FALSE;
-        }
-        else
-        {
-            return TRUE;
-        }
+
     }
 
-    function validation_username($name)
-    {
-	$id = $this->session->userdata('admin_id');
-	if ($this->Admin_model->validation_username($name,$id) == FALSE)
-        {
-            $this->form_validation->set_message('validation_username', 'This user is already registered!');
-            return FALSE;
-        }
-        else
-        {
-            return TRUE;
-        }
-    }
-    
     // Fungsi update untuk menset texfield dengan nilai dari database
-    function update($uid)
-    {
-        $this->acl->otentikasi_admin($this->title);
-
-        $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
-        $data['h2title'] = 'Updating - '.$this->modul['title'];
-	$data['form_action'] = site_url($this->title.'/update_process');
-        $data['link'] = array('link_back' => anchor($this->title,'<span>back</span>', array('class' => 'back')));
-
-        $data['roles'] = $this->role->combo();
-        $data['city'] = $this->city->combo();
-
-        $user = $this->Admin_model->get_user_by_id($uid)->row();
-
-        $data['default']['name'] = $user->name;
-        $data['default']['address'] = $user->address;
-        $data['default']['phone'] = $user->phone1;
-        $data['default']['city'] = $user->city;
-        $data['default']['user_name'] = $user->username;
-	$data['default']['password'] = $user->password;
-        $data['default']['mail'] = $user->email;
-        $data['default']['id'] = $user->yahooid;
-        $data['default']['role'] = $user->role;
-        $data['default']['status'] = $user->status;
-	
-	$this->session->set_userdata('admin_id', $user->userid);
-    
-       $this->load->view('admin_update', $data);
+    function update($uid=null)
+    {        
+        $data['parent'] = $this->admin->combo_update($uid);
+        $admin = $this->Admin_model->get_admin_by_id($uid)->row();
+        $data['default']['name'] = $admin->name;
+        $data['default']['parent'] = $admin->parent_id;
+        $data['default']['image'] = base_url().'images/admin/'.$admin->image;
+//
+	$this->session->set_userdata('langid', $admin->id);
+//        $this->load->view('admin_update', $data);
+        
+        echo $uid.'|'.$admin->name.'|'.$admin->parent_id.'|'.base_url().'images/admin/'.$admin->image;
     }
-    
+
+
+    public function valid_admin($name)
+    {
+        if ($this->Admin_model->valid_admin($name) == FALSE)
+        {
+            $this->form_validation->set_message('valid_admin', "This $this->title is already registered.!");
+            return FALSE;
+        }
+        else{ return TRUE; }
+    }
+
+    function validation_admin($name)
+    {
+	$id = $this->session->userdata('langid');
+	if ($this->Admin_model->validating_admin($name,$id) == FALSE)
+        {
+            $this->form_validation->set_message('validation_admin', 'This admin is already registered!');
+            return FALSE;
+        }
+        else { return TRUE; }
+    }
+
     // Fungsi update untuk mengupdate db
     function update_process()
     {
-        $this->acl->otentikasi_admin($this->title);
+        $this->acl->otentikasi2($this->title);
 
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
-        $data['h2title'] = 'Updating - '.$this->modul['title'];
+        $data['h2title'] = $this->modul['title'];
+        $data['main_view'] = 'admin_update';
 	$data['form_action'] = site_url($this->title.'/update_process');
-        $data['link'] = array('link_back' => anchor($this->title,'<span>back</span>', array('class' => 'back')));
+	$data['link'] = array('link_back' => anchor('admin/','<span>back</span>', array('class' => 'back')));
+        $data['parent'] = $this->admin->combo_update($this->session->userdata('langid'));
 
-        $data['roles'] = $this->role->combo();
-        $data['city'] = $this->city->combo();
-        
-        $this->form_validation->set_rules('tusername', 'UserName', 'required|callback_validation_username');
-	$this->form_validation->set_rules('tpassword', 'Password', 'required');
-        $this->form_validation->set_rules('tname', 'Name', 'required');
-        $this->form_validation->set_rules('taddress', 'Address', 'required');
-        $this->form_validation->set_rules('tphone', 'Phone', 'required');
-        $this->form_validation->set_rules('ccity', 'City', 'required');
-        $this->form_validation->set_rules('tmail', 'Email', 'required|valid_email');
-        $this->form_validation->set_rules('crole', 'Role', 'required');
-        $this->form_validation->set_rules('tid', 'Yahoo Id', '');
-        $this->form_validation->set_rules('rstatus', 'Status', 'required');
-	
+	// Form validation
+        $this->form_validation->set_rules('tname_update', 'Name', 'required|max_length[100]|callback_validation_admin');
+        $this->form_validation->set_rules('cparent_update', 'Parent Category', 'required');
+
         if ($this->form_validation->run($this) == TRUE)
-        {   
-            $users = array('username' => $this->input->post('tusername'),'password' => $this->input->post('tpassword'),'name' => $this->input->post('tname'),
-                           'address' => $this->input->post('taddress'), 'phone1' => $this->input->post('tphone'), 'city' => $this->input->post('ccity'),
-                           'email' => $this->input->post('tmail'), 'yahooid' => setnull($this->input->post('tid')), 'role' => $this->input->post('crole'), 'status' => $this->input->post('rstatus'));
-            $this->Admin_model->update($this->session->userdata('admin_id'), $users);
+        {
+            $config['upload_path'] = './images/admin/';
+            $config['file_name'] = $this->input->post('tname_update');
+            $config['allowed_types'] = 'gif|jpg|png';
+            $config['overwrite'] = true;
+            $config['max_size']	= '10000';
+            $config['max_width']  = '10000';
+            $config['max_height']  = '10000';
+            $config['remove_spaces'] = TRUE;
 
-           
-            $this->session->set_flashdata('message', 'One '.$this->title.' of data successfully updated!');
-            redirect($this->title.'/update/'.$this->session->userdata('admin_id'));
-            $this->session->unset_userdata('admin_id');
+            $this->load->library('upload', $config);
+
+            if ( !$this->upload->do_upload("userfile_update")) // if upload failure
+            {
+                $data['error'] = $this->upload->display_errors();
+                $admin = array('name' => strtolower($this->input->post('tname_update')),'parent_id' => $this->input->post('cparent_update'));
+                $img = null;
+            }
+            else
+            {
+                $info = $this->upload->data();
+                $admin = array('name' => strtolower($this->input->post('tname_update')),'parent_id' => $this->input->post('cparent_update'), 'image' => $info['file_name']);
+                $img = base_url().'images/admin/'.$info['file_name'];
+            }
+
+	    $this->Admin_model->update($this->session->userdata('langid'), $admin);
+            $this->session->set_flashdata('message', "One $this->title has successfully updated!");
+          //  $this->session->unset_userdata('langid');
+            echo "true|".$img;
+
         }
         else
         {
-           $this->load->view('admin_update', $data);
+            echo 'invalid|'.validation_errors();
         }
     }
-    
+
 }
 
 ?>

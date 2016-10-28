@@ -10,7 +10,7 @@ class Login extends MX_Controller {
         $this->load->model('Login_model', '', TRUE);
 
         $this->load->helper('date');
-        $this->load->library('log');
+        $this->log = new Log_lib();
         $this->load->library('email');
 
         $this->properti = $this->property->get();
@@ -18,7 +18,7 @@ class Login extends MX_Controller {
         // Your own constructor code
    }
 
-   private $date,$time;
+   private $date,$time,$log;
    private $properti;
 
    function index()
@@ -51,7 +51,7 @@ class Login extends MX_Controller {
 
                 $this->log->insert($userid, $this->date, $this->time, 'login');
 
-                $data = array('username' => $username, 'role' => $role, 'rules' => $rules, 'log' => $logid, 'login' => TRUE, 'waktu' => $waktu);
+                $data = array('username' => $username, 'userid' => $userid, 'role' => $role, 'rules' => $rules, 'log' => $logid, 'login' => TRUE, 'waktu' => $waktu);
                 $this->session->set_userdata($data);
                 
                 $response = array(
@@ -116,8 +116,8 @@ class Login extends MX_Controller {
 
                 Your Username is: ".$this->input->post('username')."
                 Your Password : ".$pass." <hr />
-Your password for this account has been recovered . You don’t need to do anything, this message is simply a notification to protect the security of your account.
-Please note: your password may take awhile to activate. If it doesn’t work on your first try, please try it again later
+Your password for this account has been recovered . You donï¿½t need to do anything, this message is simply a notification to protect the security of your account.
+Please note: your password may take awhile to activate. If it doesnï¿½t work on your first try, please try it again later
 DO NOT REPLY TO THIS MESSAGE. For further help or to contact support, please email to ".$this->properti['email']."
 ****************************************************************************************************************** ";
 

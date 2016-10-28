@@ -2,14 +2,21 @@
 
 class Category_model extends Custom_Model
 {
+    private $logs;
+    
     function __construct()
     {
         parent::__construct();
+        $this->logs = new Log_lib();
+        $this->com = new Components();
+        $this->com = $this->com->get_id('category');
     }
+    
     
     protected $table = 'category';
     protected $field = array('id', 'name', 'parent_id', 'image');
-    
+    protected $com;
+            
     function count_all_num_rows()
     {
         //method untuk mengembalikan nilai jumlah baris dari database.
@@ -20,6 +27,7 @@ class Category_model extends Custom_Model
     {
         $this->db->select($this->field);
         $this->db->from($this->table); 
+        $this->db->where('deleted', $this->deleted);
         $this->db->order_by('name', 'asc'); 
         $this->db->limit($limit, $offset);
         return $this->db->get(); 
@@ -27,13 +35,25 @@ class Category_model extends Custom_Model
     
     function delete($uid)
     {
+        $val = array('deleted' => date('Y-m-d H:i:s'));
         $this->db->where('id', $uid);
-        $this->db->delete($this->table); // perintah untuk delete data dari db
+        $this->db->update($this->table, $val);
+        
+        $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'delete', $this->com);
+    }
+    
+    function force_delete($uid)
+    {
+        $this->db->where('id', $uid);
+        $this->db->delete($this->table);
+        
+        $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'forced_delete', $this->com);
     }
     
     function add($users)
     {
         $this->db->insert($this->table, $users);
+        $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'create', $this->com);
     }
     
     function get_category_by_id($uid)
@@ -47,6 +67,12 @@ class Category_model extends Custom_Model
     {
         $this->db->where('id', $uid);
         $this->db->update($this->table, $users);
+        
+        $val = array('updated' => date('Y-m-d H:i:s'));
+        $this->db->where('id', $uid);
+        $this->db->update($this->table, $val);
+        
+        $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'update', $this->com);
     }
     
     function valid_category($name)

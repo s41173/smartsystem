@@ -24,13 +24,46 @@ class Components {
                     );
         return $val;
     }
+    
+    public function get_name($id = null)
+    {
+        $this->ci->db->where('id', $id);
+        $res = $this->ci->db->get($this->table)->row();
+        if ($res){ return $res->name; }
+    }
+    
+     public function get_id($name = null)
+    {
+        $this->ci->db->where('name', $name);
+        $res = $this->ci->db->get($this->table)->row();
+        if ($res){ return $res->id; }
+    }
 
     function combo()
     {
         $this->ci->db->select('name');
+        $this->ci->db->where('aktif', 'Y');
         $val = $this->ci->db->get($this->table)->result();
         foreach($val as $row){$data['options'][$row->name] = $row->name;}
         return $data;
+    }
+    
+    function combo_id()
+    {
+        $this->ci->db->select('id,name');
+        $this->ci->db->where('aktif', 'Y');
+        $this->ci->db->order_by('name','asc');
+        $val = $this->ci->db->get($this->table)->result();
+        foreach($val as $row){$data['options'][$row->id] = $row->name;}
+        return $data;
+    }
+    
+    function get_closing_aktif()
+    {
+       $this->ci->db->select('name,table');
+       $this->ci->db->where('aktif', 'Y'); 
+       $this->ci->db->where('closing', '1'); 
+       return $this->ci->db->get($this->table)->result();
     }
 }
 

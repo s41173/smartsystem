@@ -12,6 +12,7 @@ class Categoryproduct {
     function combo()
     {
         $this->ci->db->select('id, name');
+        $this->ci->db->where('deleted', NULL);
         $this->ci->db->order_by('name', 'asc');
         $val = $this->ci->db->get('category')->result();
         $data['options'][0] = 'Top';
@@ -22,6 +23,7 @@ class Categoryproduct {
     function combo_all()
     {
         $this->ci->db->select('id, name');
+        $this->ci->db->where('deleted', NULL);
         $this->ci->db->order_by('name', 'asc');
         $val = $this->ci->db->get('category')->result();
         foreach($val as $row){ $data['options'][$row->id] = ucfirst($row->name); }
@@ -31,6 +33,7 @@ class Categoryproduct {
     function combo_update($id)
     {
         $this->ci->db->select('id, name');
+        $this->ci->db->where('deleted', NULL);
         $this->ci->db->order_by('name', 'asc');
         $this->ci->db->where_not_in('id', $id);
         $val = $this->ci->db->get('category')->result();
