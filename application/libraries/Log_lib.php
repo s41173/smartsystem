@@ -13,9 +13,9 @@ class Log_lib {
 
     public function max_log()
     {
-        $this->ci->db->select_max('logid');
+        $this->ci->db->select_max('id');
         $val = $this->ci->db->get($this->table)->row_array();
-        $val = $val['logid'];
+        $val = $val['id'];
         return $val;
     }
 

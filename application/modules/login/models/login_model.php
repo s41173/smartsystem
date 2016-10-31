@@ -25,7 +25,7 @@ class Login_model extends CI_Model {
     function get_userid($username)
     {
         $query = $this->db->get_where($this->table, array('username' => $username), 1, 0)->row();
-        return $query->userid;
+        return $query->id;
     }
 
     function get_role($username)

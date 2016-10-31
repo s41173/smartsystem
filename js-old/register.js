@@ -1,14 +1,7 @@
 function cekall(val)
 {
-	if (document.getElementById('chkselect').checked)
-	{
-		for (i=0;i<val;i++)
-	    {
-		  document.getElementById("cek"+i).checked=true;
-	    }
-	}
+	if (document.getElementById('chkselect').checked){ for (i=0;i<val;i++){  document.getElementById("cek"+i).checked=true; } }
 	else {	for (i=0;i<val;i++){document.getElementById("cek"+i).checked=false;} }
-	
 }
 
 function geturl(val)
@@ -40,7 +33,6 @@ function checkdigit(sText, nid)
    var ValidChars = "0123456789.";
    var IsNumber = true;
    var Char;
-
 
    for (i = 0; i < sText.length && IsNumber == true;
    i ++ )

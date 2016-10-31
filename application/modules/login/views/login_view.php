@@ -20,6 +20,16 @@
 
 $(document).ready(function (e) {
 	
+	
+	
+	$('#user,#pass').keypress(function (e) {
+	 var key = e.which;
+	 if(key == 13)  // the enter key code
+	  {
+        $('#loginbutton').click(); 
+	  }
+	});   
+	
 	$('#loginbutton').click(function() 
 	{
 		var user = $("#user").val();

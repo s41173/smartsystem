@@ -24,6 +24,9 @@
   <style type="text/css">@import url("<?php echo base_url() . 'js/sweetalert/sweetalert.css'; ?>");</style>
   
   <script src="<?php echo base_url(); ?>js/moduljs/main.js"></script>
+  <script type="text/javascript">
+          var site = "<?php echo base_url();?>js/datatables/swf/copy_csv_xls_pdf.swf";
+  </script>
 
   <!--[if lt IE 9]>
         <script src="../assets/js/ie8-responsive-file-warning.js"></script>
@@ -97,6 +100,9 @@
               <?php $this->load->view($main_view); ?>
              <!-- pure content -->
              
+             <!-- pace loading bar -->
+             <script src="<?php echo base_url(); ?>js/pace/pace.min.js"></script>
+             
           </div>
 
 
@@ -128,8 +134,6 @@
   <script src="<?php echo base_url();?>js/custom.js"></script>
   <script src="<?php echo base_url();?>js/chartjs/chart.min.js"></script>
   <script src="<?php echo base_url();?>js/select/select2.full.js"></script>
-
-
 
   <script>
    

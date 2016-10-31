@@ -4,6 +4,12 @@ $(document).ready(function (e) {
     $('#myModal,#myModal2,#myModal3,#myModal4,#myModal5').on('hidden.bs.modal', function () {
 	  load_data();
     })
+	
+	// $('#datatable-buttons').dataTable({
+	 // dom: 'T<"clear">lfrtip',
+		// tableTools: {"sSwfPath": site}
+	 // });
+
    
     // function general
 	$("#error,#success,#warning").hide();
@@ -37,16 +43,12 @@ $(document).ready(function (e) {
 				res = data.split("|");
 				if (res[0] == "true")
 				{
-					$("#success").show();
-					document.getElementById("success").innerHTML = res[1];
-					setTimeout(function() { $("#success").fadeOut(); }, 2000);
 					load_data();
-					
+					error_mess(1,res[1],0);
 				}
 				else{ 
-				  $("#warning").show(); 
-				  document.getElementById("warning").innerHTML = res[1]; 
-				  setTimeout(function() { $("#warning").fadeOut(); }, 2000); 
+				  load_data();
+				  error_mess(2,res[1],0);
 			    }
 			}
 		})
@@ -84,25 +86,147 @@ $(document).ready(function (e) {
 	   },
 	   function(isConfirm)
 	   {
-		   if (isConfirm){
-			   
-			//alert(sites_del +"/"+ del_id);
-			$.ajax({
+			if (isConfirm){  
+			 
+			  //alert(sites_del +"/"+ del_id);  
+			  $.ajax({
 				type: 'POST',
 				url: sites_del +"/"+ del_id,
 				data: $(this).serialize(),
 				success: function(data)
 				{
-				   //window.location.reload(true);
-				   load_data();
+					res = data.split("|");
+					if (res[0] == 'true'){ error_mess(1,res[1],0); }else { error_mess(2,res[1],0); }
+				    load_data();
 				}
 				})
-				return false;
-		
-			} else {return false;}
+				return false; 
+			}
 	   });
 	
 	});
+	
+	// form untuk upload data
+	$("#upload_form").on('submit',(function(e) {
+		
+		e.preventDefault();
+		$.ajax({
+        	url: sites_add,
+			type: "POST",
+			data:  new FormData(this),
+			contentType: false,
+    	    cache: false,
+			processData:false,
+			beforeSend : function()
+			{
+				//$("#preview").fadeOut();
+				$(".error").fadeOut();
+			},
+			success: function(data)
+		    {
+				if(data=='invalid')
+				{
+					// invalid file format.
+					$(".error").html("Invalid File !").fadeIn();
+				}
+				else
+				{
+					// view uploaded file.
+					$("#preview").html(data).fadeIn();
+   				    $('#tname,#uploadImage').val("");
+					//$('#preview').html('')
+				}
+				
+				setTimeout(function() { $(".error").fadeOut(); }, 3000);
+		    },
+		  	error: function(e) 
+	    	{
+				$("#error").html(e).fadeIn();
+	    	} 
+				        
+	   });
+	     
+	}));
+	
+	// ajax form non modal
+	$("#upload_form_non").on('submit',(function(e) {
+		
+		e.preventDefault();
+		$.ajax({
+        	url: sites_add,
+			type: "POST",
+			data:  new FormData(this),
+			contentType: false,
+    	    cache: false,
+			processData:false,
+			beforeSend : function()
+			{
+				//$("#preview").fadeOut();
+			},
+			success: function(data)
+		    {
+				res = data.split("|");
+				
+				if(res[0]=='true')
+				{
+					// invalid file format.
+					error_mess(1,res[1]);
+					resets();
+				}
+				else
+				{	
+					error_mess(3,res[1]);
+				//	$('#myModal').modal('hide');
+					
+				}
+		    },
+		  	error: function(e) 
+	    	{
+				$("#error").html(e).fadeIn();
+	    	} 	        
+	   });
+	     
+	}));
+	
+	/*  edit form  */
+	$("#upload_form_edit").on('submit',(function(e) {
+		
+		e.preventDefault();
+		$.ajax({
+        	url: sites_edit,
+			type: "POST",
+			data:  new FormData(this),
+			contentType: false,
+    	    cache: false,
+			processData:false,
+			beforeSend : function()
+			{
+				//$("#preview").fadeOut();
+			},
+			success: function(data)
+		    {
+				res = data.split("|");
+				if(res[0]=='invalid')
+				{
+					// invalid file format.
+					error_mess(3,res[1]);
+				}
+				else
+				{
+					// view uploaded file.
+					error_mess(1,'Update Successfully...!');
+					if (res[1]){ $("#catimg_update").attr("src",res[1]); }
+
+					//$('#myModal2').modal('hide');
+				}
+		    },
+		  	error: function(e) 
+	    	{
+				$("#err").html(e).fadeIn();
+	    	} 	        
+	   });
+	   
+	}));
 	
 	
 	// =============================================================================================================
@@ -113,13 +237,22 @@ $(document).ready(function (e) {
 
 
 	// function errorbox
-	function error_mess (type,mess)
+	function error_mess (type,mess,pages=1)
 	{
 	  $(document).ready(function (e) {
 		  
-	    if (type == 1){ $(".success").html(mess).fadeIn(); setTimeout(function() { $(".success").fadeOut(); }, 3000); }
-        else if (type == 2){ $(".warning").html(mess).fadeIn(); setTimeout(function() { $(".warning").fadeOut(); }, 3000); }
-	    else if (type == 3){ $(".error").html(mess).fadeIn(); setTimeout(function() { $(".error").fadeOut(); }, 3000); }
+		if (pages == 1)  
+		{
+		  if (type == 1){ $(".success").html(mess).fadeIn(); setTimeout(function() { $(".success").fadeOut(); }, 3000); }
+          else if (type == 2){ $(".warning").html(mess).fadeIn(); setTimeout(function() { $(".warning").fadeOut(); }, 3000); }
+	      else if (type == 3){ $(".error").html(mess).fadeIn(); setTimeout(function() { $(".error").fadeOut(); }, 3000); }
+		}
+		else{
+		  if (type == 1){ $("#success").html(mess).fadeIn(); setTimeout(function() { $("#success").fadeOut(); }, 3000); }
+          else if (type == 2){ $("#warning").html(mess).fadeIn(); setTimeout(function() { $("#warning").fadeOut(); }, 3000); }
+	      else if (type == 3){ $("#error").html(mess).fadeIn(); setTimeout(function() { $("#error").fadeOut(); }, 3000); }
+		}
+	    
 	   
 	   // document ready end	
       });

@@ -39,18 +39,19 @@ class Category extends MX_Controller
     public function getdatatable($search=null)
     {
         if(!$search){ $result = $this->Category_model->get_last_category($this->modul['limit'])->result(); }
-	
+        
+        if ($result){
 	foreach($result as $res)
 	{
 	   $output[] = array ($res->id, $res->name, $this->category->get_name($res->parent_id), base_url().'images/category/'.$res->image);
 	}
-	
-	 $this->output
-      ->set_status_header(200)
-      ->set_content_type('application/json', 'utf-8')
-      ->set_output(json_encode($output, JSON_PRETTY_PRINT))
-      ->_display();
-      exit; 
+            $this->output
+            ->set_status_header(200)
+            ->set_content_type('application/json', 'utf-8')
+            ->set_output(json_encode($output, JSON_PRETTY_PRINT))
+            ->_display();
+            exit; 
+        }
     }
 
     function get_last_category()
@@ -134,7 +135,7 @@ class Category extends MX_Controller
            $this->Category_model->delete($uid);
            $this->session->set_flashdata('message', "1 $this->title successfully removed..!");
            
-           echo 'true';
+           echo "true|1 $this->title successfully soft removed..!";
        }
        else
        {
@@ -147,10 +148,10 @@ class Category extends MX_Controller
            $this->Category_model->delete($uid);
            $this->session->set_flashdata('message', "1 $this->title successfully removed..!");
            
-           echo 'true';
+           echo "true|1 $this->title successfully removed..!";
         }
         else { $this->session->set_flashdata('message', "$this->title related to another component..!"); 
-        echo  "$this->title related to another component..!";} 
+        echo  "invalid|$this->title related to another component..!";} 
        }
        // redirect($this->title);
     }

@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class City {
+class Role_lib {
 
     public function __construct()
     {
@@ -11,9 +11,9 @@ class City {
 
     function combo()
     {
-        $this->ci->db->select('id, name');
-        $val = $this->ci->db->get('city')->result();
-        foreach($val as $row){$data['options'][$row->name] = $row->name;}
+        $this->ci->db->select('id, name, desc, rules');
+        $val = $this->ci->db->get('role')->result();
+        foreach($val as $row){$data['options'][$row->name] = ucfirst($row->name);}
         return $data;
     }
 

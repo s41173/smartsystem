@@ -1,6 +1,10 @@
 $(document).ready(function (e) {
 	
-   
+	$('#datatable-buttons').dataTable({
+	 dom: 'T<"clear">lfrtip',
+		tableTools: {"sSwfPath": site}
+	 });
+	
     // function general
     load_data();
 	
@@ -12,133 +16,6 @@ $(document).ready(function (e) {
 	  document.getElementById("uploadImage").value = "";
 	  
 	});
-	
-	
-	// form untuk upload data
-	$("#upload_form").on('submit',(function(e) {
-		
-		e.preventDefault();
-		$.ajax({
-        	url: sites_add,
-			type: "POST",
-			data:  new FormData(this),
-			contentType: false,
-    	    cache: false,
-			processData:false,
-			beforeSend : function()
-			{
-				//$("#preview").fadeOut();
-				$(".error").fadeOut();
-			},
-			success: function(data)
-		    {
-				if(data=='invalid')
-				{
-					// invalid file format.
-					$(".error").html("Invalid File !").fadeIn();
-				}
-				else
-				{
-					// view uploaded file.
-					$("#preview").html(data).fadeIn();
-   				    $('#tname,#uploadImage').val("");
-					//$('#preview').html('')
-				}
-				
-				setTimeout(function() { $(".error").fadeOut(); }, 3000);
-		    },
-		  	error: function(e) 
-	    	{
-				$("#error").html(e).fadeIn();
-	    	} 
-				        
-	   });
-	     
-	}));
-	
-	// ajax form non modal
-	
-	$("#upload_form_non").on('submit',(function(e) {
-		
-		e.preventDefault();
-		$.ajax({
-        	url: sites_add,
-			type: "POST",
-			data:  new FormData(this),
-			contentType: false,
-    	    cache: false,
-			processData:false,
-			beforeSend : function()
-			{
-				//$("#preview").fadeOut();
-				$("#error").fadeOut();
-			},
-			success: function(data)
-		    {
-				res = data.split("|");
-				
-				if(res[0]=='invalid')
-				{
-					// invalid file format.
-					$("#error").html(res[1]).fadeIn();
-				}
-				elseif (res[0] == 'success')
-				{	
-					// view uploaded file.
-					$("#preview").html(res[1]).fadeIn();
-				//	$('#myModal').modal('hide');
-					
-				}
-				setTimeout(function() { $(".error").fadeOut(); }, 3000);
-		    },
-		  	error: function(e) 
-	    	{
-				$("#error").html(e).fadeIn();
-	    	} 	        
-	   });
-	     
-	}));
-	
-	/*  edit form  */
-	$("#upload_form_edit").on('submit',(function(e) {
-		
-		e.preventDefault();
-		$.ajax({
-        	url: sites_edit,
-			type: "POST",
-			data:  new FormData(this),
-			contentType: false,
-    	    cache: false,
-			processData:false,
-			beforeSend : function()
-			{
-				//$("#preview").fadeOut();
-			},
-			success: function(data)
-		    {
-				res = data.split("|");
-				if(res[0]=='invalid')
-				{
-					// invalid file format.
-					error_mess(3,res[1]);
-				}
-				else
-				{
-					// view uploaded file.
-					error_mess(1,'Update Successfully...!');
-					if (res[1]){ $("#catimg_update").attr("src",res[1]); }
-
-					//$('#myModal2').modal('hide');
-				}
-		    },
-		  	error: function(e) 
-	    	{
-				$("#err").html(e).fadeIn();
-	    	} 	        
-	   });
-	   
-	}));
-	
 	
 	// fungsi jquery update
 	$(document).on('click','.text-primary',function(e)
@@ -184,7 +61,6 @@ $(document).ready(function (e) {
 				dataType: "json",
 				success: function(s) 
 				{
-
 					 console.log(s);
 						oTable.fnClearTable();
 						$(".chkselect").remove();
@@ -205,6 +81,7 @@ $(document).ready(function (e) {
 				},
 				error: function(e){
 				   console.log(e.responseText);	
+				   oTable.fnClearTable(); 
 				}
 				
 			});  // end document ready	

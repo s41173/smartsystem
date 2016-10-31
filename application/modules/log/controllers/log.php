@@ -1,157 +1,258 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 class Log extends MX_Controller
 {
-    public function __construct()
+    function __construct()
     {
         parent::__construct();
-
+        
         $this->load->model('Log_model', '', TRUE);
+
         $this->properti = $this->property->get();
         $this->acl->otentikasi();
 
         $this->modul = $this->components->get(strtolower(get_class($this)));
         $this->title = strtolower(get_class($this));
+        $this->user = new Admin_lib();
+        $this->com = new Components();
     }
-    
-    private $properti,$modul,$title;
-    
+
+    private $properti, $modul, $title;
+    private $user,$com;
+
     function index()
-    { $this->display(); }
-    
-    function display()
+    {
+       $this->get_last(); 
+    }
+     
+    public function getdatatable($search=null)
+    {
+        if(!$search){ $result = $this->Log_model->get_last_user($this->modul['limit'])->result(); }
+	
+        $output = null;
+        if ($result){
+            
+         foreach($result as $res)
+	 {
+	   $output[] = array ($res->id, $this->user->get_username($res->userid), tglin($res->date), $res->time, $this->com->get_name($res->component_id), $res->activity,
+                              $res->created, $res->updated, $res->deleted
+                             );
+	 } 
+         
+        $this->output
+         ->set_status_header(200)
+         ->set_content_type('application/json', 'utf-8')
+         ->set_output(json_encode($output, JSON_PRETTY_PRINT))
+         ->_display();
+         exit;  
+        }
+    }
+
+    function get_last()
     {
         $this->acl->otentikasi1($this->title);
-        
+
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'];
         $data['main_view'] = 'log_view';
-	$data['form_action'] = site_url($this->title.'/process_log');
-        $data['link'] = array('link_back' => anchor('main/','<span>back</span>', array('class' => 'back')));
-        
-	$uri_segment = 3;
-        $offset = $this->uri->segment($uri_segment);
-        
-        $logs = $this->Log_model->get_last_log($this->modul['limit'], $offset)->result();
-        $num_rows = $this->Log_model->count_all_num_rows();
+	$data['form_action'] = site_url($this->title.'/add_process');
+        $data['form_action_update'] = site_url($this->title.'/update_process');
+        $data['form_action_report'] = site_url($this->title.'/report_process');
+        $data['form_action_del'] = site_url($this->title.'/delete_all');
+        $data['link'] = array('link_back' => anchor('main/','Back', array('class' => 'btn btn-danger')));
 
-            // ==================== pagination  ======================
-	    $config['base_url'] = site_url($this->title.'/display');
-            $config['total_rows'] = $num_rows;
-            $config['per_page'] = $this->modul['limit'];
-            $config['uri_segment'] = $uri_segment;
-            $this->pagination->initialize($config);
-            $data['pagination'] = $this->pagination->create_links(); //array menampilkan link untuk pagination.
-            // ==================== pagination  ======================
+        $data['user'] = $this->user->combo_all();
+        $data['modul'] = $this->com->combo_id_all();
+	// ---------------------------------------- //
+ 
+        $config['first_tag_open'] = $config['last_tag_open']= $config['next_tag_open']= $config['prev_tag_open'] = $config['num_tag_open'] = '<li>';
+        $config['first_tag_close'] = $config['last_tag_close']= $config['next_tag_close']= $config['prev_tag_close'] = $config['num_tag_close'] = '</li>';
 
-            // ==================== table  ======================
-            $tmpl = array('table_open' => '<table class="tablemaster table table-bordered">');
-            $this->table->set_template($tmpl);
-            $this->table->set_empty("&nbsp;");
-	    $this->table->set_heading('No', 'Log-ID', 'Username', 'Date', 'Time', 'Activity', 'Action');
-            
-            $i = 0 + $offset;
-            
-            foreach ($logs as $log)
-            {
-                $no = array('data' => ++$i, 'class' => 'center');
-                $this->table->add_row
-                (
-                    $no, $log->logid, $log->username, tgleng($log->date), $log->time, $log->activity,
-                    anchor($this->title.'/delete/'.$log->logid,'<span>delete</span>',array('class'=> 'delete','onclick'=>"return confirm('Are you sure you will delete this data?')"))
-                );
-            }
-            $data['table'] = $this->table->generate();
-            // ==================== table  ======================
-	
-	$this->load->view('template', $data);
-    }
-    
-    function process_log()
-    {
-        $this->form_validation->set_rules('tstart', 'Start Date', 'required');
-
-	if ($this->form_validation->run($this) == TRUE)
-        {
-            $tgl = $this->input->post('ttgl');
-            if ($this->input->post('submit') == 'Search')
-            {  redirect($this->title.'/search_log/'.$this->input->post('tstart')); }
-            else
-            { redirect($this->title.'/delete_log/'.$this->input->post('tstart')); }
-        }
-        else
-        {
-            $this->session->set_flashdata('message', 'Validation Error..!!'); // set flash data message dengan session
-            redirect($this->title);
-        }
-    }
-
-    function delete_log($daten)
-    {
-        $this->acl->otentikasi3($this->title);
-        $tgl = date('Y-m-d', strtotime($daten));
-        $this->Log_model->delete_log($tgl); // memanggil model untuk mendelete data
-        $this->session->set_flashdata('message', 'history of  ['.tgleng($daten).'] successfully removed..!!'); // set flash data message dengan session
-        redirect($this->title);
-    }
-    
-    function search_log($daten)
-    {
-        $this->acl->otentikasi3($this->title);
-	$data['title'] = $this->properti['name'].' | Administrator  '.ucwords('Search '.$this->modul['title']);
-        $data['h2title'] = "Search ".$this->modul['title'];
-        $data['main_view'] = 'log_view';
-	$data['form_action'] = site_url($this->title.'/process_log');
-	$data['link'] = array('link_back' => anchor($this->title,'<span>kembali</span>', array('class' => 'back')));
-
-
-        $tgl = date('Y-m-d', strtotime($daten));
-        $logs = $this->Log_model->search($tgl)->result();
+        $config['cur_tag_open'] = "<li><span><b>";
+        $config['cur_tag_close'] = "</b></span></li>";
 
         // library HTML table untuk membuat template table class zebra
-        $tmpl = array('table_open' => '<table class="tablemaster table table-bordered">');
+        $tmpl = array('table_open' => '<table id="datatable-buttons" class="table table-striped table-bordered">');
 
         $this->table->set_template($tmpl);
         $this->table->set_empty("&nbsp;");
 
         //Set heading untuk table
-        $this->table->set_heading('No', 'Log-ID', 'Username', 'Date', 'Time', 'Action');
+        $this->table->set_heading('#','No', 'Username', 'Date', 'Time', 'Component', 'Activity', 'Action');
 
-        $i = 0;
-        foreach ($logs as $log)
-        {
-            $this->table->add_row
-            (
-                ++$i, $log->logid, $log->username, tgleng($log->date), $log->time,
-                anchor($this->title.'/delete/'.$log->logid,'<span>delete</span>',array('class'=> 'delete','onclick'=>"return confirm('Are you sure you will delete this data?')"))
-            );
-        }
-
-        // table di generate
         $data['table'] = $this->table->generate();
-
+        $data['source'] = site_url($this->title.'/getdatatable');
+            
         // Load absen view dengan melewatkan var $data sbgai parameter
 	$this->load->view('template', $data);
+    }
+    
+    function delete_all()
+    {
+      $this->acl->otentikasi_admin($this->title);
+      
+      $cek = $this->input->post('cek');
+      $jumlah = count($cek);
+
+      if($cek)
+      {
+        $jumlah = count($cek);
+        $x = 0;
+        for ($i=0; $i<$jumlah; $i++)
+        {
+           $this->Log_model->delete($cek[$i]);
+           $x=$x+1;
+        }
+        $res = intval($jumlah-$x);
+        //$this->session->set_flashdata('message', "$res $this->title successfully removed &nbsp; - &nbsp; $x related to another component..!!");
+        $mess = "$res $this->title successfully removed &nbsp; - &nbsp; $x related to another component..!!";
+        echo 'true|'.$mess;
+      }
+      else
+      { //$this->session->set_flashdata('message', "No $this->title Selected..!!"); 
+        $mess = "No $this->title Selected..!!";
+        echo 'false|'.$mess;
+      }
+   //   redirect($this->title);
     }
 
     function delete($uid)
     {
-//        otentikasi3($this->title);
-        $this->Log_model->delete($uid); // memanggil model untuk mendelete data
-        $this->session->set_flashdata('message', '1 log history successfully removed..!!'); // set flash data message dengan session
-        redirect($this->title);
+        $this->acl->otentikasi_admin($this->title);
+        $this->Log_model->delete($uid);
+        $this->session->set_flashdata('message', "1 $this->title successfully removed..!");
+           
+        echo "true|1 $this->title successfully removed..!";
+       // redirect($this->title);
     }
-    
-    function valid_date($str)
+
+    function add_process()
     {
-	if(!ereg("^(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-([0-9]{4})$", $str))
-	{
-            $this->form_validation->set_message('valid_date', 'Date format invalid. dd-mm-yyyy');
-            return false;
-	}
-	else { return true; }
+        $this->acl->otentikasi2($this->title);
+
+        $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
+        $data['h2title'] = $this->modul['title'];
+        $data['main_view'] = 'admin_view';
+	$data['form_action'] = site_url($this->title.'/add_process');
+	$data['link'] = array('link_back' => anchor('admin/','<span>back</span>', array('class' => 'back')));
+
+	// Form validation
+        $this->form_validation->set_rules('tusername', 'UserName', 'required|callback_valid_username');
+	$this->form_validation->set_rules('tpassword', 'Password', 'required');
+        $this->form_validation->set_rules('tname', 'Name', 'required');
+        $this->form_validation->set_rules('taddress', 'Address', 'required');
+        $this->form_validation->set_rules('tphone', 'Phone', 'required|numeric');
+        $this->form_validation->set_rules('ccity', 'City', 'required');
+        $this->form_validation->set_rules('tmail', 'Email', 'required|valid_email');
+        $this->form_validation->set_rules('crole', 'Role', 'required');
+        $this->form_validation->set_rules('tid', 'Yahoo Id', '');
+        $this->form_validation->set_rules('rstatus', 'Status', 'required');
+
+        if ($this->form_validation->run($this) == TRUE)
+        {//
+            $users = array('username' => $this->input->post('tusername'),'password' => $this->input->post('tpassword'),'name' => $this->input->post('tname'),
+                           'address' => $this->input->post('taddress'), 'phone1' => $this->input->post('tphone'), 'city' => $this->input->post('ccity'),
+                           'email' => $this->input->post('tmail'), 'yahooid' => setnull($this->input->post('tid')), 'role' => $this->input->post('crole'), 
+                           'status' => $this->input->post('rstatus'));
+
+            $this->Log_model->add($users);
+            $this->session->set_flashdata('message', "One $this->title data successfully saved!");
+            echo 'true|Data successfully saved..!';
+        }
+        else
+        {
+//            $this->load->view('template', $data);
+//            echo validation_errors();
+            echo 'invalid|'.validation_errors();
+        }
+
     }
-    
+
+    // Fungsi update untuk menset texfield dengan nilai dari database
+    function update($uid=null)
+    {        
+        $admin = $this->Log_model->get_user_by_id($uid)->row();
+               
+	$this->session->set_userdata('langid', $admin->id);
+        
+        echo $uid.'|'.$admin->username.'|'.$admin->name.'|'.$admin->address.'|'.$admin->phone1.
+             '|'.$admin->city.'|'.$admin->email.'|'.$admin->role.'|'.$admin->status;
+    }
+
+
+    function valid_username()
+    {
+        $uname = $this->input->post('tusername');
+        
+        if ($this->Log_model->valid_name($uname) == FALSE)
+        {
+            $this->form_validation->set_message('valid_username', 'This user is already registered.!');
+            return FALSE;
+        }
+        else{ return TRUE; }
+    }
+
+    function validation_username($name)
+    {
+	$id = $this->session->userdata('langid');
+	if ($this->Log_model->validation_username($name,$id) == FALSE)
+        {
+            $this->form_validation->set_message('validation_username', 'This user is already registered!');
+            return FALSE;
+        }
+        else{ return TRUE; }
+    }
+
+    // Fungsi update untuk mengupdate db
+    function update_process()
+    {
+        $this->acl->otentikasi2($this->title);
+
+        $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
+        $data['h2title'] = $this->modul['title'];
+        $data['main_view'] = 'admin_update';
+	$data['form_action'] = site_url($this->title.'/update_process');
+	$data['link'] = array('link_back' => anchor('admin/','<span>back</span>', array('class' => 'back')));
+
+	// Form validation
+        $this->form_validation->set_rules('tusername', 'UserName', 'required|callback_validation_username');
+	$this->form_validation->set_rules('tpassword', 'Password', '');
+        $this->form_validation->set_rules('tname', 'Name', 'required');
+        $this->form_validation->set_rules('taddress', 'Address', 'required');
+        $this->form_validation->set_rules('tphone', 'Phone', 'required|numeric');
+        $this->form_validation->set_rules('ccity', 'City', 'required');
+        $this->form_validation->set_rules('tmail', 'Email', 'required|valid_email');
+        $this->form_validation->set_rules('crole', 'Role', 'required');
+        $this->form_validation->set_rules('rstatus', 'Status', 'required');
+
+        if ($this->form_validation->run($this) == TRUE)
+        {
+            if ($this->input->post('tpassword')){
+            
+              $users = array('username' => $this->input->post('tusername'),'password' => $this->input->post('tpassword'),'name' => $this->input->post('tname'),
+                           'address' => $this->input->post('taddress'), 'phone1' => $this->input->post('tphone'), 'city' => $this->input->post('ccity'),
+                           'email' => $this->input->post('tmail'), 'yahooid' => setnull($this->input->post('tid')), 'role' => $this->input->post('crole'), 
+                           'status' => $this->input->post('rstatus'));     
+            }
+            else {
+              $users = array('username' => $this->input->post('tusername'),'name' => $this->input->post('tname'),
+                           'address' => $this->input->post('taddress'), 'phone1' => $this->input->post('tphone'), 'city' => $this->input->post('ccity'),
+                           'email' => $this->input->post('tmail'), 'yahooid' => setnull($this->input->post('tid')), 'role' => $this->input->post('crole'), 
+                           'status' => $this->input->post('rstatus'));
+            }
+
+	    $this->Log_model->update($this->session->userdata('langid'), $users);
+            $this->session->set_flashdata('message', "One $this->title has successfully updated!");
+          //  $this->session->unset_userdata('langid');
+            echo "true|One $this->title has successfully updated..!";
+
+        }
+        else
+        {
+            echo 'invalid|'.validation_errors();
+        }
+    }
+
 }
 
 ?>

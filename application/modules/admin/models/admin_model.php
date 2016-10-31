@@ -14,7 +14,7 @@ class Admin_model extends Custom_Model
     
     
     protected $table = 'user';
-    protected $field = array('userid', 'username', 'password', 'name', 'address', 'phone1', 'phone2',
+    protected $field = array('id', 'username', 'password', 'name', 'address', 'phone1', 'phone2',
                              'city', 'email', 'yahooid', 'role', 'status', 'lastlogin', 
                              'created', 'updated', 'deleted'
                             );
@@ -36,10 +36,19 @@ class Admin_model extends Custom_Model
         return $this->db->get(); 
     }
     
-    function delete($uid)
+    function force_delete($uid)
     {
         $this->db->where('id', $uid);
         $this->db->delete($this->table);
+        
+        $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'forced_delete', $this->com);
+    }
+    
+    function delete($uid)
+    {
+        $val = array('deleted' => date('Y-m-d H:i:s'));
+        $this->db->where('id', $uid);
+        $this->db->update($this->table, $val);
         
         $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'delete', $this->com);
     }
@@ -54,7 +63,7 @@ class Admin_model extends Custom_Model
     function get_user_by_id($uid)
     {
         $this->db->select($this->field);
-        $this->db->where('userid', $uid);
+        $this->db->where('id', $uid);
         return $this->db->get($this->table);
     }
 
@@ -81,6 +90,11 @@ class Admin_model extends Custom_Model
     {
         $this->db->where('id', $uid);
         $this->db->update($this->table, $users);
+        
+        $val = array('updated' => date('Y-m-d H:i:s'));
+        $this->db->where('id', $uid);
+        $this->db->update($this->table, $val);
+        
         $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'update', $this->com);
     }
     
@@ -95,7 +109,7 @@ class Admin_model extends Custom_Model
     function validation_username($name ,$id)
     {
         $this->db->where('username', $name);
-        $this->db->where_not_in('userid', $id);
+        $this->db->where_not_in('id', $id);
         $query = $this->db->get($this->table)->num_rows();
 
         if($query > 0){ return FALSE; } else{ return TRUE; }

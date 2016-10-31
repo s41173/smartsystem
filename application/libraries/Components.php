@@ -54,7 +54,20 @@ class Components {
         $this->ci->db->where('aktif', 'Y');
         $this->ci->db->order_by('name','asc');
         $val = $this->ci->db->get($this->table)->result();
-        foreach($val as $row){$data['options'][$row->id] = $row->name;}
+        foreach($val as $row){$data['options'][$row->id] = ucfirst($row->name);}
+        return $data;
+    }
+    
+    function combo_id_all()
+    {
+        $this->ci->db->select('id,name');
+        $this->ci->db->where('aktif', 'Y');
+        $this->ci->db->order_by('name','asc');
+        $val = $this->ci->db->get($this->table)->result();
+        
+        $data['options'][''] = '-- Select --';
+        
+        foreach($val as $row){$data['options'][$row->id] = ucfirst($row->name);}
         return $data;
     }
     
