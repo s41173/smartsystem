@@ -17,6 +17,7 @@ class Send_email extends CI_Email {
         $this->subject = $params[3];
         $this->mess = $params[4];
         $this->type = $params[5];
+        
     }
 
     private $ci;
@@ -32,15 +33,18 @@ class Send_email extends CI_Email {
               $config['charset'] = 'iso-8859-1';
               $config['wordwrap'] = TRUE;
               $config['mailtype'] = $this->type;
-
+              
               $this->initialize($config);
               $this->from($this->from_email, $this->from_name);
               $this->to($this->to);
               $this->cc($this->property['cc_email']);
               $this->subject($this->subject);
               $this->message($this->mess);
-              $this->send();
-
+              
+              if (@$this->send() != TRUE) 
+              {
+                 throw new Exception("Failed To Sent Email");   
+              }
               return TRUE;
         }
         else { return FALSE; }

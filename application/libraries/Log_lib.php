@@ -19,9 +19,10 @@ class Log_lib {
         return $val;
     }
 
-    public function insert($userid=null, $date=null, $time=null, $activity=null, $com=0)
+    public function insert($userid=null, $date=null, $time=null, $activity=null, $com=0, $desc='')
     {
-        $logs = array('userid' => $userid, 'date' => $date, 'time' => $time, 'activity' => $activity, 'component_id' => $com);
+        $logs = array('userid' => $userid, 'date' => $date, 'time' => $time, 'activity' => $activity, 'component_id' => $com,
+                      'description' => $desc);
         $this->ci->db->insert($this->table, $logs);
     }
 }

@@ -12,14 +12,17 @@ class Login extends MX_Controller {
         $this->load->helper('date');
         $this->log = new Log_lib();
         $this->load->library('email');
+        $this->login = new Login_lib();
+        $this->com = new Components();
+        $this->com = $this->com->get_id('login');
 
         $this->properti = $this->property->get();
 
         // Your own constructor code
    }
 
-   private $date,$time,$log;
-   private $properti;
+   private $date,$time,$log,$login;
+   private $properti,$com;
 
    function index()
    {
@@ -50,6 +53,7 @@ class Login extends MX_Controller {
                 $waktu = tgleng(date('Y-m-d')).' - '.waktuindo().' WIB';
 
                 $this->log->insert($userid, $this->date, $this->time, 'login');
+                $this->login->add($userid, $logid);
 
                 $data = array('username' => $username, 'userid' => $userid, 'role' => $role, 'rules' => $rules, 'log' => $logid, 'login' => TRUE, 'waktu' => $waktu);
                 $this->session->set_userdata($data);
@@ -97,47 +101,68 @@ class Login extends MX_Controller {
 
     function send_password()
     {
-        $this->form_validation->set_rules('username', 'Type Username', 'required');
+        $datax = (array)json_decode(file_get_contents('php://input')); 
 
-        if ($this->form_validation->run($this) == TRUE)
+        $username = $datax['user'];
+        
+        if ($this->Login_model->check_username($username) == FALSE)
         {
-            if ($this->Login_model->check_username($this->input->post('username')) == FALSE)
-            {
-               $this->session->set_flashdata('message', 'Username not registered ..!!');
-               redirect('login/forgot');
-            }
-            else
-            {
-              $email = $this->Login_model->get_email($this->input->post('username'));
-              $pass = $this->Login_model->get_pass($this->input->post('username'));
-              $mess = "
-                ".$this->properti['name']." - ".base_url()."
-                FORGOT PASSWORD :
+           $this->session->set_flashdata('message', 'Username not registered ..!!');
 
-                Your Username is: ".$this->input->post('username')."
-                Your Password : ".$pass." <hr />
+           $response = array(
+              'Success' => false,
+              'User' => $username,
+              'Info' => 'Username / Email not registered...!'); 
+        }
+        else
+        {  
+            try
+            {
+              $this->send_email($username); 
+              $response = array(
+               'Success' => true,
+               'User' => $username,
+               'Info' => 'Password has been sent to your email!');  
+              
+            }
+            catch(Exception $e) {  
+//                echo 'Pesan Error: ' .$e->getMessage();  
+                $this->log->insert(0, date('Y-m-d'), waktuindo(), 'error', $this->com, $e->getMessage());
+                $response = array(
+               'Success' => false,
+               'User' => $username,
+               'Info' => $e->getMessage());    
+            } 
+        }
+        
+        $this->output
+        ->set_status_header(201)
+        ->set_content_type('application/json', 'utf-8')
+        ->set_output(json_encode($response, JSON_PRETTY_PRINT))
+        ->_display();
+        exit;
+    }
+    
+    function send_email($username)
+    {
+        $email = $this->Login_model->get_email($username);
+        $pass = $this->Login_model->get_pass($username);
+        $mess = "
+          ".$this->properti['name']." - ".base_url()."
+          FORGOT PASSWORD :
+
+          Your Username is: ".$username."
+          Your Password : ".$pass." <hr />
 Your password for this account has been recovered . You don�t need to do anything, this message is simply a notification to protect the security of your account.
 Please note: your password may take awhile to activate. If it doesn�t work on your first try, please try it again later
 DO NOT REPLY TO THIS MESSAGE. For further help or to contact support, please email to ".$this->properti['email']."
 ****************************************************************************************************************** ";
 
-              $params = array($this->properti['email'], $this->properti['name'], $email, 'Password Recovery', $mess, 'text');
-              $se = $this->load->library('send_email',$params);
+        $params = array($this->properti['email'], $this->properti['name'], $email, 'Password Recovery', $mess, 'text');
+        $se = $this->load->library('send_email',$params);
 
-              if ( $se->send_process() == TRUE )
-              { $this->session->set_flashdata('message', 'Password has been sent to your email!'); }
-              else { $this->session->set_flashdata('message', 'Failed To Sent Email!'); }
-              redirect('login/forgot');
-
-            }
-            
-        }
-        else
-        {
-            $data['form_action'] = site_url('login/send_password');
-            $data['pname'] = $this->properti['name'];
-            $this->load->view('forgot_view' ,$data);
-        }
+        if ( $se->send_process() == TRUE ){ return TRUE; }
+        else { return FALSE;}
     }
 
 }

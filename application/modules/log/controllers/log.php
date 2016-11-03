@@ -22,7 +22,7 @@ class Log extends MX_Controller
 
     function index()
     {
-       $this->get_last(); 
+       $this->get_last();
     }
      
     public function getdatatable($search=null)
@@ -118,12 +118,13 @@ class Log extends MX_Controller
 
     function delete($uid)
     {
-        $this->acl->otentikasi_admin($this->title);
+        if ($this->acl->otentikasi_admin($this->title,'ajax') == TRUE){
         $this->Log_model->delete($uid);
         $this->session->set_flashdata('message', "1 $this->title successfully removed..!");
            
         echo "true|1 $this->title successfully removed..!";
-       // redirect($this->title);
+       }
+       else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
     }
 
     function add_process()
@@ -251,6 +252,33 @@ class Log extends MX_Controller
         {
             echo 'invalid|'.validation_errors();
         }
+    }
+    
+    function report_process()
+    {
+        $this->acl->otentikasi2($this->title);
+        $data['title'] = $this->properti['name'].' | Report '.ucwords($this->modul['title']);
+
+        $user  = $this->input->post('cuser');
+        $modul = $this->input->post('ccom');
+        
+        $period = $this->input->post('reservation');  
+        $start = picker_between_split($period, 0);
+        $end = picker_between_split($period, 1);
+
+        $data['start'] = $start;
+        $data['end'] = $end;
+        $data['user'] = $this->user->get_username($user);
+        $data['modul'] = $this->com->get_name($modul);
+        $data['rundate'] = tglin(date('Y-m-d'));
+        $data['log'] = $this->session->userdata('log');
+
+//        Property Details
+        $data['company'] = $this->properti['name'];
+        $data['reports'] = $this->Log_model->report($user,$modul,$start,$end)->result();
+
+        if ($this->input->post('ctype') == 0){ $this->load->view('log_report', $data); }
+        else { $this->load->view('log_pivot', $data); } 
     }
 
 }

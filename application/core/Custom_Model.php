@@ -122,6 +122,22 @@ class Custom_Model extends CI_Model {
     protected $softDeletes = TRUE;
     protected $deleted = NULL;
     protected $updated = NULL;
+    
+    protected function between($field, $start=null,$end=null)
+    {
+        if ($start != null && $end != null)
+        {
+            return $this->db->where($field." BETWEEN '".setnull($start)."' AND '".setnull($end)."'");
+        }
+        else { return null; }
+    }
+    
+    protected function cek_null($val,$field)
+    {
+        if ($val == "" || $val == 0){return null;}
+        else {return $this->db->where($field, $val);}
+    }
+    
         
         
     // =================================== batas fungsi custom ===================================

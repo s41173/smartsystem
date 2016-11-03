@@ -1,60 +1,97 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link rel="shortcut icon" href="<?php echo base_url().'images/fav_icon.png';?>" />
-<style type="text/css">@import url("<?php echo base_url() . 'css/login.css'; ?>");</style>
-<script type="text/javascript" src="<?php echo base_url(); ?>js/register.js"></script>
-<title>Login</title>
+	<meta charset="UTF-8">
+    <link rel="shortcut icon" href="<?php echo base_url().'images/fav_icon.png';?>" />
+	<title> Login </title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700,300' rel='stylesheet' type='text/css'>
+        
+    <style type="text/css">@import url("<?php echo base_url() . 'css/login.css'; ?>");</style>
+    <script type="text/javascript" src="<?php echo base_url().'js/jquery.min.js'; ?>"></script>
+    
+    <!-- sweet alert js -->
+    <script type="text/javascript" src="<?php echo base_url().'js/sweetalert/sweetalert.min.js'; ?>"></script>
+    <style type="text/css">@import url("<?php echo base_url() . 'js/sweetalert/sweetalert.css'; ?>");</style>
+    
 </head>
+
+<script type="text/javascript">
+
+$(document).ready(function (e) {
+	
+	
+	
+	$('#user').keypress(function (e) {
+	 var key = e.which;
+	 if(key == 13)  // the enter key code
+	  {
+        $('#loginbutton').click(); 
+	  }
+	});   
+	
+	$('#loginbutton').click(function() 
+	{
+		var user = $("#user").val();
+		
+		if (user != "")
+		{
+			var nilai = '{ "user":"'+user+'" }';
+				
+			$.ajax({
+				type: 'POST',
+                url: '<?php echo site_url('login/send_password'); ?>',
+				data : nilai,
+			    contentType: "application/json",
+                dataType: 'json',
+				success: function(data) 
+			    {
+					if (data.Success == true){ swal(data.Info, "", "success"); }
+					else{ swal(data.Info, "", "error"); }
+				}
+			}) 
+			return false;
+			
+		}
+		else{ swal("Invalid Username / Email..!!", "", "error"); }
+		
+	});
+
+
+// document ready end	
+});
+
+</script>
+
 <body>
 
-	<div class="container_12">
-			
-			<div class="grid_12" id="container">
-				
-				<div class="grid_12" id="loginplace">
-					
-					<div id="logos" style="margin: 15px 0 0 335px;"> <img align="middle" width="300" height="150" src="<?php echo $logo; ?>" alt="<?php echo $pname; ?>" /> </div> 
-					<div class="clear"></div>
-				
-					<div id="loginbox">
-						<fieldset class="field">
-						<p style="text-align:center; font-weight:bolder; "> Web base ERP System - Forgot Password </p>
-						<form action="<?php echo $form_action; ?>" name="login_form" id="login_form" method="post" onsubmit="return login();">  
-							<table style="margin-left:35px; ">
-		<tr> <td> <label for="username">Username</label>  </td> <td>:</td> <td> <input type="text" name="username" id="user" size="20" class="form_field"/> <br /> </td> </tr>
-		<tr> <td colspan="3"> <input type="submit" name="submit" class="button" value="Send Email"/> <input type="reset" name="reset" class="button" value="Reset"/> </td> </tr>
-							</table>
-					  </form>
-					  <a href="<?php echo base_url()."index.php/login"; ?>"> [ Back Login ] </a>
-					  </fieldset>
-					  <?php
-						$message = $this->session->flashdata('message');
-						echo $message == '' ? '' : '<p class="field_error">' . $message . '</p>';
-					  ?>
-				    </div>
-					
-					<div id="descbox">
-						<p style="font-size:11px; color:#333333; text-align:left; font-family:Verdana, Arial, Helvetica, sans-serif; "> 
-							This is a secure service that is only given to the appropriate authorities. <br />
-							Username is the email address you have registered as a user ID to login
-							and password provided separately via email.
-						</p>
-						
-						<p style="font-size:11px; color:#333333; text-align:left; font-family:Verdana, Arial, Helvetica, sans-serif; ">
-							If you experience any difficulties in accessing this service please contact your Administrator or Manager. 
-						</p>
-					</div>
-					
-					<div id="footer">
-						<p> Copyright &copy; <?php echo date('Y').' '.$pname; ?> </p>
-					</div>
-					
-				</div>			
-									
-        	</div>
-	</div>
+<form action="<?php echo $form_action; ?>" name="login_form" id="loginform" method="post">
+<div class="containerx">
+<img src="<?php echo $logo; ?>" alt="<?php echo $pname; ?>" class="logo">
+
+
+<div class="txt_field">
+	<i class="fa fa-user"></i>
+	<input type="text" name="username" id="user" class="txt" required placeholder="email">
+	<div class="clr"> </div>
+</div>
+
+<div class="btn">
+	<button type="button" id="loginbutton"> Reset Password </button> <br>
+    <p style="margin:5px 0 0 0; float:left;"> <a id="forgot" href="<?php echo site_url('login'); ?>"> [ Back Login ] </a> </p>
+    <p>&copy; Copyrights <?php echo $pname.'&nbsp;'.date('Y'); ?>. <br>All rights reserved.</p>
+</div>
+	
+</div>
+</form>
 
 </body>
+
+<style type="text/css">
+
+  #forgot{ color:#fff; font-size:12px; text-decoration:none; }
+  #forgot:hover { text-decoration:underline; }
+
+</style>
+
 </html>

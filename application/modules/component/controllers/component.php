@@ -9,7 +9,7 @@ class Component extends MX_Controller
         $this->load->model('Component_model', '', TRUE);
         $this->properti = $this->property->get();
         $this->acl->otentikasi();
-        $this->role = $this->load->library('role');
+        $this->role = $this->load->library('role_lib');
 
 //        $this->modul = $this->components->get('component');
 ////        $this->title = $this->component['name'];

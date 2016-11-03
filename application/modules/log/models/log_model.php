@@ -113,6 +113,18 @@ class Log_model extends Custom_Model
 
         if($query > 0){ return FALSE; } else{ return TRUE; }
     }
+    
+    function report($user=null,$modul=null,$start,$end)
+    {
+       $this->db->select($this->field);
+       $this->db->from($this->table); 
+       $this->db->where('deleted', $this->deleted);
+       $this->between("log.date", $start, $end);
+       $this->cek_null($user, 'userid');
+       $this->cek_null($modul, 'component_id');
+       $this->db->order_by('id', 'desc'); 
+       return $this->db->get(); 
+    }
 
 }
 

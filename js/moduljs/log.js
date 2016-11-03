@@ -1,5 +1,13 @@
 $(document).ready(function (e) {
 	
+	
+	
+    $('#d1,#d2,#d3,#d4,#d5').daterangepicker({
+		locale: {format: 'YYYY/MM/DD'}
+	}
+	
+	);
+	
     // function general
 	
 	$('#datatable-buttons').dataTable({

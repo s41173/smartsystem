@@ -46,6 +46,7 @@ $(document).ready(function (e) {
 					load_data();
 					error_mess(1,res[1],0);
 				}
+				else if(res[0] == 'error') { error_mess(3,res[1],0); }
 				else{ 
 				  load_data();
 				  error_mess(2,res[1],0);
@@ -96,7 +97,9 @@ $(document).ready(function (e) {
 				success: function(data)
 				{
 					res = data.split("|");
-					if (res[0] == 'true'){ error_mess(1,res[1],0); }else { error_mess(2,res[1],0); }
+					if (res[0] == 'true'){ error_mess(1,res[1],0); }
+					else if(res[0] == 'error') { error_mess(3,res[1],0); }
+					else { error_mess(2,res[1],0); }
 				    load_data();
 				}
 				})
@@ -209,12 +212,13 @@ $(document).ready(function (e) {
 				if(res[0]=='invalid')
 				{
 					// invalid file format.
-					error_mess(3,res[1]);
+					error_mess(2,res[1],1);
 				}
+				else if(res[0]=='error') { error_mess(3,res[1]); }
 				else
 				{
 					// view uploaded file.
-					error_mess(1,'Update Successfully...!');
+					error_mess(1,'Update Successfully...!',1);
 					if (res[1]){ $("#catimg_update").attr("src",res[1]); }
 
 					//$('#myModal2').modal('hide');
@@ -243,16 +247,17 @@ $(document).ready(function (e) {
 		  
 		if (pages == 1)  
 		{
+			/* pop up window */
 		  if (type == 1){ $(".success").html(mess).fadeIn(); setTimeout(function() { $(".success").fadeOut(); }, 3000); }
           else if (type == 2){ $(".warning").html(mess).fadeIn(); setTimeout(function() { $(".warning").fadeOut(); }, 3000); }
 	      else if (type == 3){ $(".error").html(mess).fadeIn(); setTimeout(function() { $(".error").fadeOut(); }, 3000); }
 		}
 		else{
+		  /* parent window */
 		  if (type == 1){ $("#success").html(mess).fadeIn(); setTimeout(function() { $("#success").fadeOut(); }, 3000); }
           else if (type == 2){ $("#warning").html(mess).fadeIn(); setTimeout(function() { $("#warning").fadeOut(); }, 3000); }
 	      else if (type == 3){ $("#error").html(mess).fadeIn(); setTimeout(function() { $("#error").fadeOut(); }, 3000); }
 		}
-	    
 	   
 	   // document ready end	
       });

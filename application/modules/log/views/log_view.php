@@ -13,6 +13,13 @@
 <script src="<?php echo base_url(); ?>js/moduljs/log.js"></script>
 <script src="<?php echo base_url(); ?>js-old/register.js"></script>
 
+ <!-- Date time picker -->
+ <script type="text/javascript" src="http://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+ 
+ <!-- Include Date Range Picker -->
+<script type="text/javascript" src="http://cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+
 <script type="text/javascript">
 
 	var sites_add  = "<?php echo site_url('log/add_process/');?>";
@@ -84,7 +91,7 @@
       
       <!-- Modal - Report Form -->
       <div class="modal fade" id="myModal3" role="dialog">
-         <?php $this->load->view('log_report'); ?>    
+         <?php $this->load->view('log_report_panel'); ?>    
       </div>
       <!-- Modal - Report Form -->
       

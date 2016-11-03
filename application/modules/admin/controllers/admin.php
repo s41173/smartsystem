@@ -63,7 +63,7 @@ class Admin extends MX_Controller
         $data['form_action_del'] = site_url($this->title.'/delete_all');
         $data['link'] = array('link_back' => anchor('main/','Back', array('class' => 'btn btn-danger')));
 
-        $data['city'] = $this->city->combo();
+        $data['city'] = $this->city->combo_province();
         $data['roles'] = $this->role->combo();
 	// ---------------------------------------- //
  
@@ -91,82 +91,86 @@ class Admin extends MX_Controller
     
     function delete_all()
     {
-      $this->acl->otentikasi_admin($this->title);
+      if ($this->acl->otentikasi_admin($this->title,'ajax') == TRUE){
       
-      $cek = $this->input->post('cek');
-      $jumlah = count($cek);
-
-      if($cek)
-      {
+        $cek = $this->input->post('cek');
         $jumlah = count($cek);
-        $x = 0;
-        for ($i=0; $i<$jumlah; $i++)
+
+        if($cek)
         {
-           $this->Admin_model->delete($cek[$i]);
-           $x=$x+1;
+          $jumlah = count($cek);
+          $x = 0;
+          for ($i=0; $i<$jumlah; $i++)
+          {
+             $this->Admin_model->delete($cek[$i]);
+             $x=$x+1;
+          }
+          $res = intval($jumlah-$x);
+          //$this->session->set_flashdata('message', "$res $this->title successfully removed &nbsp; - &nbsp; $x related to another component..!!");
+          $mess = "$res $this->title successfully removed &nbsp; - &nbsp; $x related to another component..!!";
+          echo 'true|'.$mess;
         }
-        $res = intval($jumlah-$x);
-        //$this->session->set_flashdata('message', "$res $this->title successfully removed &nbsp; - &nbsp; $x related to another component..!!");
-        $mess = "$res $this->title successfully removed &nbsp; - &nbsp; $x related to another component..!!";
-        echo 'true|'.$mess;
-      }
-      else
-      { //$this->session->set_flashdata('message', "No $this->title Selected..!!"); 
-        $mess = "No $this->title Selected..!!";
-        echo 'false|'.$mess;
-      }
-   //   redirect($this->title);
+        else
+        { //$this->session->set_flashdata('message', "No $this->title Selected..!!"); 
+          $mess = "No $this->title Selected..!!";
+          echo 'false|'.$mess;
+        }
+      }else{ echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
+      
     }
 
     function delete($uid)
     {
-        $this->acl->otentikasi_admin($this->title);
-        $this->Admin_model->delete($uid);
-        $this->session->set_flashdata('message', "1 $this->title successfully removed..!");
-           
-        echo "true|1 $this->title successfully removed..!";
-       // redirect($this->title);
+        if ($this->acl->otentikasi_admin($this->title,'ajax') == TRUE){
+            $this->Admin_model->delete($uid);
+            $this->session->set_flashdata('message', "1 $this->title successfully removed..!");
+
+            echo "true|1 $this->title successfully removed..!";
+        }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
+        
     }
 
     function add_process()
     {
-        $this->acl->otentikasi2($this->title);
+        if ($this->acl->otentikasi_admin($this->title,'ajax') == TRUE){
 
-        $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
-        $data['h2title'] = $this->modul['title'];
-        $data['main_view'] = 'admin_view';
-	$data['form_action'] = site_url($this->title.'/add_process');
-	$data['link'] = array('link_back' => anchor('admin/','<span>back</span>', array('class' => 'back')));
+            $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
+            $data['h2title'] = $this->modul['title'];
+            $data['main_view'] = 'admin_view';
+            $data['form_action'] = site_url($this->title.'/add_process');
+            $data['link'] = array('link_back' => anchor('admin/','<span>back</span>', array('class' => 'back')));
 
-	// Form validation
-        $this->form_validation->set_rules('tusername', 'UserName', 'required|callback_valid_username');
-	$this->form_validation->set_rules('tpassword', 'Password', 'required');
-        $this->form_validation->set_rules('tname', 'Name', 'required');
-        $this->form_validation->set_rules('taddress', 'Address', 'required');
-        $this->form_validation->set_rules('tphone', 'Phone', 'required|numeric');
-        $this->form_validation->set_rules('ccity', 'City', 'required');
-        $this->form_validation->set_rules('tmail', 'Email', 'required|valid_email');
-        $this->form_validation->set_rules('crole', 'Role', 'required');
-        $this->form_validation->set_rules('tid', 'Yahoo Id', '');
-        $this->form_validation->set_rules('rstatus', 'Status', 'required');
+            // Form validation
+            $this->form_validation->set_rules('tusername', 'UserName', 'required|callback_valid_username');
+            $this->form_validation->set_rules('tpassword', 'Password', 'required');
+            $this->form_validation->set_rules('tname', 'Name', 'required');
+            $this->form_validation->set_rules('taddress', 'Address', 'required');
+            $this->form_validation->set_rules('tphone', 'Phone', 'required|numeric');
+            $this->form_validation->set_rules('ccity', 'City', 'required');
+            $this->form_validation->set_rules('tmail', 'Email', 'required|valid_email');
+            $this->form_validation->set_rules('crole', 'Role', 'required');
+            $this->form_validation->set_rules('tid', 'Yahoo Id', '');
+            $this->form_validation->set_rules('rstatus', 'Status', 'required');
 
-        if ($this->form_validation->run($this) == TRUE)
-        {//
-            $users = array('username' => $this->input->post('tusername'),'password' => $this->input->post('tpassword'),'name' => $this->input->post('tname'),
-                           'address' => $this->input->post('taddress'), 'phone1' => $this->input->post('tphone'), 'city' => $this->input->post('ccity'),
-                           'email' => $this->input->post('tmail'), 'yahooid' => setnull($this->input->post('tid')), 'role' => $this->input->post('crole'), 
-                           'status' => $this->input->post('rstatus'));
+            if ($this->form_validation->run($this) == TRUE)
+            {//
+                $users = array('username' => $this->input->post('tusername'),'password' => $this->input->post('tpassword'),'name' => $this->input->post('tname'),
+                               'address' => $this->input->post('taddress'), 'phone1' => $this->input->post('tphone'), 'city' => $this->input->post('ccity'),
+                               'email' => $this->input->post('tmail'), 'yahooid' => setnull($this->input->post('tid')), 'role' => $this->input->post('crole'), 
+                               'status' => $this->input->post('rstatus'));
 
-            $this->Admin_model->add($users);
-            $this->session->set_flashdata('message', "One $this->title data successfully saved!");
-            echo 'true|Data successfully saved..!';
+                $this->Admin_model->add($users);
+                $this->session->set_flashdata('message', "One $this->title data successfully saved!");
+                echo 'true|Data successfully saved..!';
+            }
+            else
+            {
+    //            $this->load->view('template', $data);
+    //            echo validation_errors();
+                echo 'invalid|'.validation_errors();
+            }
         }
-        else
-        {
-//            $this->load->view('template', $data);
-//            echo validation_errors();
-            echo 'invalid|'.validation_errors();
-        }
+        else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
 
     }
 
@@ -208,7 +212,7 @@ class Admin extends MX_Controller
     // Fungsi update untuk mengupdate db
     function update_process()
     {
-        $this->acl->otentikasi2($this->title);
+        if ($this->acl->otentikasi2($this->title,'ajax') == TRUE){
 
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'];
@@ -249,10 +253,8 @@ class Admin extends MX_Controller
             echo "true|One $this->title has successfully updated..!";
 
         }
-        else
-        {
-            echo 'invalid|'.validation_errors();
-        }
+        else{ echo 'invalid|'.validation_errors(); }
+        }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
     }
 
 }

@@ -209,3 +209,17 @@ function get_total_days($val)
 function previous_month($month){ if ($month == 1){ return 12;  }else { return $month-1; } }
 
 function previous_year($month,$year){ if ($month == 1){ return $year-1;  }else { return $year; } }
+
+// date time picker
+
+function picker_between_split($val,$order)
+{
+    $res = explode('-', $val);
+    if ($order == 0){ return picker_split($res[0]); }else { return picker_split($res[1]); }
+}
+
+function picker_split($val)
+{
+   $res = explode('/', $val);
+   return implode('-', $res);
+}
