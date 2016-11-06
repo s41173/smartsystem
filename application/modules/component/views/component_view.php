@@ -1,80 +1,140 @@
-<div id="webadmin">
-	<div class="title"> <?php $flashmessage = $this->session->flashdata('message'); ?> </div>
-	<p class="message"> <?php echo ! empty($message) ? $message : '' . ! empty($flashmessage) ? $flashmessage : ''; ?> </p>
+
+ <!-- Datatables CSS -->
+<link href="<?php echo base_url(); ?>js/datatables/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>js/datatables/buttons.bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>js/datatables/fixedHeader.bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>js/datatables/responsive.bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>js/datatables/scroller.bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>js/datatables/dataTables.tableTools.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>css/icheck/flat/green.css" rel="stylesheet" type="text/css">
+
+<script src="<?php echo base_url(); ?>js/moduljs/component.js"></script>
+<script src="<?php echo base_url(); ?>js-old/register.js"></script>
+
+<script type="text/javascript">
+
+	var sites_add  = "<?php echo site_url('component/add_process/');?>";
+	var sites_edit = "<?php echo site_url('component/update_process/');?>";
+	var sites_del  = "<?php echo site_url('component/delete/');?>";
+	var sites_get  = "<?php echo site_url('component/update/');?>";
+	var source = "<?php echo $source;?>";
 	
-	<div class="errorbox"> <?php echo validation_errors(); ?> </div>
-	
-	<fieldset class="field"> <legend> Create Component </legend>
-			<form name="modul_form" id="form" class="myform" method="post" action="<?php echo $form_action; ?>" enctype="multipart/form-data">
-				<table>
-				
-					<tr> <td> <span class="label"> Name / Title </span> </td> <td>: &nbsp;</td> 
-					<td> <input type="text" class="input-large" name="tname" title="Type Modul Name" required /> &nbsp; - &nbsp; 
-					<input type="text" class="input-large" name="ttitle" title="Type Modul Title" required /> <br />
-					</td>
-				  </tr>
-					
-					<tr> <td> <span class="label">Publish </span> </td> <td>:</td> 
-					<td> Yes <input name="rpublish" class="required" type="radio" value="Y" /> 
-					     No <input name="rpublish" class="required" type="radio" value="N" />  <br/>  <br/>
-					</td> 
-				    </tr>
-					
-					<tr> <td><span class="label">Status</span></td> <td>:</td> 
-						 <td>
-			  <select name="cstatus" class="required input-small" title="Status">
-				 <option value="user" <?php echo set_select('cstatus', 'user', isset($default['status']) && $default['status'] == 'user' ? TRUE : FALSE); ?> /> User </option>
-				 <option value="admin" <?php echo set_select('cstatus', 'admin', isset($default['status']) && $default['status'] == 'admin' ? TRUE : FALSE); ?> /> Admin </option>
-			  </select> <br />  
-						 </td>  </tr>
-						 
-					<tr> <td> <span class="label">Active</span> </td> <td>:</td> 
-					   <td> Yes <input name="raktif" class="required" type="radio" value="Y" /> 
-					        No <input name="raktif" class="required" type="radio" value="N" />  <br/>  <br/>  
-					   </td> 
-				    </tr>
-					
-				<tr> <td> <span class="label"> Limit </span></td> <td>:</td> 
-				     <td> <input type="text" class="required input-small" name="tlimit" id="tlimit" size="2" maxlength="3" onkeyup="checkdigit(this.value, 'tlimit')" required />                          <br />  </td>  </tr>
-					
-				<tr> <td><span class="label">Role</span></td> <td>:</td> <td> 				
-				<?php $js = 'class="required input-medium", size="6" '; echo form_dropdown('crole[]', $options, $array, $js); ?>
-				</td> </tr> 
-				
-				<tr> <td> <span class="label"> Order </label></td> <td>:</td> 
-				     <td> <input type="text" class="required input-small" name="torder" id="torder" size="2" maxlength="3" onkeyup="checkdigit(this.value, 'torder')" required /> 
-				     <br />  </td>  </tr>
-				
-				<tr> <td><span class="label"> Image </span> </td> <td>:</td> 
- 				<td> <img width="250" height="170" src="<?php echo set_value('tket', isset($default['image']) ? $default['image'] : ''); ?>" 
-				title="<?php echo set_value('tket', isset($default['image']) ? $default['image'] : ''); ?>"> </td> </tr>
-				
-				<tr> <td> <span class="label">Change image</span> </td> <td>:</td> <td> 
-				<input type="file" class="input-large" title="Upload image" name="userfile" /> <br /> 
-				<?php echo isset($error) ? $error : ''; ?> <small>*) Leave it blank if not upload images.</small> </td> </tr>
-				
-				</table> <br />  
-			<p>
-				<input type="submit" name="submit" class="btn"  value=" Save " />
-				<input type="reset" name="reset" class="btn"  value=" Cancel " />
-			</p>
-		  </form>
-	</fieldset>
-</div>
+</script>
 
-<div id="webadmin2">
-	
-    <form name="search_form" class="myform" method="post" action="<?php echo $form_action_del; ?>">
-     <?php echo ! empty($table) ? $table : ''; ?>
-	 <div class="paging"> <?php echo ! empty($pagination) ? $pagination : ''; ?> </div>
-	 <p class="cek"> <?php echo ! empty($radio1) ? $radio1 : ''; echo ! empty($radio2) ? $radio2 : ''; ?> <input type="submit" name="button" class="button_delete" title="Process Button" value="Delete All" />  </p> 
-	</form>	
-	
-	<!-- links -->
-	<div class="buttonplace"> <?php if (!empty($link)){foreach($link as $links){echo $links . '';}} ?> </div>
-</div>
+          <div class="row"> 
+          
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div class="x_panel" >
+              
+              <!-- xtitle -->
+              <div class="x_title">
+                
+               <h2> Component Filter </h2>
+                
+                <ul class="nav navbar-right panel_toolbox">
+                  <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a> </li>
+                  <li><a class="close-link"><i class="fa fa-close"></i></a> </li>
+                </ul>
+                
+                <div class="clearfix"></div>
+              </div>
+              <!-- xtitle -->
+                
+                <div class="x_content">
+           
+           <!-- searching form -->
+           
+           <form id="searchform" class="form-inline">
+              <div class="form-group">
+                <select name="cpublish" id="cpublish_search" class="form-control">
+                   <option value="0"> -- Publish -- </option>
+                   <option value="Y"> Publish </option>
+                   <option value="N"> Unpublish </option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <select name="cstatus" id="cstatus_search" class="form-control">
+                   <option value="0"> -- Status -- </option>
+                   <option value="admin"> Admin </option>
+                   <option value="user"> User </option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <select name="cactive" id="cactive_search" class="form-control">
+                   <option value="0"> -- Active -- </option>
+                   <option value="Y"> Active </option>
+                   <option value="N"> Inactive </option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+               <button type="submit" class="btn btn-primary button_inline"> Filter </button>
+               <button type="button" onClick="load_data();" class="btn btn-danger button_inline"> Clear </button>
+              </div>
+          </form>
+           
+           <!-- searching form -->
+           
+              
+          <form class="form-inline" id="cekallform" method="post" action="<?php echo ! empty($form_action_del) ? $form_action_del : ''; ?>">
+                  <!-- table -->
+                  
+                  <?php echo ! empty($table) ? $table : ''; ?>            
+                  
+                  <div class="form-group" id="chkbox">
+                    Check All : 
+                    <button type="submit" id="cekallbutton" class="btn btn-danger btn-xs">
+                       <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                  </div>
+                  <!-- Check All Function -->
+                  
+          </form>       
+             </div>
 
-
-
-<!-- batas -->
-
+               <!-- Trigger the modal with a button --> 
+   <button type="button" onClick="resets();" class="btn btn-primary" data-toggle="modal" data-target="#myModal"> <i class="fa fa-plus"></i>&nbsp;Add New </button>
+   
+               <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal3"> Report  </button>-->
+               
+               <!-- links -->
+	           <?php if (!empty($link)){foreach($link as $links){echo $links . '';}} ?>
+               <!-- links -->
+                             
+            </div>
+          </div>  
+    
+      <!-- Modal - Add Form -->
+      <div class="modal fade" id="myModal" role="dialog">
+         <?php $this->load->view('component_form'); ?>      
+      </div>
+      <!-- Modal - Add Form -->
+      
+      <!-- Modal Edit Form -->
+      <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	     <?php $this->load->view('component_update'); ?> 
+      </div>
+      <!-- Modal Edit Form -->
+      
+      <!-- Modal - Report Form -->
+      <div class="modal fade" id="myModal3" role="dialog">
+         <?php /*$this->load->view('category_report');*/ ?>    
+      </div>
+      <!-- Modal - Report Form -->
+      
+      <script src="<?php echo base_url(); ?>js/icheck/icheck.min.js"></script>
+      
+       <!-- Datatables JS -->
+        <script src="<?php echo base_url(); ?>js/datatables/jquery.dataTables.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/dataTables.bootstrap.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/jszip.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/pdfmake.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/vfs_fonts.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/dataTables.fixedHeader.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/dataTables.keyTable.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/dataTables.responsive.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/responsive.bootstrap.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/dataTables.scroller.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/dataTables.tableTools.js"></script>

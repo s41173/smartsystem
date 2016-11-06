@@ -5,30 +5,42 @@ $(document).ready(function (e) {
 	  load_data();
     })
 	
-	// $('#datatable-buttons').dataTable({
-	 // dom: 'T<"clear">lfrtip',
-		// tableTools: {"sSwfPath": site}
-	 // });
+	$('#myModal').on('show.bs.modal', function () {
+	  resets();
+    })
 
+    	// ajax loading
+	$('#loading').ajaxStart(function(){
+		$(this).fadeIn();
+	}).ajaxStop(function(){
+		$(this).fadeOut();
+	});
    
     // function general
 	$("#error,#success,#warning").hide();
-	$(".error,.success,.warning").hide();
+	$(".error,.success,.warning,#loading").hide();
 
-	// ajax form
+	// ajax form untuk form non modal
 	
 	$('#ajaxform,#ajaxform2,#ajaxform3,#ajaxform4').submit(function() {
 		$.ajax({
 			type: 'POST',
 			url: $(this).attr('action'),
-			data: $(this).serialize(),
+			data:  new FormData(this),
+			contentType: false,
+    	    cache: false,
+			processData:false,
 			success: function(data) {
-				// $('#result').html(data);
-				if (data == "true")
-				{
-					location.reload(true);
+				
+				res = data.split("|");
+				if (res[0] == "true")
+				{   
+			        error_mess(1,res[1],0);
+					load_form();
+					// location.reload(true);
 				}
-				else{ error_mess(3,data); }
+				else if (res[0] == 'warning'){ error_mess(2,res[1],0); }
+				else{ error_mess(3,res[1],0); }
 			}
 		})
 		return false;
@@ -54,13 +66,6 @@ $(document).ready(function (e) {
 			}
 		})
 		return false;
-	});
-	
-	// ajax loading
-	$('#loading').ajaxStart(function(){
-		$(this).fadeIn();
-	}).ajaxStop(function(){
-		$(this).fadeOut();
 	});
 	
 	// ================================================== delete ajax ===============================================
@@ -114,7 +119,7 @@ $(document).ready(function (e) {
 		
 		e.preventDefault();
 		$.ajax({
-        	url: sites_add,
+		    url: $(this).attr('action'),
 			type: "POST",
 			data:  new FormData(this),
 			contentType: false,
@@ -123,24 +128,18 @@ $(document).ready(function (e) {
 			beforeSend : function()
 			{
 				//$("#preview").fadeOut();
-				$(".error").fadeOut();
 			},
 			success: function(data)
 		    {
-				if(data=='invalid')
+				res = data.split("|");
+				if(res[0]=='true')
 				{
 					// invalid file format.
-					$(".error").html("Invalid File !").fadeIn();
+					error_mess(1,res[1],1); 
+					if (res[2]){ $("#catimg").attr("src",res[2]); }
 				}
-				else
-				{
-					// view uploaded file.
-					$("#preview").html(data).fadeIn();
-   				    $('#tname,#uploadImage').val("");
-					//$('#preview').html('')
-				}
-				
-				setTimeout(function() { $(".error").fadeOut(); }, 3000);
+				else if (res[0] == 'warning'){ error_mess(2,res[1],1); }
+				else if (res[0] == 'error'){ error_mess(3,res[1],1); }
 		    },
 		  	error: function(e) 
 	    	{
@@ -151,12 +150,12 @@ $(document).ready(function (e) {
 	     
 	}));
 	
-	// ajax form non modal
-	$("#upload_form_non").on('submit',(function(e) {
+	// ajax form non upload data
+	$("#upload_form_non,#edit_form_non").on('submit',(function(e) {
 		
 		e.preventDefault();
 		$.ajax({
-        	url: sites_add,
+        	url: $(this).attr('action'),
 			type: "POST",
 			data:  new FormData(this),
 			contentType: false,
@@ -176,27 +175,24 @@ $(document).ready(function (e) {
 					error_mess(1,res[1]);
 					resets();
 				}
-				else
-				{	
-					error_mess(3,res[1]);
-				//	$('#myModal').modal('hide');
-					
-				}
+				else if(res[0] == 'warning'){ error_mess(2,res[1]); }
+				else if(res[0] == 'error'){ error_mess(3,res[1]); }
 		    },
 		  	error: function(e) 
 	    	{
-				$("#error").html(e).fadeIn();
+				//$("#error").html(e).fadeIn();
+				error_mess(3,e);
 	    	} 	        
 	   });
 	     
 	}));
 	
-	/*  edit form  */
+	/*  edit form dengan upload  */
 	$("#upload_form_edit").on('submit',(function(e) {
 		
 		e.preventDefault();
 		$.ajax({
-        	url: sites_edit,
+			url: $(this).attr('action'),
 			type: "POST",
 			data:  new FormData(this),
 			contentType: false,
@@ -209,19 +205,22 @@ $(document).ready(function (e) {
 			success: function(data)
 		    {
 				res = data.split("|");
-				if(res[0]=='invalid')
+				if(res[0]=='warning')
 				{
 					// invalid file format.
 					error_mess(2,res[1],1);
 				}
 				else if(res[0]=='error') { error_mess(3,res[1]); }
-				else
+				else if (res[0] == 'true')
 				{
 					// view uploaded file.
-					error_mess(1,'Update Successfully...!',1);
-					if (res[1]){ $("#catimg_update").attr("src",res[1]); }
+					error_mess(1,res[1],1);
+					if (res[2]){ $("#catimg_update").attr("src",""); 
+					  $("#catimg_update").attr("src",res[2]);
+					}
 
-					//$('#myModal2').modal('hide');
+					$('#myModal2').modal('hide');
+				    location.reload(true);
 				}
 		    },
 		  	error: function(e) 

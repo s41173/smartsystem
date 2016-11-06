@@ -123,6 +123,16 @@ class City_lib {
         return $data;
     }
     
+    function combo_province_name()
+    {
+        $json = $this->get_province();
+        $datax = json_decode($json, true);
+        $data['options'][""] = " -- Pilih Wilayah -- ";
+        foreach ($datax['rajaongkir']['results'] as $row)
+        {$data[$row['city_name']] = $row['city_name'];}
+        return $data;
+    }
+    
     function get_cost_fee($ori,$dest,$weight=1000)
     {
         $curl = curl_init();

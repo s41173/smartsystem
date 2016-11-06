@@ -65,7 +65,7 @@ $(document).ready(function (e) {
 
 <body>
 
-<form action="<?php echo $form_action; ?>" name="login_form" id="loginform" method="post">
+<form name="login_form" id="loginform" method="post">
 <div class="containerx">
 <img src="<?php echo $logo; ?>" alt="<?php echo $pname; ?>" class="logo">
 

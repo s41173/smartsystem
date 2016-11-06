@@ -21,39 +21,39 @@
 </div>
 <div class="x_content">
 
-<form id="upload_form_edit" data-parsley-validate class="form-horizontal form-label-left" method="POST" action="<?php echo $form_action_update; ?>" enctype="multipart/form-data">
+<form id="upload_form" data-parsley-validate class="form-horizontal form-label-left" method="POST" action="<?php echo $form_action; ?>" 
+      enctype="multipart/form-data">
    
                   <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-                    <input type="text" class="form-control has-feedback-left" id="tname_update" name="tname" placeholder="Modul Name">
+                    <input type="text" class="form-control has-feedback-left" id="tname" name="tname" placeholder="Modul Name">
                     <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span> 
-                    <input type="hidden" id="tid_update" name="tid_update">
                   </div>
                   
                   <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-                    <input type="text" class="form-control has-feedback-left" id="ttitle_update" name="ttitle" placeholder="Modul Title">
+                    <input type="text" class="form-control has-feedback-left" id="ttitle" name="ttitle" placeholder="Modul Title">
                     <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span> 
                   </div>
                   
                   <div class="form-group">
                     <label class="control-label col-md-3 col-sm-3 col-xs-12"> Active </label>
                     <div class="col-md-9 col-sm-9 col-xs-12">
-                       TRUE <input name="raktif" id="raktif0" class="required" type="radio" value="Y" /> 
-                       FALSE <input name="raktif" id="raktif1" class="required" type="radio" value="N" />  
+                       TRUE <input name="raktif" class="required" type="radio" value="Y" /> 
+                       FALSE <input name="raktif" class="required" type="radio" value="N" />  
                     </div>
                   </div>
                   
                   <div class="form-group">
                     <label class="control-label col-md-3 col-sm-3 col-xs-12"> Publish </label>
                     <div class="col-md-9 col-sm-9 col-xs-12">
-                       TRUE <input name="rpublish" id="rpublish0" class="required" type="radio" value="Y" /> 
-                       FALSE <input name="rpublish" id="rpublish1" class="required" type="radio" value="N" />  
+                       TRUE <input name="rpublish" class="required" type="radio" value="Y" /> 
+                       FALSE <input name="rpublish" class="required" type="radio" value="N" />  
                     </div>
                   </div>
                   
                   <div class="form-group">
                     <label class="control-label col-md-3 col-sm-3 col-xs-12"> Status </label>
                     <div class="col-md-9 col-sm-9 col-xs-12">
-                      <select name="cstatus" id="cstatus_update" class="form-control" title="Status">
+                      <select name="cstatus" class="form-control" title="Status">
                          <option value="user"> User </option>
                          <option value="admin"> Admin </option>
                       </select>
@@ -64,25 +64,25 @@
                     <label class="control-label col-md-3 col-sm-3 col-xs-12"> Role </label>
                     <div class="col-md-9 col-sm-9 col-xs-12">
                     
-       <?php $js = "class='form-control' id='crole_update' size='6' multiple='multiple' tabindex='-1' style='width:100%;' "; 
+       <?php $js = "class='select2_multiple form-control' id='crole' multiple='multiple' tabindex='-1' style='width:100%;' "; 
 	         echo form_dropdown('crole[]', $options, $array, $js); ?>
                     
                     </div>
                   </div>
                   
                   <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-                    <input type="tel" name="tlimit" class="form-control" id="tlimit_update" placeholder="Limit">
+                    <input type="tel" name="tlimit" class="form-control" id="tlimit" placeholder="Limit">
                   </div>
                   
                    <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-                    <input type="tel" name="torder" class="form-control" id="torder_update" placeholder="Order">
+                    <input type="tel" name="torder" class="form-control" id="torder" placeholder="Order">
                   </div>
                   
       <div class="form-group">
       <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12"> Image </label>
       <div class="col-md-6 col-sm-6 col-xs-12">
             <input type="file" id="uploadImage" accept="image/*" class="input-medium" title="Upload" name="userfile" /> <br>
-            <img id="catimg_update" style="max-width:50px; height:auto;">
+            <img id="catimg" style=" max-width:50px; height:auto;">
       </div>
       </div>
        

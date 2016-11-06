@@ -13,8 +13,10 @@ class Configuration_model extends Custom_Model
     }
     
     
-    protected $table = 'user';
-    protected $field = array('id,name,address,phone1,phone2,email,billing_email,technical_email, cc_email, zip,account_name,account_no,bank,city,site_name,meta_description,meta_keyword,logo');
+    protected $table = 'property';
+    protected $field = array('id' ,'name', 'address', 'phone1', 'phone2', 'email', 'billing_email', 'technical_email',
+                             'cc_email', 'zip', 'account_name', 'account_no', 'bank', 'city', 'site_name',
+                             'meta_description', 'meta_keyword', 'logo');
     protected $com;
             
     function count_all_num_rows()
@@ -27,8 +29,6 @@ class Configuration_model extends Custom_Model
     {
         $this->db->select($this->field);
         $this->db->from($this->table); 
-        $this->db->where('deleted', $this->deleted);
-        $this->db->order_by('name', 'asc'); 
         $this->db->limit($limit, $offset);
         return $this->db->get(); 
     }
@@ -57,7 +57,7 @@ class Configuration_model extends Custom_Model
     }
     
     
-    function get_user_by_id($uid)
+    function get_by_id($uid)
     {
         $this->db->select($this->field);
         $this->db->where('id', $uid);

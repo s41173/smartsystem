@@ -21,7 +21,7 @@
 </div>
 <div class="x_content">
 
- <form id="upload_form_edit" data-parsley-validate class="form-horizontal form-label-left" method="POST" 
+ <form id="edit_form_non" data-parsley-validate class="form-horizontal form-label-left" method="POST" 
  action="<?php echo $form_action_update; ?>" enctype="multipart/form-data">
    
                   <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">

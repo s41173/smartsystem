@@ -93,7 +93,7 @@ class Category extends MX_Controller
     
     function delete_all()
     {
-      $this->acl->otentikasi_admin($this->title);
+      if ($this->acl->otentikasi_admin($this->title,'ajax') == TRUE){
       
       $cek = $this->input->post('cek');
       $jumlah = count($cek);
@@ -125,12 +125,12 @@ class Category extends MX_Controller
         $mess = "No $this->title Selected..!!";
         echo 'false|'.$mess;
       }
-   //   redirect($this->title);
+      }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
     }
 
     function delete($uid,$type='soft')
     {
-        $this->acl->otentikasi_admin($this->title);
+        if ($this->acl->otentikasi_admin($this->title,'ajax') == TRUE){
         if ($type == 'soft'){
            $this->Category_model->delete($uid);
            $this->session->set_flashdata('message', "1 $this->title successfully removed..!");
@@ -153,7 +153,7 @@ class Category extends MX_Controller
         else { $this->session->set_flashdata('message', "$this->title related to another component..!"); 
         echo  "invalid|$this->title related to another component..!";} 
        }
-       // redirect($this->title);
+       }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
     }
 
     private function cek_relation($id)
@@ -164,7 +164,7 @@ class Category extends MX_Controller
 
     function add_process()
     {
-        $this->acl->otentikasi2($this->title);
+        if ($this->acl->otentikasi2($this->title,'ajax') == TRUE){
 
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'];
@@ -205,21 +205,13 @@ class Category extends MX_Controller
             $this->session->set_flashdata('message', "One $this->title data successfully saved!");
 //            redirect($this->title);
             
-            if ($info['file_name'])
-            {
-              $img = base_url().'images/category/'.$info['file_name'];
-              echo "<img width='200' src='$img' />";
-            }
-            else { echo '<p style="color:#FD080C; font-size:12px; font-weight:bold;"> '.$this->title.' Successfully Saved...! </p>'; }
+            if ($this->upload->display_errors()){ echo "warning|".$this->upload->display_errors(); }
+            else { echo 'true|'.$this->title.' successfully saved..!|'.base_url().'images/category/'.$info['file_name']; }
             
           //  echo 'true';
         }
-        else
-        {
-//               $this->load->view('template', $data);
-//            echo validation_errors();
-            echo 'invalid';
-        }
+        else{ echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
+        }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
 
     }
 
@@ -263,7 +255,7 @@ class Category extends MX_Controller
     // Fungsi update untuk mengupdate db
     function update_process()
     {
-        $this->acl->otentikasi2($this->title);
+        if ($this->acl->otentikasi2($this->title,'ajax') == TRUE){
 
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'];
@@ -304,14 +296,20 @@ class Category extends MX_Controller
 
 	    $this->Category_model->update($this->session->userdata('langid'), $category);
             $this->session->set_flashdata('message', "One $this->title has successfully updated!");
-          //  $this->session->unset_userdata('langid');
-            echo "true|".$img;
-
+            
+            if ($this->upload->display_errors()){ echo "warning|".$this->upload->display_errors(); }
+            else { echo 'true|Data successfully saved..!|'.base_url().'images/category/'.$info['file_name']; }
+            
         }
-        else
-        {
-            echo 'invalid|'.validation_errors();
-        }
+        else{ echo 'error|'.validation_errors(); }
+        }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
+    }
+    
+    function remove_image($uid)
+    {
+       $img = $this->Category_model->get_category_by_id($uid)->row();
+       $img = $img->image;
+       if ($img){ $img = "./images/category/".$img; unlink("$img"); } 
     }
 
 }

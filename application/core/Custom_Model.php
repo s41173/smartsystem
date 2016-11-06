@@ -134,7 +134,8 @@ class Custom_Model extends CI_Model {
     
     protected function cek_null($val,$field)
     {
-        if ($val == "" || $val == 0){return null;}
+        if ($val == ""){return null;}
+        elseif ($val == '0'){ return null; }
         else {return $this->db->where($field, $val);}
     }
     

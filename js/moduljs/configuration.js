@@ -2,12 +2,7 @@ $(document).ready(function (e) {
 	
     // function general
 	
-	$('#datatable-buttons').dataTable({
-	 dom: 'T<"clear">lfrtip',
-		tableTools: {"sSwfPath": site}
-	 });
-	
-	load_data();  
+	load_form();  
 	
 	// batas dtatable
 	
@@ -46,6 +41,50 @@ $(document).ready(function (e) {
 // document ready end	
 });
 
+	// fungsi load form
+	
+	function load_form()
+	{
+		$(document).ready(function (e) {
+			
+		  	$.ajax({
+				type : 'GET',
+				url: source,
+				//force to handle it as text
+				contentType: "application/json",
+				dataType: "json",
+				success: function(data) 
+				{   
+					// alert(data[0][1]);
+					$("#tname").val(data[0][1]);
+					$("#taddress").val(data[0][2]);
+					$("#ccity").val(data[0][13]);
+					$("#tzip").val(data[0][9]);
+					$("#tphone").val(data[0][3]);
+					$("#tphone2").val(data[0][4]);
+					$("#tmail").val(data[0][5]);
+					$("#tbillmail").val(data[0][6]);
+					$("#ttechmail").val(data[0][7]);
+					$("#tccmail").val(data[0][8]);
+					$("#taccount_name").val(data[0][10]);
+					$("#taccount_no").val(data[0][11]);
+					$("#tbank").val(data[0][12]);
+					$("#tsitename").val(data[0][14]);
+					$("#tmetadesc").val(data[0][15]);
+					$("#tmetakey").val(data[0][16]);
+					$("#catimg_update").attr("src","");
+					$("#catimg_update").attr("src",base_url+"images/property/"+data[0][17]);
+			   
+				},
+				error: function(e){
+				   //console.log(e.responseText);	
+				}
+				
+			});  
+			
+	    });  // end document ready	
+	}
+
     // fungsi load data
 	function load_data()
 	{
@@ -73,9 +112,9 @@ $(document).ready(function (e) {
 				   //console.log(e.responseText);	
 				}
 				
-			});  // end document ready	
+			});  
 			
-        });
+        }); // end document ready	
 	}
 	
 	// batas fungsi load data

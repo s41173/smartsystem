@@ -44,10 +44,9 @@ $(document).ready(function (e) {
 		$(document).ready(function (e) {
 			
 			var oTable = $('#datatable-buttons').dataTable();
-			
 		    $.ajax({
 				type : 'GET',
-				url: source,
+				url: param,
 				//force to handle it as text
 				contentType: "application/json",
 				dataType: "json",

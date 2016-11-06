@@ -8,6 +8,11 @@
 </div>
 <div class="modal-body">
  
+ <!-- error div -->
+ <div class="alert alert-success success"> </div>
+ <div class="alert alert-warning warning"> </div>
+ <div class="alert alert-error error"> </div>
+ 
  <!-- form add -->
 <div class="x_panel" >
 <div class="x_title">
@@ -39,7 +44,7 @@
       <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12"> Image </label>
       <div class="col-md-6 col-sm-6 col-xs-12">
           <input type="file" id="uploadImage" accept="image/*" class="input-medium" title="Upload" name="userfile" /> <br>
-          <div style="margin:10px;" id="preview"><img src="" /></div>
+          <img id="catimg" style=" max-width:50px; height:auto;">
       </div>
       </div>
 

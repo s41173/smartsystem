@@ -169,7 +169,7 @@ class Roles extends MX_Controller
             {
     //            $this->load->view('template', $data);
     //            echo validation_errors();
-                echo 'invalid|'.validation_errors();
+                echo 'error|'.validation_errors();
             }
         }
         else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
@@ -233,7 +233,7 @@ class Roles extends MX_Controller
                 echo "true|One $this->title has successfully updated..!";
 
             }
-            else{ echo 'invalid|'.validation_errors(); }
+            else{ echo 'error|'.validation_errors(); }
         }
         else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
     }

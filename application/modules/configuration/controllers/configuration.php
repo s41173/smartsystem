@@ -14,11 +14,11 @@ class Configuration extends MX_Controller
         $this->modul = $this->components->get(strtolower(get_class($this)));
         $this->title = strtolower(get_class($this));
         $this->role = new Role_lib();
-
+        $this->city = new City_lib();
     }
 
     private $properti, $modul, $title;
-    private $role;
+    private $role,$city;
 
     function index()
     {
@@ -27,19 +27,16 @@ class Configuration extends MX_Controller
      
     public function getdatatable($search=null)
     {
-        if(!$search){ $result = $this->Configuration_model->get_last($this->modul['limit'])->result(); }
+        if(!$search){ $result = $this->Configuration_model->get_last($this->modul['limit'])->row(); }
 	
         $output = null;
         if ($result){
                 
-         foreach($result as $res)
-	 {
-           if ($res->status == 1){ $stts = 'TRUE'; }else { $stts = 'FALSE'; }
-	   $output[] = array ($res->id, $res->username, $res->name, $res->address, $res->phone1, $res->phone2,
-                              $res->city, $res->email, $res->yahooid, $res->role, $stts, $res->lastlogin,
-                              $res->created, $res->updated, $res->deleted
+        $output[] = array ($result->id, $result->name, $result->address, $result->phone1, $result->phone2, $result->email,
+                              $result->billing_email, $result->technical_email, $result->cc_email, $result->zip, $result->account_name,
+                              $result->account_no, $result->bank, $result->city, $result->site_name, $result->meta_description,
+                              $result->meta_keyword, $result->logo
                              );
-	 } 
          
         $this->output
          ->set_status_header(200)
@@ -57,12 +54,13 @@ class Configuration extends MX_Controller
         $data['title'] = $this->properti['name'].' | Configurationistrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'];
         $data['main_view'] = 'configuration_view';
-	$data['form_action'] = site_url($this->title.'/add_process');
-        $data['form_action_update'] = site_url($this->title.'/update_process');
-        $data['form_action_del'] = site_url($this->title.'/delete_all');
+        $data['form_action1'] = site_url($this->title.'/update_process/1');
+        $data['form_action2'] = site_url($this->title.'/update_process/2');
+        $data['form_action3'] = site_url($this->title.'/update_process/3');
         $data['link'] = array('link_back' => anchor('main/','Back', array('class' => 'btn btn-danger')));
 
         $data['roles'] = $this->role->combo();
+        $data['city'] = $this->city->combo_province_name();
 	// ---------------------------------------- //
  
         $config['first_tag_open'] = $config['last_tag_open']= $config['next_tag_open']= $config['prev_tag_open'] = $config['num_tag_open'] = '<li>';
@@ -86,173 +84,103 @@ class Configuration extends MX_Controller
         // Load absen view dengan melewatkan var $data sbgai parameter
 	$this->load->view('template', $data);
     }
-    
-    function delete_all()
-    {
-      if ($this->acl->otentikasi_admin($this->title,'ajax') == TRUE){
-      
-        $cek = $this->input->post('cek');
-        $jumlah = count($cek);
-
-        if($cek)
-        {
-          $jumlah = count($cek);
-          $x = 0;
-          for ($i=0; $i<$jumlah; $i++)
-          {
-             $this->Configuration_model->delete($cek[$i]);
-             $x=$x+1;
-          }
-          $res = intval($jumlah-$x);
-          //$this->session->set_flashdata('message', "$res $this->title successfully removed &nbsp; - &nbsp; $x related to another component..!!");
-          $mess = "$res $this->title successfully removed &nbsp; - &nbsp; $x related to another component..!!";
-          echo 'true|'.$mess;
-        }
-        else
-        { //$this->session->set_flashdata('message', "No $this->title Selected..!!"); 
-          $mess = "No $this->title Selected..!!";
-          echo 'false|'.$mess;
-        }
-      }else{ echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
-      
-    }
-
-    function delete($uid)
-    {
-        if ($this->acl->otentikasi_admin($this->title,'ajax') == TRUE){
-            $this->Configuration_model->delete($uid);
-            $this->session->set_flashdata('message', "1 $this->title successfully removed..!");
-
-            echo "true|1 $this->title successfully removed..!";
-        }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
-        
-    }
-
-    function add_process()
-    {
-        if ($this->acl->otentikasi_admin($this->title,'ajax') == TRUE){
-
-            $data['title'] = $this->properti['name'].' | Configurationistrator  '.ucwords($this->modul['title']);
-            $data['h2title'] = $this->modul['title'];
-            $data['main_view'] = 'admin_view';
-            $data['form_action'] = site_url($this->title.'/add_process');
-            $data['link'] = array('link_back' => anchor('admin/','<span>back</span>', array('class' => 'back')));
-
-            // Form validation
-            $this->form_validation->set_rules('tusername', 'UserName', 'required|callback_valid_username');
-            $this->form_validation->set_rules('tpassword', 'Password', 'required');
-            $this->form_validation->set_rules('tname', 'Name', 'required');
-            $this->form_validation->set_rules('taddress', 'Address', 'required');
-            $this->form_validation->set_rules('tphone', 'Phone', 'required|numeric');
-            $this->form_validation->set_rules('ccity', 'City', 'required');
-            $this->form_validation->set_rules('tmail', 'Email', 'required|valid_email');
-            $this->form_validation->set_rules('crole', 'Role', 'required');
-            $this->form_validation->set_rules('tid', 'Yahoo Id', '');
-            $this->form_validation->set_rules('rstatus', 'Status', 'required');
-
-            if ($this->form_validation->run($this) == TRUE)
-            {//
-                $users = array('username' => $this->input->post('tusername'),'password' => $this->input->post('tpassword'),'name' => $this->input->post('tname'),
-                               'address' => $this->input->post('taddress'), 'phone1' => $this->input->post('tphone'), 'city' => $this->input->post('ccity'),
-                               'email' => $this->input->post('tmail'), 'yahooid' => setnull($this->input->post('tid')), 'role' => $this->input->post('crole'), 
-                               'status' => $this->input->post('rstatus'));
-
-                $this->Configuration_model->add($users);
-                $this->session->set_flashdata('message', "One $this->title data successfully saved!");
-                echo 'true|Data successfully saved..!';
-            }
-            else
-            {
-    //            $this->load->view('template', $data);
-    //            echo validation_errors();
-                echo 'invalid|'.validation_errors();
-            }
-        }
-        else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
-
-    }
-
-    // Fungsi update untuk menset texfield dengan nilai dari database
-    function update($uid=null)
-    {        
-        $admin = $this->Configuration_model->get_user_by_id($uid)->row();
-               
-	$this->session->set_userdata('langid', $admin->id);
-        
-        echo $uid.'|'.$admin->username.'|'.$admin->name.'|'.$admin->address.'|'.$admin->phone1.
-             '|'.$admin->city.'|'.$admin->email.'|'.$admin->role.'|'.$admin->status;
-    }
-
-
-    function valid_username()
-    {
-        $uname = $this->input->post('tusername');
-        
-        if ($this->Configuration_model->valid_name($uname) == FALSE)
-        {
-            $this->form_validation->set_message('valid_username', 'This user is already registered.!');
-            return FALSE;
-        }
-        else{ return TRUE; }
-    }
-
-    function validation_username($name)
-    {
-	$id = $this->session->userdata('langid');
-	if ($this->Configuration_model->validation_username($name,$id) == FALSE)
-        {
-            $this->form_validation->set_message('validation_username', 'This user is already registered!');
-            return FALSE;
-        }
-        else{ return TRUE; }
-    }
 
     // Fungsi update untuk mengupdate db
-    function update_process()
+    function update_process($param=0)
     {
-        if ($this->acl->otentikasi2($this->title,'ajax') == TRUE){
+        if ($this->acl->otentikasi3($this->title,'ajax') == TRUE){
 
         $data['title'] = $this->properti['name'].' | Configurationistrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'];
         $data['main_view'] = 'admin_update';
-	$data['form_action'] = site_url($this->title.'/update_process');
+	$data['form_action1'] = site_url($this->title.'/update_process/1');
+        $data['form_action2'] = site_url($this->title.'/update_process/2');
+        $data['form_action3'] = site_url($this->title.'/update_process/3');
 	$data['link'] = array('link_back' => anchor('admin/','<span>back</span>', array('class' => 'back')));
 
 	// Form validation
-        $this->form_validation->set_rules('tusername', 'UserName', 'required|callback_validation_username');
-	$this->form_validation->set_rules('tpassword', 'Password', '');
-        $this->form_validation->set_rules('tname', 'Name', 'required');
-        $this->form_validation->set_rules('taddress', 'Address', 'required');
-        $this->form_validation->set_rules('tphone', 'Phone', 'required|numeric');
-        $this->form_validation->set_rules('ccity', 'City', 'required');
-        $this->form_validation->set_rules('tmail', 'Email', 'required|valid_email');
-        $this->form_validation->set_rules('crole', 'Role', 'required');
-        $this->form_validation->set_rules('rstatus', 'Status', 'required');
+        if ($param == 1)
+        {
+           $this->form_validation->set_rules('tname', 'Property', 'required|max_length[100]');
+           $this->form_validation->set_rules('taddress', 'Address', 'required');
+	   $this->form_validation->set_rules('tphone1', 'Phone1', 'required|max_length[15]');
+           $this->form_validation->set_rules('tphone2', 'Phone2', 'required|max_length[15]');
+           $this->form_validation->set_rules('tmail', 'Property Mail', 'required|valid_email|max_length[100]');
+           $this->form_validation->set_rules('tbillmail', 'Billing Email', 'required|valid_email|max_length[100]');
+           $this->form_validation->set_rules('ttechmail', 'Technical Email', 'required|valid_email|max_length[100]');
+           $this->form_validation->set_rules('tccmail', 'CC Email', 'required|valid_email|max_length[100]');
+	   $this->form_validation->set_rules('ccity', 'City', 'required|max_length[25]');
+           $this->form_validation->set_rules('tzip', 'Zip Code', 'required|numeric|max_length[25]');
+        }
+        elseif ($param == 2)
+        {
+            $this->form_validation->set_rules('taccount_name', 'Account Name', 'required|max_length[100]');
+            $this->form_validation->set_rules('taccount_no', 'Account No', 'required|max_length[100]');
+            $this->form_validation->set_rules('tbank', 'Bank Name', 'required'); 
+        }
+        elseif ($param == 3)
+        {
+            $this->form_validation->set_rules('tsitename', 'Site Name', 'required');
+            $this->form_validation->set_rules('tmetadesc', 'Global Meta Description', '');
+            $this->form_validation->set_rules('tmetakey', 'Global Meta Keyword', ''); 
+        }
+
 
         if ($this->form_validation->run($this) == TRUE)
         {
-            if ($this->input->post('tpassword')){
+            if ($param == 1)
+            {
+                $property = array('name' => $this->input->post('tname'), 'address' => $this->input->post('taddress'),
+                                  'phone1' => $this->input->post('tphone1'), 'phone2' => $this->input->post('tphone2'),
+                                  'cc_email' => $this->input->post('tccmail'), 'email' => $this->input->post('tmail'),
+                                  'billing_email' => $this->input->post('tbillmail'), 'technical_email' => $this->input->post('ttechmail'),
+                                  'zip' => $this->input->post('tzip'),'city' => $this->input->post('ccity'));
+
+                $this->Configuration_model->update(1, $property);
+                echo "true|One $this->title has successfully updated..! ";
+            }
+            elseif ($param == 2)
+            {
+                $property = array( 'bank' => $this->input->post('tbank'), 'account_name' => $this->input->post('taccount_name'), 'account_no' => $this->input->post('taccount_no'));
+                $this->Configuration_model->update(1, $property);
+                echo "true|One $this->title has successfully updated..! ";
+            }
+            elseif ($param == 3){
             
-              $users = array('username' => $this->input->post('tusername'),'password' => $this->input->post('tpassword'),'name' => $this->input->post('tname'),
-                           'address' => $this->input->post('taddress'), 'phone1' => $this->input->post('tphone'), 'city' => $this->input->post('ccity'),
-                           'email' => $this->input->post('tmail'), 'yahooid' => setnull($this->input->post('tid')), 'role' => $this->input->post('crole'), 
-                           'status' => $this->input->post('rstatus'));     
-            }
-            else {
-              $users = array('username' => $this->input->post('tusername'),'name' => $this->input->post('tname'),
-                           'address' => $this->input->post('taddress'), 'phone1' => $this->input->post('tphone'), 'city' => $this->input->post('ccity'),
-                           'email' => $this->input->post('tmail'), 'yahooid' => setnull($this->input->post('tid')), 'role' => $this->input->post('crole'), 
-                           'status' => $this->input->post('rstatus'));
-            }
+               $config['upload_path']   = './images/property/';
+               $config['allowed_types'] = 'gif|jpg|png';
+               $config['overwrite']     = TRUE;
+               $config['max_size']      = '15000';
+               $config['max_width']     = '10000';
+               $config['max_height']    = '10000';
+               $config['remove_spaces'] = TRUE;
 
-	    $this->Configuration_model->update($this->session->userdata('langid'), $users);
-            $this->session->set_flashdata('message', "One $this->title has successfully updated!");
-          //  $this->session->unset_userdata('langid');
-            echo "true|One $this->title has successfully updated..!";
-
-        }
-        else{ echo 'invalid|'.validation_errors(); }
-        }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
+               $this->load->library('upload', $config); 
+               
+               if ( !$this->upload->do_upload("userfile")){
+                   $data['error'] = $this->upload->display_errors();
+                   $property = array('site_name' => $this->input->post('tsitename'), 'meta_description' => $this->input->post('tmetadesc'), 'meta_keyword' => $this->input->post('tmetakey'));
+               }
+               else{
+                   $info = $this->upload->data();
+                   $property = array('site_name' => $this->input->post('tsitename'), 'meta_description' => $this->input->post('tmetadesc'), 'meta_keyword' => $this->input->post('tmetakey'), 'logo' => $info['file_name']);
+               }
+               
+               $this->Configuration_model->update(1, $property);
+               if ($this->upload->display_errors()){ echo "warning|".$this->upload->display_errors(); }
+               else { echo "true|One $this->title has successfully updated..! "; }
+            }
+            
+        } else{ echo 'error|'.validation_errors(); }
+      }
+      else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
+    }
+    
+    function remove_img()
+    {
+        $img = $this->Configuration_model->get_by_id(1)->row();
+        $img = $img->logo;
+        if ($img){ $img = "./images/property/".$img; unlink("$img"); }
     }
 
 }

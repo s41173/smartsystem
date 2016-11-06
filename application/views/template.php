@@ -26,6 +26,7 @@
   <script src="<?php echo base_url(); ?>js/moduljs/main.js"></script>
   <script type="text/javascript">
           var site = "<?php echo base_url();?>js/datatables/swf/copy_csv_xls_pdf.swf";
+		  var base_url = "<?php echo base_url(); ?>";
   </script>
 
   <!--[if lt IE 9]>
@@ -55,12 +56,13 @@
       <!-- page content -->
       <div class="right_col" role="main">
         <div class="">
-          
           <div class="page-title">
           
                 <div class="title_left">
                   <h3> Dashboard - <?php echo isset($h2title) ? $h2title : ''; ?> </h3>
                 </div>
+                
+                <div id="loading" class="loader"></div> 
 
             <!--<div class="title_right">
               <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
@@ -111,7 +113,7 @@
         <!-- footer content -->
         <footer>
           <div class="pull-right">
-            Admin Template by <a target="blank" href="http://www.dswip.com"> <b> Dswip Kreasindo </b> </a>
+            Powered By <a target="blank" href="http://www.dswip.com"> <b> Dswip Kreasindo </b> </a>
           </div>
           <div class="clearfix"></div>
         </footer>
@@ -127,6 +129,9 @@
     <ul class="list-unstyled notifications clearfix" data-tabbed_notifications="notif-group"></ul>
     <div class="clearfix"></div>
     <div id="notif-group" class="tabbed_notifications"></div>
+  </div>
+  
+  
   </div>
 
 
@@ -188,8 +193,8 @@
       });
 	  
       $(".select2_multiple").select2({
-        maximumSelectionLength: 4,
-        placeholder: "With Max Selection limit 4",
+        maximumSelectionLength: 10,
+        placeholder: "With Max Selection limit 10",
         allowClear: true
       });
     });

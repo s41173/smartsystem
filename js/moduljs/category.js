@@ -10,11 +10,7 @@ $(document).ready(function (e) {
 	
 	// reset form
 	$("#breset,#bclose").click(function(){
-	
-	  document.getElementById('tname').value = '';
-	  document.getElementById("preview").innerHTML = "";
-	  document.getElementById("uploadImage").value = "";
-	  
+	   resets();
 	});
 	
 	// fungsi jquery update
@@ -27,24 +23,37 @@ $(document).ready(function (e) {
 		$(".error").fadeOut();
 		
 		$("#myModal2").modal('show');
-		$.post(url,
-			{id:$(this).attr('data-id')},
-			function(result)
-			{
+		// batas
+		$.ajax({
+			type: 'POST',
+			url: url,
+    	    cache: false,
+			headers: { "cache-control": "no-cache" },
+			success: function(result) {
+				
 				res = result.split("|");
 				
+				resets();
 				$("#tid_update").val(res[0]);
 				$("#tname_update").val(res[1]);
 				$("#cparent_update").val(res[2]);
 				$("#catimg_update").attr("src",res[3]);
-			}   
-		);
-		
+			}
+		})
+		return false;	
 	});
 		
 // document ready end	
 });
 
+    function resets()
+    {
+	  $(document).ready(function (e) {
+		  
+		 $("#tname,#uploadImage").val("");
+		 $("#catimg,#catimg_update").attr("src","");
+	  });
+    }
 
 // fungsi load data
 	function load_data()
