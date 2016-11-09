@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Frontmenu {
+class Frontmenu_lib {
 
     public function __construct()
     {

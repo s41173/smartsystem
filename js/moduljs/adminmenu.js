@@ -27,9 +27,17 @@ $(document).ready(function (e) {
 			   res = result.split("|");
 				
 			   $("#tid_update").val(res[0]);
-			   $("#tname_update").val(res[1]);
-			   $("#tdesc_update").val(res[2]);
-			   $("#crules_update option[value='"+res[3]+"']").prop('selected', true);
+			   $("#tusername_update").val(res[1]);
+			   $("#tname_update").val(res[2]);
+			   $("#taddress_update").val(res[3]);
+			   $("#tphone_update").val(res[4]);
+			   $('#ccity_update').val(res[5]).change();
+			   $("#tmail_update").val(res[6]);
+			   $('#crole_update').val(res[7]).change();
+			   
+			   // rstatus
+			   if (res[8] == 1){ $("#rstatus1").prop( "checked", true );  }
+			   else { $("#rstatus0").prop( "checked", true ); }
 			}   
 		);
 		
@@ -44,6 +52,7 @@ $(document).ready(function (e) {
 		$(document).ready(function (e) {
 			
 			var oTable = $('#datatable-buttons').dataTable();
+			
 		    $.ajax({
 				type : 'GET',
 				url: source,
@@ -55,7 +64,12 @@ $(document).ready(function (e) {
 				       console.log(s);
 					  						oTable.fnClearTable();						$(".chkselect").remove()
 			$("#chkbox").append('<input type="checkbox" name="newsletter" value="accept1" onclick="cekall('+s.length+')" id="chkselect" class="chkselect">');														for(var i = 0; i < s.length; i++) {						  oTable.fnAddData([
-'<input type="checkbox" name="cek[]" value="'+s[i][0]+'" id="cek'+i+'" style="margin:0px"  />',										i+1,										s[i][1],										s[i][2],										s[i][3],
+'<input type="checkbox" name="cek[]" value="'+s[i][0]+'" id="cek'+i+'" style="margin:0px"  />',										i+1,										s[i][1],										s[i][2],										s[i][3],										s[i][4],
+										s[i][5],
+										s[i][6],
+										s[i][7],
+										s[i][9],
+										s[i][10],
 '<a href="" class="text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a> <a href="#" class="text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'										    ]);																					} // End For 
 											
 				},
@@ -74,7 +88,7 @@ $(document).ready(function (e) {
 	{  
 	   $(document).ready(function (e) {
 		  // reset form
-		 $("#tname, #crules, #tdesc").val("");
+		  $("#tname, #tmail, #tusername, #tpassword, #ccity, #tphone, #crole, #rstatus, #taddress").val("");
 	  });
 	}
 	

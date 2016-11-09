@@ -1,68 +1,84 @@
-<?php
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Widget_model extends CI_Model
+class Widget_model extends Custom_Model
 {
-    function Widget_model()
+    private $logs;
+    
+    function __construct()
     {
         parent::__construct();
+        $this->logs = new Log_lib();
+        $this->com = new Components();
+        $this->com = $this->com->get_id('widget');
     }
     
-    var $table = 'widget';
     
+    protected $table = 'widget';
+    protected $field = array('id', 'name', 'title', 'position', 'publish', 'order', 'menu', 'moremenu', 'limit');
+    protected $com;
+            
     function count_all_num_rows()
     {
         //method untuk mengembalikan nilai jumlah baris dari database.
         return $this->db->count_all($this->table);
     }
     
-    function get_last_widget($limit, $offset)
+    function get_last($limit, $offset=null)
     {
-        $this->db->select('id, name, title, position, publish, order, menu, moremenu, limit'); // select kolom yang mau di tampilkan
-        $this->db->from($this->table); // from table dengan join nya
-        $this->db->order_by('name', 'asc'); // query order
+        $this->db->select($this->field);
+        $this->db->from($this->table); 
+        $this->db->where('deleted', $this->deleted);
+        $this->db->order_by('name', 'asc'); 
         $this->db->limit($limit, $offset);
-        return $this->db->get(); // mengembalikan isi dari db
+        return $this->db->get(); 
+    }
+    
+    function force_delete($uid)
+    {
+        $this->db->where('id', $uid);
+        $this->db->delete($this->table);
+        
+        $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'forced_delete', $this->com);
     }
     
     function delete($uid)
     {
+        $val = array('deleted' => date('Y-m-d H:i:s'));
         $this->db->where('id', $uid);
-        $this->db->delete($this->table); // perintah untuk delete data dari db
+        $this->db->update($this->table, $val);
+        
+        $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'delete', $this->com);
     }
     
     function add($users)
     {
         $this->db->insert($this->table, $users);
+        $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'create', $this->com);
     }
     
-    function get_widget_by_id($uid)
+    function get_by_id($uid)
     {
-        $this->db->select('id, name, title, position, publish, order, menu, moremenu, limit'); // select kolom yang mau di tampilkan
+        $this->db->select($this->field);
         $this->db->where('id', $uid);
         return $this->db->get($this->table);
     }
 
-    function get_widget_by_name($name)
+    function get_userid($name)
     {
-        $this->db->select('id, name, title, position, publish, order, menu, moremenu, limit'); // select kolom yang mau di tampilkan
-        $this->db->where('name', $name);
+        $this->db->select($this->field);
+        $this->db->where('username', $name);
         return $this->db->get($this->table);
     }
-
-    function get_widget($val)
+    
+    function get_user()
     {
-        $this->db->select('id, name, title, position, publish, order, menu, moremenu, limit'); // select kolom yang mau di tampilkan
-        $this->db->where('publish', 1);
-        $this->db->where('position', $val);
-        $this->db->order_by('order', 'asc'); // query order
+        $this->db->order_by('name', 'asc'); // query order
         return $this->db->get($this->table);
     }
-
-    function get_widget_combo()
+    
+    function counter()
     {
-        $this->db->select('id, name, title, position, publish, order, menu, moremenu, limit'); // select kolom yang mau di tampilkan
-        $this->db->where('publish', 1);
-        $this->db->order_by('order', 'asc'); // query order
+        $this->db->select_max('userid');
         return $this->db->get($this->table);
     }
     
@@ -70,6 +86,12 @@ class Widget_model extends CI_Model
     {
         $this->db->where('id', $uid);
         $this->db->update($this->table, $users);
+        
+        $val = array('updated' => date('Y-m-d H:i:s'));
+        $this->db->where('id', $uid);
+        $this->db->update($this->table, $val);
+        
+        $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'update', $this->com);
     }
     
     function valid_widget($name)
@@ -77,14 +99,7 @@ class Widget_model extends CI_Model
         $this->db->where('name', $name);
         $query = $this->db->get($this->table)->num_rows();
 
-        if($query > 0)
-        {
-           return FALSE;
-        }
-        else
-        {
-           return TRUE;
-        }
+        if($query > 0){ return FALSE; }else{ return TRUE; }
     }
 
     function validating_widget($name,$id)
@@ -93,15 +108,9 @@ class Widget_model extends CI_Model
         $this->db->where_not_in('id', $id);
         $query = $this->db->get($this->table)->num_rows();
 
-        if($query > 0)
-        {
-                return FALSE;
-        }
-        else
-        {
-                return TRUE;
-        }
+        if($query > 0){ return FALSE; }else{ return TRUE; }
     }
+
 
 }
 

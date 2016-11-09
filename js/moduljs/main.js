@@ -94,7 +94,7 @@ $(document).ready(function (e) {
 	   {
 			if (isConfirm){  
 			 
-			  //alert(sites_del +"/"+ del_id);  
+			  // alert(sites_del +"/"+ del_id);  
 			  $.ajax({
 				type: 'POST',
 				url: sites_del +"/"+ del_id,

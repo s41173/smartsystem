@@ -53,7 +53,7 @@
                   <div class="form-group">
                     <label class="control-label col-md-3 col-sm-3 col-xs-12"> Status </label>
                     <div class="col-md-9 col-sm-9 col-xs-12">
-                      <select name="cstatus" id="cstatus_update" class="form-control" title="Status">
+                      <select name="cstatus" id="cstatus_update" class="select2_single form-control" title="Status">
                          <option value="user"> User </option>
                          <option value="admin"> Admin </option>
                       </select>
@@ -64,7 +64,7 @@
                     <label class="control-label col-md-3 col-sm-3 col-xs-12"> Role </label>
                     <div class="col-md-9 col-sm-9 col-xs-12">
                     
-       <?php $js = "class='form-control' id='crole_update' size='6' multiple='multiple' tabindex='-1' style='width:100%;' "; 
+       <?php $js = "class='select2_multiple form-control' id='crole_update' multiple='multiple' tabindex='-1' style='width:100%;' "; 
 	         echo form_dropdown('crole[]', $options, $array, $js); ?>
                     
                     </div>

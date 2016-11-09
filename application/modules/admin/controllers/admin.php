@@ -167,7 +167,7 @@ class Admin extends MX_Controller
             {
     //            $this->load->view('template', $data);
     //            echo validation_errors();
-                echo 'invalid|'.validation_errors();
+                echo 'warning|'.validation_errors();
             }
         }
         else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
@@ -177,7 +177,7 @@ class Admin extends MX_Controller
     // Fungsi update untuk menset texfield dengan nilai dari database
     function update($uid=null)
     {        
-        $admin = $this->Admin_model->get_user_by_id($uid)->row();
+        $admin = $this->Admin_model->get_by_id($uid)->row();
                
 	$this->session->set_userdata('langid', $admin->id);
         
@@ -253,7 +253,7 @@ class Admin extends MX_Controller
             echo "true|One $this->title has successfully updated..!";
 
         }
-        else{ echo 'invalid|'.validation_errors(); }
+        else{ echo 'warning|'.validation_errors(); }
         }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
     }
 

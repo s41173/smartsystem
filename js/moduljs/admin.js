@@ -31,9 +31,9 @@ $(document).ready(function (e) {
 			   $("#tname_update").val(res[2]);
 			   $("#taddress_update").val(res[3]);
 			   $("#tphone_update").val(res[4]);
-			   $("#ccity_update option[value='"+res[5]+"']").prop('selected', true);
+			   $('#ccity_update').val(res[5]).change();
 			   $("#tmail_update").val(res[6]);
-			   $("#crole_update option[value='"+res[7]+"']").prop('selected', true);
+			   $('#crole_update').val(res[7]).change();
 			   
 			   // rstatus
 			   if (res[8] == 1){ $("#rstatus1").prop( "checked", true );  }

@@ -60,7 +60,7 @@ class Admin_model extends Custom_Model
     }
     
     
-    function get_user_by_id($uid)
+    function get_by_id($uid)
     {
         $this->db->select($this->field);
         $this->db->where('id', $uid);

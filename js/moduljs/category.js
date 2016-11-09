@@ -36,7 +36,7 @@ $(document).ready(function (e) {
 				resets();
 				$("#tid_update").val(res[0]);
 				$("#tname_update").val(res[1]);
-				$("#cparent_update").val(res[2]);
+				$('#cparent_update').val(res[2]).change();
 				$("#catimg_update").attr("src",res[3]);
 			}
 		})

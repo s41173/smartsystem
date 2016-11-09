@@ -26,9 +26,9 @@ $(document).ready(function (e) {
 			   $("#tname_update").val(res[2]);
 			   $("#taddress_update").val(res[3]);
 			   $("#tphone_update").val(res[4]);
-			   $("#ccity_update option[value='"+res[5]+"']").prop('selected', true);
+			   $("#ccity").val(res[5]).change();
 			   $("#tmail_update").val(res[6]);
-			   $("#crole_update option[value='"+res[7]+"']").prop('selected', true);
+			   $("#crole_update").val(res[7]).change();
 			   
 			   // rstatus
 			   if (res[8] == 1){ $("#rstatus1").prop( "checked", true );  }
@@ -58,7 +58,7 @@ $(document).ready(function (e) {
 					// alert(data[0][1]);
 					$("#tname").val(data[0][1]);
 					$("#taddress").val(data[0][2]);
-					$("#ccity").val(data[0][13]);
+					$("#ccity").val(data[0][13]).change();
 					$("#tzip").val(data[0][9]);
 					$("#tphone").val(data[0][3]);
 					$("#tphone2").val(data[0][4]);

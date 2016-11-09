@@ -1,11 +1,11 @@
 <div class="left_col scroll-view">
         <div class="navbar nav_title" style="border: 0;">
-            <a href="<?php echo site_url('main'); ?>" class="site_title"><i class="fa fa-home"></i> <span>Comtronics</span></a>
+            <a href="<?php echo site_url('main'); ?>" class="site_title"><i class="fa fa-home"></i> <span> D'swip Panel </span></a>
         </div>
         <div class="clearfix"></div>
             <div class="profile">
                 <div class="profile_pic">
-                    <img src="<?php echo base_url(); ?>images/img.jpg" alt="..." class="img-circle profile_img">
+                    <img src="<?php echo base_url(); ?>images/img.png" alt="..." class="img-circle profile_img">
                 </div>
                 <div class="profile_info">
                     <span>Welcome,</span>
@@ -21,10 +21,9 @@
                     <ul class="nav side-menu">
                     
                         <li><a href="<?php echo site_url('main'); ?>"><i class="fa fa-home"></i> Home </a> </li>
-                        
                         <li><a> <i class="fa fa-dropbox"></i> Product <span class="fa fa-chevron-down"></span></a>
                             <ul class="nav child_menu" style="display: none">
-                                <li><a href="<?php echo site_url('category'); ?>">Category</a></li>
+                                <li><a href="<?php echo site_url('category'); ?>">Category</a> <span class=""></span> </li>
                                 <li><a href="<?php echo site_url('product'); ?>">Product List </a></li>
                                 <li><a href="<?php echo site_url('slider'); ?>">Image Slider </a></li>
                                 <li><a href="<?php echo site_url('banner'); ?>">Banner </a></li>

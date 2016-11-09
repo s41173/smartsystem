@@ -31,8 +31,8 @@ $(document).ready(function (e) {
 			   $("#tid_update").val(res[0]);
 			   $("#tname_update").val(res[1]);
 			   $("#ttitle_update").val(res[2]);
-			   $("#crole_update").val(val);
-			   $("#cstatus_update option[value='"+res[4]+"']").prop('selected', true);
+			   $("#crole_update").val(val).change();
+			   $("#cstatus_update").val(res[4]).change();
 			   $("#tlimit_update").val(res[6]);
 			   $("#torder_update").val(res[9]);
 			   $("#catimg_update").attr("src",base_url+"images/component/"+res[8]);

@@ -94,7 +94,7 @@
       <div class="form-group">
         <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12"> City </label>
         <div class="col-md-6 col-sm-6 col-xs-12">
-          <?php $js = "class='form-control' id='ccity' tabindex='-1' style='width:100%;' "; 
+          <?php $js = "class='select2_single form-control' id='ccity' tabindex='-1' style='width:100%;' "; 
 	      echo form_dropdown('ccity', $city, isset($default['city']) ? $default['city'] : '', $js); ?>
         </div>
         
