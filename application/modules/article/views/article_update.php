@@ -1,74 +1,107 @@
-
-
-<div id="webadmin">
-
-	<div class="title"> <?php $flashmessage = $this->session->flashdata('message'); ?> </div>
-	<p class="message"> <?php echo ! empty($message) ? $message : '' . ! empty($flashmessage) ? $flashmessage : ''; ?> </p>
-	
-	<div id="errorbox" class="errorbox"> <?php echo validation_errors(); ?> </div>
-	
-	<form name="search_form" class="myform" id="form" method="post" action="<?php echo $form_action; ?>" enctype="multipart/form-data">
-		<fieldset class="field"> <legend>Add News </legend>
-			<table border="0">
-			
-			  <tr> <td> <label for="ccategory">Category</label> </td> <td>:</td> 
-			  <td> <?php echo form_dropdown('ccategory', $category, isset($default['category']) ? $default['category'] : ''); ?> <br/> </td>  </tr>
-			  
-			   <tr> <td> <label for="clang"> Language </label> </td> <td>:</td> 
-			   <td> <?php echo form_dropdown('clang', $language, isset($default['lang']) ? $default['lang'] : ''); ?> <br/>  </td>  </tr>
-			  
-			   <tr> <td> <label for="tpermalink">Permalink</label> </td> <td>:</td> 
-			   <td>  <input type="text" class="required" name="tpermalink" id="tpermalink" title="News Permalink - max 20 character" size="30" value="<?php echo set_value('tpermalink', isset($default['permalink']) ? $default['permalink'] : ''); ?>" /> <br /> </td></tr>
-			  
-				<tr> <td> <label for="ttitle">Title</label> </td> <td>:</td> 
-				     <td> <input type="text" class="required" name="ttitle" size="45" maxlength="100" onkeyup="setpermalink(this.value)" 
-				          value="<?php echo set_value('ttitle', isset($default['title']) ? $default['title'] : ''); ?>" /> <br /> </td></tr>		
-							
-				<tr> <td> <span class="label"> Date </span></td> <td>:</td> 
-				<td> 
-					<div id="datetimepicker" class="input-append date">
-					  <input type="text" name="tdate" readonly="readonly" class="input-small" 
-					  value="<?php echo set_value('tdate', isset($default['date']) ? $default['date'] : ''); ?>"></input>
-					  <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i> </span>
-					</div>
-				</td> </tr>
-				
-				<tr> <td> <label for="ccoment">Commented</label> </td> <td>:</td> 
-				<td> <input type="checkbox" name="ccoment" title="Tick checkbox if regulated as commented" value="1" <?php echo set_radio('ccoment', '1', isset($default['coment']) && $default['coment'] == '1' ? TRUE : FALSE); ?> />  </td>
-				
-				<tr> <td> <label for="cfront"> Front Page </label> </td> <td>:</td> 
-				<td> <input type="checkbox" name="cfront" title="Tick checkbox if regulated as front" value="1" <?php echo set_radio('cfront', '1', isset($default['front']) && $default['front'] == '1' ? TRUE : FALSE); ?> />  </td>
-				
-				<tr> <td> <label for="userfile"> Image</label> </td> <td>:</td> <td> 
-				<a class="fancy" href="<?php echo isset($default['image']) ? $default['image'] : ''; ?>"> 
-				<img alt="" width="250" src="<?php echo set_value('tket', isset($default['image']) ? $default['image'] : ''); ?>" >
-				</a>  </td> </tr>
-				
-						<tr> <td> <label for="userfile"> Change image</label> </td> <td>:</td> <td> <input type="file" title="Upload image" name="userfile" size="35" /> <br /> <?php echo isset($error) ? $error : '';?> <small>*) Leave it blank if not upload images.</small> </td> </tr>
-				
-			</table>
-		</fieldset>
-		
-		<fieldset class="field"> <legend>News Content</legend>
-
-			<textarea name="tdesc" id="content" > <?php echo isset($desc) ? $desc : ''; ?> </textarea>
-		    <?php echo display_ckeditor($ckeditor); ?> <br />
-			
-			<p>
-				<input type="submit" name="submit" class="btn"  value=" Save " />
-				<input type="reset" name="reset" class="btn" value=" Cancel " />
-			</p>
-		</fieldset>
-	</form>	
+<div class="modal-dialog">
+        
+<!-- Modal content-->
+<div class="modal-content">
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal">&times;</button>
+  <h4 class="modal-title"> Add New Component </h4>
 </div>
+<div class="modal-body">
 
-<script type="text/javascript">
-      $('#datetimepicker').datetimepicker({
-        format: 'yyyy-MM-dd'
-      });
-</script>
+ <!-- error div -->
+ <div class="alert alert-success success"> </div>
+ <div class="alert alert-warning warning"> </div>
+ <div class="alert alert-error error"> </div>
+ 
+ <!-- form add -->
+<div class="x_panel" >
+<div class="x_title">
+  
+  <div class="clearfix"></div> 
+</div>
+<div class="x_content">
 
-<div class="buttonplace"> <?php if (!empty($link)){foreach($link as $links){echo $links . '';}} ?> </div>
+<form id="upload_form_edit" data-parsley-validate class="form-horizontal form-label-left" method="POST" action="<?php echo $form_action_update; ?>" enctype="multipart/form-data">
+   
+                  <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+                    <input type="text" class="form-control has-feedback-left" id="tname_update" name="tname" placeholder="Modul Name">
+                    <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span> 
+                    <input type="hidden" id="tid_update" name="tid_update">
+                  </div>
+                  
+                  <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+                    <input type="text" class="form-control has-feedback-left" id="ttitle_update" name="ttitle" placeholder="Modul Title">
+                    <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span> 
+                  </div>
+                  
+                  <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12"> Active </label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                       TRUE <input name="raktif" id="raktif0" class="required" type="radio" value="Y" /> 
+                       FALSE <input name="raktif" id="raktif1" class="required" type="radio" value="N" />  
+                    </div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12"> Publish </label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                       TRUE <input name="rpublish" id="rpublish0" class="required" type="radio" value="Y" /> 
+                       FALSE <input name="rpublish" id="rpublish1" class="required" type="radio" value="N" />  
+                    </div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12"> Status </label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                      <select name="cstatus" id="cstatus_update" class="select2_single form-control" title="Status">
+                         <option value="user"> User </option>
+                         <option value="admin"> Admin </option>
+                      </select>
+                    </div>
+                  </div>
+                                      
+                  <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12"> Role </label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                    
+       <?php $js = "class='select2_multiple form-control' id='crole_update' multiple='multiple' tabindex='-1' style='width:100%;' "; 
+	         echo form_dropdown('crole[]', $options, $array, $js); ?>
+                    
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+                    <input type="tel" name="tlimit" class="form-control" id="tlimit_update" placeholder="Limit">
+                  </div>
+                  
+                   <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+                    <input type="tel" name="torder" class="form-control" id="torder_update" placeholder="Order">
+                  </div>
+                  
+      <div class="form-group">
+      <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12"> Image </label>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+            <input type="file" id="uploadImage" accept="image/*" class="input-medium" title="Upload" name="userfile" /> <br>
+            <img id="catimg_update" style="max-width:50px; height:auto;">
+      </div>
+      </div>
+       
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+              <button type="submit" class="btn btn-primary" id="button">Save</button>
+              <button type="button" id="bclose" class="btn btn-danger" data-dismiss="modal">Close</button>
+              <button type="reset" id="breset" class="btn btn-warning">Reset</button>
+            </div>
+          </div>
+</form> 
 
+</div>
+</div>
+<!-- form add -->
 
-<!-- batas -->
+</div>
+    <div class="modal-footer"> </div>
+</div>
+  
+</div>

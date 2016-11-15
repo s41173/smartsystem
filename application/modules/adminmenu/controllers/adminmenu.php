@@ -101,22 +101,25 @@ class Adminmenu extends MX_Controller
 
             // Form validation
             $this->form_validation->set_rules('tname', 'Password', 'required|callback_valid_name');
-            $this->form_validation->set_rules('cparent', 'Parent Adminmenu', 'required');
+            $this->form_validation->set_rules('cparent', 'Parent Adminmenu', 'callback_valid_parent');
             $this->form_validation->set_rules('cmodul', 'Modul', 'required');
             $this->form_validation->set_rules('turl', 'URL', 'required');
             $this->form_validation->set_rules('tmenuorder', 'Menu Order', 'required');
             $this->form_validation->set_rules('tclass', 'Class', '');
             $this->form_validation->set_rules('tid', 'ID', '');
             $this->form_validation->set_rules('ctarget', 'Target', 'required');
+            $this->form_validation->set_rules('cstatus', 'Parent Status', 'required');
 
             if ($this->form_validation->run($this) == TRUE)
-            {//
-                $users = array('username' => $this->input->post('tusername'),'password' => $this->input->post('tpassword'),'name' => $this->input->post('tname'),
-                               'address' => $this->input->post('taddress'), 'phone1' => $this->input->post('tphone'), 'city' => $this->input->post('ccity'),
-                               'email' => $this->input->post('tmail'), 'yahooid' => setnull($this->input->post('tid')), 'role' => $this->input->post('crole'), 
-                               'status' => $this->input->post('rstatus'));
+            {
+               if ($this->input->post('cstatus') == 1) { $parent = 0; }else { $parent = $this->input->post('cparent'); }
+               $menu = array('parent_id' => $parent,'name' => $this->input->post('tname'),
+                              'modul' => $this->input->post('cmodul'), 'url' => $this->input->post('turl'),
+                              'menu_order' => $this->input->post('tmenuorder'), 'class_style' => $this->input->post('tclass'),
+                              'id_style' => $this->input->post('tid'),'icon' => null, 'target' => $this->input->post('ctarget'),
+                              'parent_status' => $this->input->post('cstatus'));
 
-                $this->Admin_model->add($users);
+                $this->Adminmenu_model->add($menu);
                 $this->session->set_flashdata('message', "One $this->title data successfully saved!");
                 echo 'true|Data successfully saved..!';
             }
@@ -130,96 +133,129 @@ class Adminmenu extends MX_Controller
         else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
 
     }
+    
+    function delete_all()
+    {
+      if ($this->acl->otentikasi_admin($this->title,'ajax') == TRUE){
+      
+        $cek = $this->input->post('cek');
+        $jumlah = count($cek);
+
+        if($cek)
+        {
+          $jumlah = count($cek);
+          $x = 0;
+          for ($i=0; $i<$jumlah; $i++)
+          {
+             $this->Adminmenu_model->delete($cek[$i]);
+             $x=$x+1;
+          }
+          $res = intval($jumlah-$x);
+          //$this->session->set_flashdata('message', "$res $this->title successfully removed &nbsp; - &nbsp; $x related to another component..!!");
+          $mess = "$res $this->title successfully removed &nbsp; - &nbsp; $x related to another component..!!";
+          echo 'true|'.$mess;
+        }
+        else
+        { //$this->session->set_flashdata('message', "No $this->title Selected..!!"); 
+          $mess = "No $this->title Selected..!!";
+          echo 'false|'.$mess;
+        }
+      }else{ echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
+      
+    }
+    
+    function delete($uid)
+    {
+        if ($this->acl->otentikasi_admin($this->title,'ajax') == TRUE){
+            $this->Adminmenu_model->delete($uid);
+            $this->session->set_flashdata('message', "1 $this->title successfully removed..!");
+
+            echo "true|1 $this->title successfully removed..!";
+        }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
+        
+    }
+    
+    function update($uid=null)
+    {        
+        $admin = $this->Adminmenu_model->get_by_id($uid)->row();
+               
+	$this->session->set_userdata('langid', $admin->id);
+        
+        echo $uid.'|'.$admin->parent_id.'|'.$admin->name.'|'.$admin->modul.'|'.$admin->url.
+             '|'.$admin->menu_order.'|'.$admin->class_style.'|'.$admin->id_style.'|'.$admin->icon.'|'.
+              $admin->target.'|'.$admin->parent_status;
+    }
 
     // Fungsi update untuk mengupdate db
-    function update_process($param=0)
-    {
-        if ($this->acl->otentikasi3($this->title,'ajax') == TRUE){
 
-        $data['title'] = $this->properti['name'].' | Configurationistrator  '.ucwords($this->modul['title']);
+    function update_process()
+    {
+        if ($this->acl->otentikasi_admin($this->title,'ajax') == TRUE){
+
+        $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'];
         $data['main_view'] = 'admin_update';
-	$data['form_action1'] = site_url($this->title.'/update_process/1');
-        $data['form_action2'] = site_url($this->title.'/update_process/2');
-        $data['form_action3'] = site_url($this->title.'/update_process/3');
+	$data['form_action'] = site_url($this->title.'/update_process');
 	$data['link'] = array('link_back' => anchor('admin/','<span>back</span>', array('class' => 'back')));
 
 	// Form validation
-        if ($param == 1)
-        {
-           $this->form_validation->set_rules('tname', 'Property', 'required|max_length[100]');
-           $this->form_validation->set_rules('taddress', 'Address', 'required');
-	   $this->form_validation->set_rules('tphone1', 'Phone1', 'required|max_length[15]');
-           $this->form_validation->set_rules('tphone2', 'Phone2', 'required|max_length[15]');
-           $this->form_validation->set_rules('tmail', 'Property Mail', 'required|valid_email|max_length[100]');
-           $this->form_validation->set_rules('tbillmail', 'Billing Email', 'required|valid_email|max_length[100]');
-           $this->form_validation->set_rules('ttechmail', 'Technical Email', 'required|valid_email|max_length[100]');
-           $this->form_validation->set_rules('tccmail', 'CC Email', 'required|valid_email|max_length[100]');
-	   $this->form_validation->set_rules('ccity', 'City', 'required|max_length[25]');
-           $this->form_validation->set_rules('tzip', 'Zip Code', 'required|numeric|max_length[25]');
-        }
-        elseif ($param == 2)
-        {
-            $this->form_validation->set_rules('taccount_name', 'Account Name', 'required|max_length[100]');
-            $this->form_validation->set_rules('taccount_no', 'Account No', 'required|max_length[100]');
-            $this->form_validation->set_rules('tbank', 'Bank Name', 'required'); 
-        }
-        elseif ($param == 3)
-        {
-            $this->form_validation->set_rules('tsitename', 'Site Name', 'required');
-            $this->form_validation->set_rules('tmetadesc', 'Global Meta Description', '');
-            $this->form_validation->set_rules('tmetakey', 'Global Meta Keyword', ''); 
-        }
-
+        $this->form_validation->set_rules('tname', 'Name', 'required|callback_validating_name');
+        $this->form_validation->set_rules('cparent', 'Parent Adminmenu', 'callback_valid_parent');
+        $this->form_validation->set_rules('cmodul', 'Modul', 'required');
+        $this->form_validation->set_rules('turl', 'URL', 'required');
+        $this->form_validation->set_rules('tmenuorder', 'Menu Order', 'required');
+        $this->form_validation->set_rules('tclass', 'Class', '');
+        $this->form_validation->set_rules('tid', 'ID', '');
+        $this->form_validation->set_rules('ctarget', 'Target', 'required');
 
         if ($this->form_validation->run($this) == TRUE)
         {
-            if ($param == 1)
-            {
-                $property = array('name' => $this->input->post('tname'), 'address' => $this->input->post('taddress'),
-                                  'phone1' => $this->input->post('tphone1'), 'phone2' => $this->input->post('tphone2'),
-                                  'cc_email' => $this->input->post('tccmail'), 'email' => $this->input->post('tmail'),
-                                  'billing_email' => $this->input->post('tbillmail'), 'technical_email' => $this->input->post('ttechmail'),
-                                  'zip' => $this->input->post('tzip'),'city' => $this->input->post('ccity'));
+            if ($this->input->post('cstatus') == 1) { $parent = 0; }else { $parent = $this->input->post('cparent'); }
+            $menu = array('parent_id' => $parent,'name' => $this->input->post('tname'),
+                              'modul' => $this->input->post('cmodul'), 'url' => $this->input->post('turl'),
+                              'menu_order' => $this->input->post('tmenuorder'), 'class_style' => $this->input->post('tclass'),
+                              'id_style' => $this->input->post('tid'),'icon' => null, 'target' => $this->input->post('ctarget'),
+                              'parent_status' => $this->input->post('cstatus'));
 
-                $this->Adminmenu_model->update(1, $property);
-                echo "true|One $this->title has successfully updated..! ";
-            }
-            elseif ($param == 2)
-            {
-                $property = array( 'bank' => $this->input->post('tbank'), 'account_name' => $this->input->post('taccount_name'), 'account_no' => $this->input->post('taccount_no'));
-                $this->Adminmenu_model->update(1, $property);
-                echo "true|One $this->title has successfully updated..! ";
-            }
-            elseif ($param == 3){
-            
-               $config['upload_path']   = './images/property/';
-               $config['allowed_types'] = 'gif|jpg|png';
-               $config['overwrite']     = TRUE;
-               $config['max_size']      = '15000';
-               $config['max_width']     = '10000';
-               $config['max_height']    = '10000';
-               $config['remove_spaces'] = TRUE;
+	    $this->Adminmenu_model->update($this->session->userdata('langid'), $menu);
+            $this->session->set_flashdata('message', "One $this->title has successfully updated!");
+          //  $this->session->unset_userdata('langid');
+            echo "true|One $this->title has successfully updated..!";
 
-               $this->load->library('upload', $config); 
-               
-               if ( !$this->upload->do_upload("userfile")){
-                   $data['error'] = $this->upload->display_errors();
-                   $property = array('site_name' => $this->input->post('tsitename'), 'meta_description' => $this->input->post('tmetadesc'), 'meta_keyword' => $this->input->post('tmetakey'));
-               }
-               else{
-                   $info = $this->upload->data();
-                   $property = array('site_name' => $this->input->post('tsitename'), 'meta_description' => $this->input->post('tmetadesc'), 'meta_keyword' => $this->input->post('tmetakey'), 'logo' => $info['file_name']);
-               }
-               
-               $this->Adminmenu_model->update(1, $property);
-               if ($this->upload->display_errors()){ echo "warning|".$this->upload->display_errors(); }
-               else { echo "true|One $this->title has successfully updated..! "; }
-            }
-            
-        } else{ echo 'error|'.validation_errors(); }
-      }
-      else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
+        }
+        else{ echo 'warning|'.validation_errors(); }
+        }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
+    }
+    
+    function valid_name($name)
+    {
+        if ($this->Adminmenu_model->valid_name($name) == FALSE)
+        {
+            $this->form_validation->set_message('valid_name', $this->title.' name registered');
+            return FALSE;
+        }
+        else{ return TRUE; }
+    }
+
+    function validating_name($name)
+    {
+	$id = $this->session->userdata('langid');
+	if ($this->Adminmenu_model->validating_name($name,$id) == FALSE)
+        {
+            $this->form_validation->set_message('validating_name', "This $this->title name is already registered!");
+            return FALSE;
+        }
+        else{ return TRUE; }
+    }
+    
+    function valid_parent($cparent)
+    {
+        $stts = $this->input->post('cstatus');
+        if ($stts == 0){ 
+            if (!$cparent){ $this->form_validation->set_message('valid_parent', "parent menu required..!"); return FALSE; }
+            else { return TRUE; }            
+        }
+        else { return TRUE; }
     }
     
     function remove_img()

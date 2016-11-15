@@ -27,17 +27,16 @@ $(document).ready(function (e) {
 			   res = result.split("|");
 				
 			   $("#tid_update").val(res[0]);
-			   $("#tusername_update").val(res[1]);
 			   $("#tname_update").val(res[2]);
-			   $("#taddress_update").val(res[3]);
-			   $("#tphone_update").val(res[4]);
-			   $('#ccity_update').val(res[5]).change();
-			   $("#tmail_update").val(res[6]);
-			   $('#crole_update').val(res[7]).change();
+			   $("#turl_update").val(res[4]);
+			   $("#tmenuorder_update").val(res[5]);
+			   $("#tclass_update").val(res[6]);
+			   $("#tidstyle_update").val(res[7]);
 			   
-			   // rstatus
-			   if (res[8] == 1){ $("#rstatus1").prop( "checked", true );  }
-			   else { $("#rstatus0").prop( "checked", true ); }
+			   $('#cmodul_update').val(res[3]).change();
+			   $('#cparent_update').val(res[1]).change();
+			   $("#ctarget_update").val(res[9]);
+			   $("#cstatus_update").val(res[10]);
 			}   
 		);
 		
@@ -88,7 +87,8 @@ $(document).ready(function (e) {
 	{  
 	   $(document).ready(function (e) {
 		  // reset form
-		  $("#tname, #tmail, #tusername, #tpassword, #ccity, #tphone, #crole, #rstatus, #taddress").val("");
+		  $("#tname, #turl, #tmenuorder, #tclass, #tid, #ctarget, #cstatus").val("");
+		  $('#cparent,#cmodul').val("").change();
 	  });
 	}
 	

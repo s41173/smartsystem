@@ -1,32 +1,19 @@
 <?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 
-function editor()
-{
-    //Ckeditor's configuration
-    $data = array(
-
-            //ID of the textarea that will be replaced
-            'id' 	=> 	'content',
-            'path'	=>	'js/ckeditor',
-
-            //Optionnal values
-            'config' => array(
-            'toolbar' 	=> 	"Full", 	//Using the Full toolbar
-            'width' 	=> 	"99%",	//Setting a custom width
-            'height' 	=> 	'450px',	//Setting a custom height
-            ),
-
-            //Replacing styles from the "Styles tool"
-            'styles' => array(
-            //Creating a new style named "style 1"
-            'style 1' => array ('name' => 'Blue Title', 'element' => 'h2',
-            'styles' => array('color' => 'Blue', 'font-weight' => 'bold' )),
-
-            //Creating a new style named "style 2"
-            'style 2' => array ('name' 	=> 'Red Title', 'element' 	=> 'h2',
-            'styles' => array('color' => 'Red', 'font-weight' => 'bold', 'text-decoration' => 'underline')))
-	);
-
-    return $data;
-}
+    function editor($width='100%',$height='400px') {
+        
+    $path = '../js/ckfinder';    
+    $CI =& get_instance();    
+    //Loading Library For Ckeditor
+    $CI->load->library('ckeditor');
+    $CI->load->library('ckFinder');
+    //configure base path of ckeditor folder 
+    $CI->ckeditor->basePath = base_url().'js/ckeditor/';
+    $CI->ckeditor-> config['toolbar'] = 'Full';
+    $CI->ckeditor->config['language'] = 'en';
+    $CI->ckeditor-> config['width'] = $width;
+    $CI->ckeditor-> config['height'] = $height;
+    //configure ckfinder with ckeditor config 
+    $CI->ckfinder->SetupCKEditor($CI->ckeditor,$path); 
+  }

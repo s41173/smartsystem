@@ -132,10 +132,22 @@ class Custom_Model extends CI_Model {
         else { return null; }
     }
     
+    protected function cek_null_string($val,$field)
+    {
+        if ($val == "null"){return null;}
+        else {return $this->db->where($field, $val);}
+    }
+    
     protected function cek_null($val,$field)
     {
         if ($val == ""){return null;}
         elseif ($val == '0'){ return null; }
+        else {return $this->db->where($field, $val);}
+    }
+    
+    protected function cek_nol($val,$field)
+    {
+        if ($val == ""){return null;}
         else {return $this->db->where($field, $val);}
     }
     

@@ -14,7 +14,7 @@ class Role_model extends Custom_Model
     
     
     protected $table = 'role';
-    protected $field = array('id', 'name', 'desc', 'rules');
+    protected $field = array('id', 'name', 'desc', 'rules', 'granted_menu');
     protected $com;
             
     function count_all_num_rows()

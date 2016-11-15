@@ -60,7 +60,7 @@
 
   <div id="step-1">
     <!-- form -->
-    <form class="form-horizontal form-label-left" id="ajaxform" method="post" action="<?php echo $form_action; ?>">
+    <form class="form-horizontal form-label-left" id="ajaxformdata" method="post" action="<?php echo $form_action; ?>">
 
       <div class="form-group">
         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name"> Name </label>
@@ -95,7 +95,7 @@
       <div class="form-group">
         <label class="control-label col-md-3 col-sm-3 col-xs-12"> Order </label>
         <div class="col-md-6 col-sm-6 col-xs-12">
-			<input type="text" class="form-control" name="tmenuorder" id="tmenuorder" title="Menu Order" placeholder="Order" />
+			<input type="number" class="form-control" name="tmenuorder" id="tmenuorder" title="Menu Order" placeholder="Order" />
         </div>
       </div>
       
@@ -121,8 +121,8 @@
               <option value="_blank"> Blank </option>
               <option value="_self"> Self </option>
               <option value="_top"> Top </option>
-            </select            
-        ></div>
+            </select>
+        </div>
       </div>
       
       <div class="form-group">
@@ -131,8 +131,8 @@
          <select name="cstatus" id="cstatus" class="form-control" title="Target">
               <option selected="selected" value="0"> Child </option>
               <option value="1"> Parent </option>
-         </select   
-       </div>   
+         </select>
+        </div>   
       </div> 
       <br>
       
@@ -141,7 +141,7 @@
       <div class="form-group">
         <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
           <button type="submit" class="btn btn-primary" id="button">Save</button>
-          <button type="reset" class="btn btn-success" id="breset">Reset</button>
+          <button type="button" class="btn btn-success" onClick="resets();" id="breset">Reset</button>
         </div>
       </div>
       
@@ -207,7 +207,7 @@
       
       <!-- Modal Edit Form -->
       <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	     <?php //$this->load->view('admin_update'); ?> 
+	     <?php $this->load->view('menu_update'); ?> 
       </div>
       <!-- Modal Edit Form -->
       
@@ -244,9 +244,9 @@
           transitionEffect: 'slide'
         });
 
-        $('.buttonNext').addClass('btn btn-success');
+/*        $('.buttonNext').addClass('btn btn-success');
         $('.buttonPrevious').addClass('btn btn-primary');
-        $('.buttonFinish').addClass('btn btn-default');
+        $('.buttonFinish').addClass('btn btn-default');*/
       });
     </script>
     <!-- /jQuery Smart Wizard -->

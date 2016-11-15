@@ -64,7 +64,7 @@ $autoload['libraries'] = array('database', 'datamapper', 'form_validation', 'tab
 |	$autoload['helper'] = array('url', 'file');
 */
 
-$autoload['helper'] = array('form', 'url', 'html', 'time', 'combo');
+$autoload['helper'] = array('form', 'url', 'html', 'time', 'combo', 'tebal');
 
 
 /*
@@ -109,7 +109,7 @@ $autoload['language'] = array();
 |
 */
 
-$autoload['model'] = array();
+$autoload['model'] = array('main_model');
 
 
 /* End of file autoload.php */

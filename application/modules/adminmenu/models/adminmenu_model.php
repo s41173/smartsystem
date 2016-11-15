@@ -28,6 +28,7 @@ class Adminmenu_model extends Custom_Model
     {
         $this->db->select($this->field);
         $this->db->from($this->table); 
+        $this->db->where('deleted', $this->deleted);
         $this->db->limit($limit, $offset);
         return $this->db->get(); 
     }
@@ -55,24 +56,10 @@ class Adminmenu_model extends Custom_Model
         $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'create', $this->com);
     }
     
-    
     function get_by_id($uid)
     {
         $this->db->select($this->field);
         $this->db->where('id', $uid);
-        return $this->db->get($this->table);
-    }
-
-    function get_userid($name)
-    {
-        $this->db->select($this->field);
-        $this->db->where('username', $name);
-        return $this->db->get($this->table);
-    }
-    
-    function get_user()
-    {
-        $this->db->order_by('name', 'asc'); // query order
         return $this->db->get($this->table);
     }
     

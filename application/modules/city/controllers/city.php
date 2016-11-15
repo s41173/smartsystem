@@ -20,8 +20,11 @@ class City extends MX_Controller
 
     function index()
     {
-        $this->get_last_city();
+      $this->load->helper('editor');
+      editor();
+      $this->load->view('welcome_message');
     }
+
 
     function get_last_city()
     {

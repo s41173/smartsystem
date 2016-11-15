@@ -50,8 +50,8 @@
     <div class="main_container">
 
       <div class="col-md-3 left_col">
-
-         <?php include 'inc/sidebar-admin.php'; ?>
+      
+         <?php $this->load->view('navigation'); ?>
 
       <!-- page content -->
       <div class="right_col" role="main">
@@ -83,6 +83,7 @@
           		
              <!-- error message -->
               <div> <?php $flashmessage = $this->session->flashdata('message'); ?> </div>
+              
               <div id="error" class="alert alert-danger alert-dismissible fade in" role="alert">
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span>
                     </button>

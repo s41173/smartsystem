@@ -51,6 +51,16 @@ action="<?php echo $form_action_update; ?>" enctype="multipart/form-data">
          <textarea name="tdesc" id="tdesc_update" class="form-control" rows="3" placeholder="Description" required></textarea>
         </div>
       </div>
+      
+      <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12"> Parent Menu </label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+            
+		<?php $js = "class='select2_multiple form-control' id='cmenu_update' multiple='multiple' tabindex='-1' style='width:100%;' "; 
+             echo form_dropdown('cmenu[]', $options, $array, $js); ?>
+            
+        </div>
+      </div>
 
       <div class="ln_solid"></div>
       <div class="form-group">

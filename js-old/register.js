@@ -4,9 +4,9 @@ function cekall(val)
 	else {	for (i=0;i<val;i++){document.getElementById("cek"+i).checked=false;} }
 }
 
-function geturl(val)
+function geturl(val,target='turl')
 {
-	document.getElementById("turl").value = val.toLowerCase()+"/";
+	document.getElementById(target).value = val.toLowerCase()+"/";
 }
 
 function setnilai(val)

@@ -1,21 +1,19 @@
-<ul class="menu" id="menu2">
+<li><a><i class="fa fa-bars"></i> Menu <span class="fa fa-chevron-down"></span></a>
+    <ul class="nav child_menu" style="display: none">
+        <li><a href="<?php echo site_url('frontmenu'); ?>"> Front Menu</a> </li>
+        <li><a href="<?php echo site_url('adminmenu'); ?>"> Admin menu</a> </li>
+    </ul>
+</li>
+<li><a><i class="fa fa-gear"></i> Configuration <span class="fa fa-chevron-down"></span></a>
+    <ul class="nav child_menu" style="display: none">
+        <li><a href="<?php echo site_url('admin'); ?>">Web Admin</a></li>
+       <li><a href="<?php echo site_url('component'); ?>">Component Manager</a></li>
+       <li><a href="<?php echo site_url('widget'); ?>">Widget List</a></li>
+       <li><a href="<?php echo site_url('log'); ?>">History</a></li>
+       <li><a href="<?php echo site_url('roles'); ?>">Role</a></li>
+       <li><a href="<?php echo site_url('configuration'); ?>">Global Configuration</a></li>
+       <li> <a href="#" target="_blank"> Web - Mail </a> </li>
+    </ul>
+</li>
 
-	   <li><a href="#">Menu</a>
-            <ul>
-                <li><?php echo anchor('frontmenu', 'Front Menu');?></li>
-				<li><?php echo anchor('adminmenu', 'Admin Menu');?></li>
-            </ul>
-       </li>
-
-	    <li> <a href="#">Configuration</a>
-            <ul>
-			   <li><?php echo anchor('admin', 'Web Admin');?></li>
-			   <li><?php echo anchor('component', 'Component Manager');?></li>
-  			   <li><?php echo anchor('widget', 'Widget List');?></li>
-			   <li><?php echo anchor('log', 'History');?></li>
-			   <li><?php echo anchor('roles', 'Role');?></li>
-			   <li><?php echo anchor('configuration', 'Global Configuration');?></li>
-			   <li> <a href="http://smilefoundation.or.id/webapps/webmail2/" target="_blank"> Web - Mail </a> </li>
-            </ul>
-        </li>
-</ul>
+<li><a href="<?php echo site_url('login/process_logout'); ?>"><i class="fa fa-power-off"></i> log Out</a>

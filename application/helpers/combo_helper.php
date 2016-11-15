@@ -24,6 +24,11 @@ if (! function_exists('replace'))
     }
 }
 
+if (! function_exists('status'))
+{
+    function status($val){if ($val == "0"){$value = 'N';}else{ $value = "Y"; }return $value;}
+}
+
 
 
 /* End of file combo_helper.php */

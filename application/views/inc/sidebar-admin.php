@@ -20,7 +20,7 @@
                     <h3>General</h3>
                     <ul class="nav side-menu">
                     
-                        <li><a href="<?php echo site_url('main'); ?>"><i class="fa fa-home"></i> Home </a> </li>
+                        <li><a href="<?php echo site_url('main'); ?>"> <i class="fa fa-home"></i> Home </a> </li>
                         <li><a> <i class="fa fa-dropbox"></i> Product <span class="fa fa-chevron-down"></span></a>
                             <ul class="nav child_menu" style="display: none">
                                 <li><a href="<?php echo site_url('category'); ?>">Category</a> <span class=""></span> </li>

@@ -1,77 +1,92 @@
-<?php
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Article_model extends CI_Model
+class Article_model extends Custom_Model
 {
+    private $logs;
+    
     function __construct()
     {
         parent::__construct();
+        $this->logs = new Log_lib();
+        $this->com = new Components();
+        $this->com = $this->com->get_id('article');
     }
     
-    var $table = 'article';
     
+    protected $table = 'article';
+    protected $field = array('id', 'category_id', 'user', 'lang', 'permalink', 'title', 'text', 'image', 'dates', 'time', 'counter', 
+                             'comment', 'front', 'publish', 'created', 'updated', 'deleted');
+    protected $com;
+            
     function count_all_num_rows()
     {
         //method untuk mengembalikan nilai jumlah baris dari database.
         return $this->db->count_all($this->table);
     }
     
-    function get_last_article($limit, $offset)
+    function get_last($limit, $offset=null)
     {
-        $this->db->select('article.id, news_category.name as category, article.lang, article.permalink, article.user, article.publish, article.title, article.dates, article.time, article.comment');
-        $this->db->from('article, news_category'); // from table dengan join nya
-        $this->db->where('article.category_id = news_category.id');
-        $this->db->order_by('article.dates', 'desc');
+        $this->db->select($this->field);
+        $this->db->from($this->table); 
+        $this->db->where('deleted', $this->deleted);
+        $this->db->order_by('dates', 'desc'); 
         $this->db->limit($limit, $offset);
-        return $this->db->get(); // mengembalikan isi dari db
+        return $this->db->get(); 
     }
-
-    function search_article($val=null, $date=null, $lang=null)
+    
+    function search($cat=null,$lang=null,$publish=null,$dates=null)
     {
-        $this->db->select('article.id, news_category.name as category, article.lang, article.permalink, article.user, article.title, article.publish, article.dates, article.time, article.comment');
-        $this->db->from('article, news_category');
-        $this->db->where('article.category_id = news_category.id');
-        $this->cek_null($val,"article.category_id");
-        $this->cek_null($date,"article.dates");
-        $this->cek_null($lang,"article.lang");
-
-        $this->db->order_by('article.dates', 'desc');
-        return $this->db->get(); // mengembalikan isi dari db
+        if ($dates != 'null'){
+          $start = picker_between_split($dates, 0);
+          $end = picker_between_split($dates, 1);
+        }
+        else { $start = null; $end=null; }
+        
+        $this->db->select($this->field);
+        $this->db->from($this->table); 
+        $this->db->where('deleted', $this->deleted);
+        $this->cek_null_string($cat, 'category_id');
+        $this->cek_null_string($lang, 'lang');
+        $this->cek_null_string($publish, 'publish');
+        $this->between('dates', $start, $end);
+        
+        $this->db->order_by('dates', 'asc'); 
+        return $this->db->get(); 
     }
-
-    function cek_null($val,$field)
+    
+    function force_delete($uid)
     {
-        if ($val == ""){return null;}
-        else {return $this->db->where($field, $val);}
+        $this->db->where('id', $uid);
+        $this->db->delete($this->table);
+        
+        $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'forced_delete', $this->com);
     }
     
     function delete($uid)
     {
+        $val = array('deleted' => date('Y-m-d H:i:s'));
         $this->db->where('id', $uid);
-        $this->db->delete($this->table); // perintah untuk delete data dari db
-    }
-
-    function delete_based_category($uid)
-    {
-        $this->db->where('category_id', $uid);
-        $this->db->delete($this->table); // perintah untuk delete data dari db
+        $this->db->update($this->table, $val);
+        
+        $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'delete', $this->com);
     }
     
     function add($users)
     {
         $this->db->insert($this->table, $users);
+        $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'create', $this->com);
     }
     
-    function get_article_by_id($uid)
+    
+    function get_by_id($uid)
     {
-        $this->db->select('id, category_id, lang, permalink, user, comment, front, title, dates, time, image, text, publish');
+        $this->db->select($this->field);
         $this->db->where('id', $uid);
         return $this->db->get($this->table);
     }
 
-
-    function get_article_name()
+    function get_user()
     {
-        $this->db->where('publish', 1);
         $this->db->order_by('name', 'asc'); // query order
         return $this->db->get($this->table);
     }
@@ -86,21 +101,31 @@ class Article_model extends CI_Model
     {
         $this->db->where('id', $uid);
         $this->db->update($this->table, $users);
+        
+        $val = array('updated' => date('Y-m-d H:i:s'));
+        $this->db->where('id', $uid);
+        $this->db->update($this->table, $val);
+        
+        $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'update', $this->com);
     }
     
-    function valid_title($name)
+    function valid_modul($name)
     {
         $this->db->where('title', $name);
         $query = $this->db->get($this->table)->num_rows();
-        if($query > 0) { return FALSE; } else { return TRUE; }
+
+        if($query > 0){ return FALSE; }
+        else{ return TRUE; }
     }
 
-    function validating_title($name,$id)
+    function validating_modul($name,$id)
     {
         $this->db->where('title', $name);
         $this->db->where_not_in('id', $id);
         $query = $this->db->get($this->table)->num_rows();
-        if($query > 0) { return FALSE; } else { return TRUE; }
+
+        if($query > 0){ return FALSE; }
+        else{ return TRUE;}
     }
 
 }

@@ -214,8 +214,12 @@ function previous_year($month,$year){ if ($month == 1){ return $year-1;  }else {
 
 function picker_between_split($val,$order)
 {
-    $res = explode('-', $val);
-    if ($order == 0){ return picker_split($res[0]); }else { return picker_split($res[1]); }
+    if ($val)
+    {
+      $res = explode('-', $val);
+      if ($order == 0){ return picker_split($res[0]); }else { return picker_split($res[1]); }
+    }else { return null; }
+    
 }
 
 function picker_split($val)

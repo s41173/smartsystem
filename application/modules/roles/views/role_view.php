@@ -57,7 +57,8 @@
 
                <!-- Trigger the modal with a button --> 
    <button type="button" onClick="resets();" class="btn btn-primary" data-toggle="modal" data-target="#myModal"> <i class="fa fa-plus"></i>&nbsp;Add New </button>
-               <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal3"> Report  </button>-->
+   
+               <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal3"> Report  </button>
                
                <!-- links -->
 	           <?php if (!empty($link)){foreach($link as $links){echo $links . '';}} ?>
@@ -81,7 +82,7 @@
       
       <!-- Modal - Report Form -->
       <div class="modal fade" id="myModal3" role="dialog">
-         <?php /*$this->load->view('category_report');*/ ?>    
+         <?php $this->load->view('iframe'); ?>    
       </div>
       <!-- Modal - Report Form -->
       

@@ -25,11 +25,13 @@ $(document).ready(function (e) {
 			function(result)
 			{
 			   res = result.split("|");
+			   var val = res[4].split(",");
 				
 			   $("#tid_update").val(res[0]);
 			   $("#tname_update").val(res[1]);
 			   $("#tdesc_update").val(res[2]);
 			   $("#crules_update option[value='"+res[3]+"']").prop('selected', true);
+			   $("#cmenu_update").val(val).change();
 			}   
 		);
 		

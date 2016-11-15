@@ -8,7 +8,7 @@ $(document).ready(function (e) {
 	$('#myModal').on('show.bs.modal', function () {
 	  resets();
     })
-
+	
     	// ajax loading
 	$('#loading').ajaxStart(function(){
 		$(this).fadeIn();
@@ -37,6 +37,31 @@ $(document).ready(function (e) {
 				{   
 			        error_mess(1,res[1],0);
 					load_form();
+					// location.reload(true);
+				}
+				else if (res[0] == 'warning'){ error_mess(2,res[1],0); }
+				else{ error_mess(3,res[1],0); }
+			}
+		})
+		return false;
+	});
+	
+	$('#ajaxformdata').submit(function() {
+		$.ajax({
+			type: 'POST',
+			url: $(this).attr('action'),
+			data:  new FormData(this),
+			contentType: false,
+    	    cache: false,
+			processData:false,
+			success: function(data) {
+				
+				res = data.split("|");
+				if (res[0] == "true")
+				{   
+			        error_mess(1,res[1],0);
+					load_data();
+					resets();
 					// location.reload(true);
 				}
 				else if (res[0] == 'warning'){ error_mess(2,res[1],0); }

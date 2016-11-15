@@ -13,10 +13,11 @@ class Roles extends MX_Controller
 
         $this->modul = $this->components->get(strtolower(get_class($this)));
         $this->title = strtolower(get_class($this));
+        $this->menu = new Adminmenu_lib();
 
     }
 
-    private $properti, $modul, $title;
+    private $properti, $modul, $title, $menu;
 
     function index()
     {
@@ -74,6 +75,8 @@ class Roles extends MX_Controller
         $data['form_action_del'] = site_url($this->title.'/delete_all');
         $data['link'] = array('link_back' => anchor('main/','Back', array('class' => 'btn btn-danger')));
 
+        $data['array'] = array('','');
+        $data['options'] = $this->menu->combo_parent();
 	// ---------------------------------------- //
  
         $config['first_tag_open'] = $config['last_tag_open']= $config['next_tag_open']= $config['prev_tag_open'] = $config['num_tag_open'] = '<li>';
@@ -97,6 +100,8 @@ class Roles extends MX_Controller
         // Load absen view dengan melewatkan var $data sbgai parameter
 	$this->load->view('template', $data);
     }
+    
+    private function split_array($val){ return implode(",",$val); }
     
     function delete_all()
     {
@@ -159,7 +164,8 @@ class Roles extends MX_Controller
 
             if ($this->form_validation->run($this) == TRUE)
             {//
-                $roles = array('name' => $this->input->post('tname'), 'desc' => $this->input->post('tdesc'), 'rules' => $this->input->post('crules'));
+                $roles = array('name' => $this->input->post('tname'), 'desc' => $this->input->post('tdesc'), 'rules' => $this->input->post('crules'),
+                               'granted_menu' => $this->split_array($this->input->post('cmenu')));
 
                 $this->Role_model->add($roles);
                 $this->session->set_flashdata('message', "One $this->title data successfully saved!");
@@ -182,7 +188,7 @@ class Roles extends MX_Controller
         $role = $this->Role_model->get_role_by_id($uid)->row();
                
 	$this->session->set_userdata('langid', $role->id);
-        echo $uid.'|'.$role->name.'|'.$role->desc.'|'.$role->rules;
+        echo $uid.'|'.$role->name.'|'.$role->desc.'|'.$role->rules.'|'.$role->granted_menu;
     }
 
 
@@ -225,7 +231,8 @@ class Roles extends MX_Controller
 
             if ($this->form_validation->run($this) == TRUE)
             {
-                $roles = array('name' => $this->input->post('tname'), 'desc' => $this->input->post('tdesc'), 'rules' => $this->input->post('crules'));
+                $roles = array('name' => $this->input->post('tname'), 'desc' => $this->input->post('tdesc'), 'rules' => $this->input->post('crules'),
+                               'granted_menu' => $this->split_array($this->input->post('cmenu')));
 
                 $this->Role_model->update($this->session->userdata('langid'), $roles);
                 $this->session->set_flashdata('message', "One $this->title has successfully updated!");
