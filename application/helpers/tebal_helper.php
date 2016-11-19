@@ -23,5 +23,23 @@ if ( ! function_exists('split_space'))
     }
 }
 
+if ( ! function_exists('split_array'))
+{
+  function split_array($val){ return implode(",",$val); }
+}
+
+if ( ! function_exists('position'))
+{
+    function position()
+    {
+        $data = null;
+        for($i=1; $i<=10; $i++)
+        {
+          $data['options']['user'.$i] = ucfirst('user'.$i);
+        }
+        return $data;
+    }
+}
+
 /* End of file number_helper.php */
 /* Location: ./system/helpers/number_helper.php */

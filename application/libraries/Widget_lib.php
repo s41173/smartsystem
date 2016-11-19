@@ -1,13 +1,11 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Widget_lib {
+class Widget_lib extends Main_model {
 
-    public function __construct()
+    public function __construct($deleted=NULL)
     {
-        $this->ci = & get_instance();
+        $this->deleted = $deleted;
     }
-
-    private $ci;
 
     function combo_position()
     {

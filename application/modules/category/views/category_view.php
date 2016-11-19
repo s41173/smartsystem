@@ -17,6 +17,7 @@
 	var sites_edit = "<?php echo site_url('category/update_process/');?>";
 	var sites_del  = "<?php echo site_url('category/delete/');?>";
 	var sites_get  = "<?php echo site_url('category/update/');?>";
+    var sites_primary  = "<?php echo site_url('category/publish/');?>";
 	var source = "<?php echo $source;?>";
 	
 </script>

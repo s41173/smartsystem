@@ -165,7 +165,7 @@ class Roles extends MX_Controller
             if ($this->form_validation->run($this) == TRUE)
             {//
                 $roles = array('name' => $this->input->post('tname'), 'desc' => $this->input->post('tdesc'), 'rules' => $this->input->post('crules'),
-                               'granted_menu' => $this->split_array($this->input->post('cmenu')));
+                               'created' => date('Y-m-d H:i:s'), 'granted_menu' => $this->split_array($this->input->post('cmenu')));
 
                 $this->Role_model->add($roles);
                 $this->session->set_flashdata('message', "One $this->title data successfully saved!");

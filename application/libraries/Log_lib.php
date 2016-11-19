@@ -1,20 +1,18 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Log_lib {
+class Log_lib extends Main_model {
 
-    public function __construct($params=null)
+    public function __construct($deleted=NULL)
     {
         // Do something with $params
-        $this->ci = & get_instance();
+        $this->deleted = $deleted;
+        $this->tableName = 'log';
     }
-
-    private $table = 'log';
-    private $ci;
 
     public function max_log()
     {
-        $this->ci->db->select_max('id');
-        $val = $this->ci->db->get($this->table)->row_array();
+        $this->db->select_max('id');
+        $val = $this->db->get($this->tableName)->row_array();
         $val = $val['id'];
         return $val;
     }
@@ -23,7 +21,7 @@ class Log_lib {
     {
         $logs = array('userid' => $userid, 'date' => $date, 'time' => $time, 'activity' => $activity, 'component_id' => $com,
                       'description' => $desc);
-        $this->ci->db->insert($this->table, $logs);
+        $this->db->insert($this->tableName, $logs);
     }
 }
 

@@ -227,3 +227,9 @@ function picker_split($val)
    $res = explode('/', $val);
    return implode('-', $res);
 }
+
+function idr_format($angka)
+{
+  $jadi = number_format($angka,0,',','.');
+  return $jadi;
+}

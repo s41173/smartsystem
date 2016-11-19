@@ -117,7 +117,7 @@ class Adminmenu extends MX_Controller
                               'modul' => $this->input->post('cmodul'), 'url' => $this->input->post('turl'),
                               'menu_order' => $this->input->post('tmenuorder'), 'class_style' => $this->input->post('tclass'),
                               'id_style' => $this->input->post('tid'),'icon' => null, 'target' => $this->input->post('ctarget'),
-                              'parent_status' => $this->input->post('cstatus'));
+                              'parent_status' => $this->input->post('cstatus'), 'created' => date('Y-m-d H:i:s'));
 
                 $this->Adminmenu_model->add($menu);
                 $this->session->set_flashdata('message', "One $this->title data successfully saved!");

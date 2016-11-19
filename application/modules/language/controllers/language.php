@@ -172,7 +172,8 @@ class Language extends MX_Controller
 
         if ($this->form_validation->run($this) == TRUE)
         {
-            $category = array('name' => strtolower($this->input->post('tname')),'code' => strtoupper($this->input->post('tcode')));
+            $category = array('name' => strtolower($this->input->post('tname')), 
+                              'created' => date('Y-m-d H:i:s'), 'code' => strtoupper($this->input->post('tcode')));
 
             $this->Language_model->add($category);
             $this->session->set_flashdata('message', "One $this->title data successfully saved!");

@@ -14,7 +14,7 @@ class Category extends MX_Controller
         $this->modul = $this->components->get(strtolower(get_class($this)));
         $this->title = strtolower(get_class($this));
         $this->product = new Products();
-        $this->category = new Categoryproduct();
+        $this->category = new Categoryproduct_lib();
         $this->model = new Categorys();
 
     }
@@ -43,7 +43,7 @@ class Category extends MX_Controller
         if ($result){
 	foreach($result as $res)
 	{
-	   $output[] = array ($res->id, $res->name, $this->category->get_name($res->parent_id), base_url().'images/category/'.$res->image);
+	   $output[] = array ($res->id, $res->name, $this->category->get_name($res->parent_id), base_url().'images/category/'.$res->image, $res->publish);
 	}
             $this->output
             ->set_status_header(200)
@@ -52,6 +52,16 @@ class Category extends MX_Controller
             ->_display();
             exit; 
         }
+    }
+    
+    function publish($uid = null)
+    {
+       if ($this->acl->otentikasi2($this->title,'ajax') == TRUE){ 
+       $val = $this->Category_model->get_category_by_id($uid)->row();
+       if ($val->publish == 0){ $lng = array('publish' => 1); }else { $lng = array('publish' => 0); }
+       $this->Category_model->update($uid,$lng);
+       echo 'true|Status Changed...!';
+       }else{ echo "error|Sorry, you do not have the right to change publish status..!"; }
     }
 
     function get_last_category()
@@ -193,12 +203,16 @@ class Category extends MX_Controller
             {
                 $info['file_name'] = null;
                 $data['error'] = $this->upload->display_errors();
-                $category = array('name' => strtolower($this->input->post('tname')),'parent_id' => $this->input->post('cparent'), 'image' => null);
+                $category = array('name' => strtolower($this->input->post('tname')),
+                                  'parent_id' => $this->input->post('cparent'), 
+                                  'image' => null, 'created' => date('Y-m-d H:i:s'));
             }
             else
             {
                 $info = $this->upload->data();
-                $category = array('name' => strtolower($this->input->post('tname')),'parent_id' => $this->input->post('cparent'), 'image' => $info['file_name']);
+                $category = array('name' => strtolower($this->input->post('tname')),
+                                  'parent_id' => $this->input->post('cparent'), 
+                                  'image' => $info['file_name'], 'created' => date('Y-m-d H:i:s'));
             }
 
             $this->Category_model->add($category);
@@ -210,7 +224,7 @@ class Category extends MX_Controller
             
           //  echo 'true';
         }
-        else{ echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
+        else{ echo "error|".validation_errors(); }
         }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
 
     }

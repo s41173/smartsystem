@@ -1,68 +1,69 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class City_lib {
+class City_lib extends Main_model {
 
-    public function __construct()
+    public function __construct($deleted=NULL)
     {
-        $this->ci = & get_instance();
+        $this->deleted = $deleted;
+        $this->tableName = 'city';
     }
 
     private $ci;
 
     function combo()
     {
-        $this->ci->db->select('id, name');
-        $val = $this->ci->db->get('city')->result();
+        $this->db->select('id, name');
+        $val = $this->db->get('city')->result();
         foreach($val as $row){$data['options'][$row->name] = $row->name;}
         return $data;
     }
     
     function combo_zip()
     {
-        $this->ci->db->select('zip');
-        $val = $this->ci->db->get('city')->result();
+        $this->db->select('zip');
+        $val = $this->db->get('city')->result();
         foreach($val as $row){$data['options'][$row->zip] = $row->zip;}
         return $data;
     }
     
     function combo_district()
     {
-        $this->ci->db->select('district');
-        $val = $this->ci->db->get('city')->result();
+        $this->db->select('district');
+        $val = $this->db->get('city')->result();
         foreach($val as $row){$data['options'][$row->district] = $row->district;}
         return $data;
     }
     
     function combo_village()
     {
-        $this->ci->db->select('village');
-        $val = $this->ci->db->get('city')->result();
+        $this->db->select('village');
+        $val = $this->db->get('city')->result();
         foreach($val as $row){$data['options'][$row->zip] = $row->village;}
         return $data;
     }
     
     function get_from_zip($zip,$type)
     {
-       $this->ci->db->select($type); 
-       $this->ci->db->where('zip', $zip);
-       $val = $this->ci->db->get('city')->row();
+       $this->db->select($type); 
+       $this->db->where('zip', $zip);
+       $val = $this->db->get('city')->row();
        if ($val){ return $val; }
     }
     
     function combo_city_ongkir()
     {
-        $this->ci->db->select('ongkir_cityname');
-        $this->ci->db->order_by('ongkir_cityname', 'asc');
-        $val = $this->ci->db->get('ongkir')->result();
+        $this->db->select('ongkir_cityname');
+        $this->db->order_by('ongkir_cityname', 'asc');
+        $val = $this->db->get('ongkir')->result();
         foreach($val as $row){$data['options'][$row->ongkir_cityname] = $this->splits($row->ongkir_cityname);}
         return $data;
     }
     
     function combo_all_city_ongkir()
     {
-        $this->ci->db->select('ongkir_cityname');
-        $this->ci->db->order_by('ongkir_cityname', 'asc');
-        $val = $this->ci->db->get('ongkir')->result();
+        $this->db->select('ongkir_cityname');
+        $this->db->order_by('ongkir_cityname', 'asc');
+        $val = $this->db->get('ongkir')->result();
         $data['options'][""] = " -- Pilih Wilayah -- ";
         foreach($val as $row){$data['options'][$row->ongkir_cityname] = $this->splits($row->ongkir_cityname);}
         return $data;
@@ -70,10 +71,10 @@ class City_lib {
     
     function get_ongkir($city)
     {
-        $this->ci->db->select('ongkir_price');
-        $this->ci->db->where('ongkir_service', 'OKE');
-        $this->ci->db->where('ongkir_cityname', $city);
-        $val = $this->ci->db->get('ongkir')->row();
+        $this->db->select('ongkir_price');
+        $this->db->where('ongkir_service', 'OKE');
+        $this->db->where('ongkir_cityname', $city);
+        $val = $this->db->get('ongkir')->row();
         return intval($val->ongkir_price);
     }
     

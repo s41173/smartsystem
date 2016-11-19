@@ -148,7 +148,7 @@ class Component extends MX_Controller
             $this->form_validation->set_rules('raktif', 'Active', 'required');
             $this->form_validation->set_rules('tlimit', 'Limit', 'required');
             $this->form_validation->set_rules('torder', 'Order', 'required|numeric');
-            $this->form_validation->set_rules('crole', 'Active', 'required|callback_valid_role');
+            $this->form_validation->set_rules('crole', 'Role', 'required|callback_valid_role');
 
             if ($this->form_validation->run($this) == TRUE)
             {  
@@ -170,7 +170,7 @@ class Component extends MX_Controller
                                    'publish' => $this->input->post('rpublish'), 'status' => $this->input->post('cstatus'),
                                    'aktif' => $this->input->post('raktif'), 'limit' => $this->input->post('tlimit'),
                                    'role' => $this->split_array($this->input->post('crole')), 'order' => $this->input->post('torder'),
-                                   'icon' => 'default.png');
+                                   'icon' => 'default.png', 'created' => date('Y-m-d H:i:s'));
             }
             else
             {
@@ -179,7 +179,7 @@ class Component extends MX_Controller
                                    'publish' => $this->input->post('rpublish'), 'status' => $this->input->post('cstatus'),
                                    'aktif' => $this->input->post('raktif'), 'limit' => $this->input->post('tlimit'),
                                    'role' => $this->split_array($this->input->post('crole')), 'order' => $this->input->post('torder'),
-                                   'icon' => $info['file_name']);
+                                   'icon' => $info['file_name'], 'created' => date('Y-m-d H:i:s'));
             }
 
                 $this->Component_model->add($component);

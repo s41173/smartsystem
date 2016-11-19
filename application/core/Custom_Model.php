@@ -151,7 +151,66 @@ class Custom_Model extends CI_Model {
         else {return $this->db->where($field, $val);}
     }
     
+    function valid($field,$val)
+    {
+        $this->db->where($field, $val);
+        $query = $this->db->get($this->tableName)->num_rows();
+
+        if($query > 0){ return FALSE; }
+        else{ return TRUE; }
+    }
+
+    function validating($field,$val,$id)
+    {
+        $this->db->where($field, $val);
+        $this->db->where_not_in('id', $id);
+        $query = $this->db->get($this->tableName)->num_rows();
+
+        if($query > 0){ return FALSE; }
+        else{ return TRUE;}
+    }  
+    
+    function update($uid, $users)
+    {
+        $this->db->where('id', $uid);
+        $this->db->update($this->tableName, $users);
         
+        $val = array('updated' => date('Y-m-d H:i:s'));
+        $this->db->where('id', $uid);
+        $this->db->update($this->tableName, $val);
+        
+        $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'update', $this->com);
+    }
+    
+    function delete($uid)
+    {
+        $val = array('deleted' => date('Y-m-d H:i:s'));
+        $this->db->where('id', $uid);
+        $this->db->update($this->tableName, $val);
+        
+        $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'delete', $this->com);
+    }
+    
+    function force_delete($uid)
+    {
+        $this->db->where('id', $uid);
+        $this->db->delete($this->tableName);
+        
+        $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'forced_delete', $this->com);
+    }
+    
+    function add($users)
+    {
+        $this->db->insert($this->tableName, $users);
+        $this->logs->insert($this->session->userdata('userid'), date('Y-m-d'), waktuindo(), 'create', $this->com);
+    }
+    
+    function get_by_id($uid)
+    {
+        $this->db->select($this->field);
+        $this->db->where('id', $uid);
+        return $this->db->get($this->tableName);
+    }
         
     // =================================== batas fungsi custom ===================================
 
@@ -411,28 +470,28 @@ class Custom_Model extends CI_Model {
      *
      * @access public
      */
-	public function delete($where = NULL){
-		if($this->softDeletes){
-			if($where){
-				if(is_numeric($where)){
-					$this->db->where(array($this->primary => $where));
-					return $this->db->update($this->tableName, array("{$this->deletedField}" => date("Y-m-d H:i:s")));
-				}else if(is_array($where)){
-					$this->db->where($where);
-					return $this->db->update($this->tableName, array("{$this->deletedField}" => date("Y-m-d H:i:s")));
-				}
-			}else{
-				if($this->{$this->primary}){
-					$this->db->where(array($this->primary => $this->{$this->primary}));
-					return $this->db->update($this->tableName, array("{$this->deletedField}" => date("Y-m-d H:i:s")));
-				}
-			}
-		}else{
-			return $this->forceDelete($where);
-		}
-
-		return FALSE;
-	}
+//	public function delete($where = NULL){
+//		if($this->softDeletes){
+//			if($where){
+//				if(is_numeric($where)){
+//					$this->db->where(array($this->primary => $where));
+//					return $this->db->update($this->tableName, array("{$this->deletedField}" => date("Y-m-d H:i:s")));
+//				}else if(is_array($where)){
+//					$this->db->where($where);
+//					return $this->db->update($this->tableName, array("{$this->deletedField}" => date("Y-m-d H:i:s")));
+//				}
+//			}else{
+//				if($this->{$this->primary}){
+//					$this->db->where(array($this->primary => $this->{$this->primary}));
+//					return $this->db->update($this->tableName, array("{$this->deletedField}" => date("Y-m-d H:i:s")));
+//				}
+//			}
+//		}else{
+//			return $this->forceDelete($where);
+//		}
+//
+//		return FALSE;
+//	}
 
 	/**
      * force delete the current object or based on some parameter

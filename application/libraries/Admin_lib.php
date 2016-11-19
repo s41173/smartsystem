@@ -2,18 +2,19 @@
 
 class Admin_lib {
 
-    public function __construct()
+    public function __construct($deleted=NULL)
     {
+        $this->deleted = $deleted;
+        $this->tableName = 'user';
         $this->ci = & get_instance();
-        $this->table = 'user';
     }
-
-    private $ci,$table;
+    
+    private $ci,$tableName,$deleted;
 
     function combo()
     {
         $this->ci->db->select('id, name, username');
-        $val = $this->ci->db->get('user')->result();
+        $val = $this->ci->db->get($this->tableName)->result();
         foreach($val as $row){$data['options'][$row->id] = $row->name;}
         return $data;
     }
@@ -23,7 +24,7 @@ class Admin_lib {
         $data = null;
         $this->ci->db->select('id, name, username');
         $this->ci->db->where('role', $role);
-        $val = $this->ci->db->get($this->table)->result();
+        $val = $this->ci->db->get($this->tableName)->result();
         if ($val){ $data['options'][''] = '-- All --'; foreach($val as $row){$data['options'][$row->id] = $row->username;} }
         else { $data['options'][''] = '-- All --';  }
         return $data;
@@ -32,7 +33,7 @@ class Admin_lib {
     function combo_all()
     {
         $this->ci->db->select('id, name, username');
-        $val = $this->ci->db->get('user')->result();
+        $val = $this->ci->db->get($this->tableName)->result();
         $data['options'][''] = '-- All --';
         foreach($val as $row){$data['options'][$row->id] = $row->name;}
         return $data;
@@ -42,7 +43,7 @@ class Admin_lib {
     {
         $this->ci->db->select('id, username');
         $this->ci->db->where('username', $username);
-        $val = $this->ci->db->get('user')->row();
+        $val = $this->ci->db->get($this->tableName)->row();
         return $val->id;
     }
 
@@ -52,10 +53,9 @@ class Admin_lib {
         {
             $this->ci->db->select('id, username');
             $this->ci->db->where('id', $id);
-            $val = $this->ci->db->get('user')->row();
+            $val = $this->ci->db->get($this->tableName)->row();
             if ($val){ return $val->username; }
             else { return null; }
-            
         }
     }
 

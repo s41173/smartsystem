@@ -154,7 +154,7 @@ class Log extends MX_Controller
             $users = array('username' => $this->input->post('tusername'),'password' => $this->input->post('tpassword'),'name' => $this->input->post('tname'),
                            'address' => $this->input->post('taddress'), 'phone1' => $this->input->post('tphone'), 'city' => $this->input->post('ccity'),
                            'email' => $this->input->post('tmail'), 'yahooid' => setnull($this->input->post('tid')), 'role' => $this->input->post('crole'), 
-                           'status' => $this->input->post('rstatus'));
+                           'status' => $this->input->post('rstatus'), 'created' => date('Y-m-d H:i:s'));
 
             $this->Log_model->add($users);
             $this->session->set_flashdata('message', "One $this->title data successfully saved!");

@@ -153,7 +153,8 @@ class Widget extends MX_Controller
             {
                 $widget = array('name' => $this->input->post('tname'), 'title' => $this->input->post('ttitle'), 'limit' => $this->input->post('tlimit'),
                                 'publish' => $this->input->post('rpublish'), 'position' => $this->input->post('cposition'), 'moremenu' => $this->input->post('cmore'),
-                                'order' => $this->input->post('tmenuorder'), 'menu' => $this->split_array($this->input->post('cmenu')));
+                                'order' => $this->input->post('tmenuorder'), 'created' => date('Y-m-d H:i:s'),
+                                'menu' => $this->split_array($this->input->post('cmenu')));
 
                 $this->Widget_model->add($widget);
                 $this->session->set_flashdata('message', "One $this->title data successfully saved!");

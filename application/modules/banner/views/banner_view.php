@@ -1,90 +1,110 @@
 
-<div id="webadmin">
+ <!-- Datatables CSS -->
+<link href="<?php echo base_url(); ?>js/datatables/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>js/datatables/buttons.bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>js/datatables/fixedHeader.bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>js/datatables/responsive.bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>js/datatables/scroller.bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>js/datatables/dataTables.tableTools.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>css/icheck/flat/green.css" rel="stylesheet" type="text/css">
 
-	<div class="title"> <?php $flashmessage = $this->session->flashdata('message'); ?> </div>
-	<p class="message"> <?php echo ! empty($message) ? $message : '' . ! empty($flashmessage) ? $flashmessage : ''; ?> </p>
+<script src="<?php echo base_url(); ?>js/moduljs/banner.js"></script>
+<script src="<?php echo base_url(); ?>js-old/register.js"></script>
+
+<script type="text/javascript">
+
+	var sites_add  = "<?php echo site_url('banner/add_process/');?>";
+	var sites_edit = "<?php echo site_url('banner/update_process/');?>";
+	var sites_del  = "<?php echo site_url('banner/delete/');?>";
+	var sites_get  = "<?php echo site_url('banner/update/');?>";
+    var sites_primary  = "<?php echo site_url('banner/publish/');?>";
+	var source = "<?php echo $source;?>";
 	
-	<div id="errorbox" class="errorbox"> <?php echo validation_errors(); ?> </div>
-	
-	<fieldset class="field"> <legend>Add Banner</legend>
-	
-			<form name="admin_form" id="form" class="myform" method="post" action="<?php echo $form_action; ?>" enctype="multipart/form-data">
-				<table>
-					<tr> <td> <span class="label"> Name </span> </td> <td>: &nbsp;</td> 
-					     <td><input type="text" name="tname" size="30" title="Banner Name" required /> <br /> </td> 
-					</tr>
-					
-					<tr> <td> <span class="label">Position</span></td> <td>:</td> 
-					 <td>
-<select name="cposition" class="required input-medium" title="Position">
-<option value="user1" <?php echo set_select('cposition', 'user1', isset($default['position']) && $default['position'] == 'user1' ? TRUE : FALSE); ?> /> User 1 </option>
-<option value="user2" <?php echo set_select('cposition', 'user2', isset($default['position']) && $default['position'] == 'user2' ? TRUE : FALSE); ?> /> User 2 </option>
-<option value="user3" <?php echo set_select('cposition', 'user3', isset($default['position']) && $default['position'] == 'user3' ? TRUE : FALSE); ?> /> User 3 </option>
-<option value="user4" <?php echo set_select('cposition', 'user4', isset($default['position']) && $default['position'] == 'user4' ? TRUE : FALSE); ?> /> User 4 </option>
-<option value="user5" <?php echo set_select('cposition', 'user5', isset($default['position']) && $default['position'] == 'user5' ? TRUE : FALSE); ?> /> User 5 </option>
-<option value="user6" <?php echo set_select('cposition', 'user6', isset($default['position']) && $default['position'] == 'user6' ? TRUE : FALSE); ?> /> User 6 </option>
-<option value="user7" <?php echo set_select('cposition', 'user7', isset($default['position']) && $default['position'] == 'user7' ? TRUE : FALSE); ?> /> User 7 </option>
-<option value="user8" <?php echo set_select('cposition', 'user8', isset($default['position']) && $default['position'] == 'user8' ? TRUE : FALSE); ?> /> User 8 </option>
-<option value="user9" <?php echo set_select('cposition', 'user9', isset($default['position']) && $default['position'] == 'user9' ? TRUE : FALSE); ?> /> User 9 </option>
-<option value="user10" <?php echo set_select('cposition', 'user10', isset($default['position']) && $default['position'] == 'user10' ? TRUE : FALSE); ?> /> User 10 </option>
-<option value="user11" <?php echo set_select('cposition', 'user11', isset($default['position']) && $default['position'] == 'user11' ? TRUE : FALSE); ?> /> User 11 </option>
-<option value="user12" <?php echo set_select('cposition', 'user12', isset($default['position']) && $default['position'] == 'user12' ? TRUE : FALSE); ?> /> User 12 </option>
-<option value="user13" <?php echo set_select('cposition', 'user13', isset($default['position']) && $default['position'] == 'user13' ? TRUE : FALSE); ?> /> User 13 </option>
-<option value="user14" <?php echo set_select('cposition', 'user14', isset($default['position']) && $default['position'] == 'user14' ? TRUE : FALSE); ?> /> User 14 </option>
-<option value="user15" <?php echo set_select('cposition', 'user15', isset($default['position']) && $default['position'] == 'user15' ? TRUE : FALSE); ?> /> User 15 </option>
-<option value="user16" <?php echo set_select('cposition', 'user16', isset($default['position']) && $default['position'] == 'user16' ? TRUE : FALSE); ?> /> User 16 </option>
-<option value="user17" <?php echo set_select('cposition', 'user17', isset($default['position']) && $default['position'] == 'user17' ? TRUE : FALSE); ?> /> User 17 </option>
-<option value="user18" <?php echo set_select('cposition', 'user18', isset($default['position']) && $default['position'] == 'user18' ? TRUE : FALSE); ?> /> User 18 </option>
-<option value="user19" <?php echo set_select('cposition', 'user19', isset($default['position']) && $default['position'] == 'user19' ? TRUE : FALSE); ?> /> User 19 </option>
-<option value="user20" <?php echo set_select('cposition', 'user20', isset($default['position']) && $default['position'] == 'user20' ? TRUE : FALSE); ?> /> User 20 </option>
-</select> <br />  
-					 </td>  </tr>
-					 
-					 <tr> <td><span class="label">Url</span></td> <td>:</td> 
-	                      <td> <input type="text" class="required input-large" name="turl" id="turl" size="50" title="URL" required /> <br /> </td> 
-					 </tr>
-					 
-					 <tr> <td><span class="label"> Width x Height </span></td> <td>:</td> 
-	                      <td> <input type="text" class="input-small" name="twidth" id="tw" title="Width" onkeyup="checkdigit(this.value, 'tw')" required /> X
-						       <input type="text" class="input-small" name="theight" id="th" title="Height" onkeyup="checkdigit(this.value, 'th')" required /> <br /> 
-						  </td> 
-					 </tr>
-					 
-					<tr> <td> <span class="label">Publish</span> </td> <td>:</td> 
-					   <td> Yes <input name="rpublish" class="required" type="radio" title="Y" value="1" />
-					        No <input name="rpublish" class="required" type="radio" title="N" value="0" />  <br/> <br/>  
-					   </td> 
-				    </tr>
-					
-					<tr> <td><span class="label">Menu</span></td> <td>:</td> 
-					<td> <?php $js = 'size="10"'; $array = array('', '');  echo form_dropdown('cmenu[]', $menu, $array, $js, isset($default['menu']) ? $default['menu'] : ''); ?> 
-						<br> </td> </tr> 
-						
-					 <tr> <td> <span class="label"> Image </span> </td> <td>:</td> 
-				          <td> <input type="file" class="input-medium" title="Upload image" name="userfile" required /> <br /> <?php echo isset($error) ? $error : '';?> </td> 
-					 </tr>	
-					
-				</table>				  
-			<p> <br />
-				<input type="submit" name="submit" class="btn" value=" Save " />
-				<input type="reset" name="reset" class="btn" value=" Cancel " />
-			</p>
-		  </form>
-	</fieldset>
-</div>
+</script>
 
-<div id="webadmin2">
-	
-    <form name="search_form" class="myform" method="post" action="<?php echo $form_action_del; ?>">
-     <?php echo ! empty($table) ? $table : ''; ?>
-	 <div class="paging"> <?php echo ! empty($pagination) ? $pagination : ''; ?> </div>
-	</form>	
-	
-	<!-- links -->
-	<div class="buttonplace"> <?php if (!empty($link)){foreach($link as $links){echo $links . '';}} ?> </div>
-</div>
+          <div class="row"> 
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div class="x_panel" >
+              
+              <!-- xtitle -->
+              <div class="x_title">
+              
+                <ul class="nav navbar-right panel_toolbox">
+                  <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a> </li>
+                  <li><a class="close-link"><i class="fa fa-close"></i></a> </li>
+                </ul>
+                
+                <div class="clearfix"></div>
+              </div>
+              <!-- xtitle -->
+                
+                <div class="x_content">
+                  
+          <form class="form-inline" id="cekallform" method="post" action="<?php echo ! empty($form_action_del) ? $form_action_del : ''; ?>">
+                 
+                 <div class="table-responsive">
+                  <!-- table -->
+                  <?php echo ! empty($table) ? $table : ''; ?>
+                  <!-- table -->
+                  </div>
+                  
+                  <!-- Check All Function -->
+                  <div class="form-group" id="chkbox">
+                    Check All : 
+                    <button type="submit" id="cekallbutton" class="btn btn-danger btn-xs">
+                       <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                  </div>
+                  <!-- Check All Function -->    
+          </form>       
+             </div>
 
-
-
-<!-- batas -->
-
+               <!-- Trigger the modal with a button --> 
+ <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal"> <i class="fa fa-plus"></i>&nbsp;Add New </button>
+               <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal3"> Report  </button>-->
+               
+               <!-- links -->
+	           <?php if (!empty($link)){foreach($link as $links){echo $links . '';}} ?>
+               <!-- links -->
+                             
+            </div>
+          </div>
+      
+    
+      <!-- Modal - Add Form -->
+      <div class="modal fade" id="myModal" role="dialog">
+         <?php $this->load->view('banner_form'); ?>      
+      </div>
+      <!-- Modal - Add Form -->
+      
+      <!-- Modal Edit Form -->
+      <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	     <?php $this->load->view('banner_update'); ?> 
+      </div>
+      <!-- Modal Edit Form -->
+      
+      <!-- Modal - Report Form -->
+      <div class="modal fade" id="myModal3" role="dialog">
+         <?php /*$this->load->view('category_report');*/ ?>    
+      </div>
+      <!-- Modal - Report Form -->
+      
+      <script src="<?php echo base_url(); ?>js/icheck/icheck.min.js"></script>
+      
+       <!-- Datatables JS -->
+        <script src="<?php echo base_url(); ?>js/datatables/jquery.dataTables.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/dataTables.bootstrap.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/dataTables.buttons.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/buttons.bootstrap.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/jszip.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/pdfmake.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/vfs_fonts.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/buttons.html5.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/buttons.print.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/dataTables.fixedHeader.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/dataTables.keyTable.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/dataTables.responsive.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/responsive.bootstrap.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/dataTables.scroller.min.js"></script>
+        <script src="<?php echo base_url(); ?>js/datatables/dataTables.tableTools.js"></script>
+        

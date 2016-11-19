@@ -1,18 +1,19 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Frontmenu_lib {
+class Frontmenu_lib extends Main_model {
 
-    public function __construct()
+    public function __construct($deleted=NULL)
     {
-        $this->ci = & get_instance();
+        $this->deleted = $deleted;
+        $this->tableName = 'menu';
     }
 
     private $ci;
 
     function combo()
     {
-        $this->ci->db->select('id, name');
-        $val = $this->ci->db->get('menu')->result();
+        $this->db->select('id, name');
+        $val = $this->db->get($this->tableName)->result();
         foreach($val as $row){$data['options'][$row->id] = $row->name;}
         return $data;
     }
@@ -21,9 +22,9 @@ class Frontmenu_lib {
     {
         if ($val)
         {
-           $this->ci->db->select('id, parent_id, position, name, type, url, menu_order, limit, default, class_style, id_style, icon');
-           $this->ci->db->where('id', $val);
-           $res = $this->ci->db->get('menu')->row();
+           $this->db->select('id, parent_id, position, name, type, url, menu_order, limit, default, class_style, id_style, icon');
+           $this->db->where('id', $val);
+           $res = $this->db->get($this->tableName)->row();
 
            if ($res) {  return $res->name; } else{ return null; }
         }

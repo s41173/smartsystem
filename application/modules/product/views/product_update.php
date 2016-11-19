@@ -1,128 +1,107 @@
-<style type="text/css">@import url("<?php echo base_url() . 'css/style.css'; ?>");</style>
-<style type="text/css">@import url("<?php echo base_url() . 'development-bundle/themes/base/ui.all.css'; ?>");</style>
-<style type="text/css">@import url("<?php echo base_url() . 'css/jquery.fancybox-1.3.4.css'; ?>");</style>
-
-<script type="text/javascript" src="<?php echo base_url();?>js/register.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>js/jquery-1.3.2.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>js/datetimepicker_css.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>/development-bundle/ui/ui.core.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>js/jquery.tools.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>js/hoverIntent.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>js/jquery.fancybox-1.3.4.pack.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>js/complete.js"></script> 
-<script type="text/javascript" src="<?php echo base_url();?>js/jquery.tablesorter.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>js/sortir.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>js/jquery.maskedinput-1.3.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url();?>js/validate.js"></script> 
-<script type='text/javascript' src='<?php echo base_url();?>js/jquery.validate.js'></script>  
-
-<script type="text/javascript">
-var uri = "<?php echo site_url('ajax')."/"; ?>";
-var baseuri = "<?php echo base_url(); ?>";
-</script>
-
-<style>
-        .refresh{ border:1px solid #AAAAAA; color:#000; padding:2px 5px 2px 5px; margin:0px 2px 0px 2px; background-color:#FFF;}
-		.refresh:hover{ background-color:#CCCCCC; color: #FF0000;}
-		.refresh:visited{ background-color:#FFF; color: #000000;}	
-</style>
-
-<?php 
-		
-$atts1 = array(
-	  'class'      => 'refresh',
-	  'title'      => 'add cust',
-	  'width'      => '600',
-	  'height'     => '400',
-	  'scrollbars' => 'yes',
-	  'status'     => 'yes',
-	  'resizable'  => 'yes',
-	  'screenx'    =>  '\'+((parseInt(screen.width) - 600)/2)+\'',
-	  'screeny'    =>  '\'+((parseInt(screen.height) - 400)/2)+\'',
-);
-
-?>
-
-<script type="text/javascript">	
-	function refreshparent() { opener.location.reload(true); }
-</script>
-
-<body onUnload="refreshparent()">
-<div id="webadmin">
-	<div class="title"> <?php $flashmessage = $this->session->flashdata('message'); ?> </div>
-	<p class="message"> <?php echo ! empty($message) ? $message : '' . ! empty($flashmessage) ? $flashmessage : ''; ?> </p>
-	
-	<div id="errorbox" class="errorbox"> <?php echo validation_errors(); ?> </div>
-	
-	<fieldset class="field"> <legend> Inventory </legend>
-	<form name="modul_form" class="myform" id="form" method="post" action="<?php echo $form_action; ?>" enctype="multipart/form-data" >
-				<table>
-			
-			<tr>	
-			<td> <label for="ccategory"> Category (*) </label> </td> <td>:</td>
-			<td> <?php $js = 'class="required"'; echo form_dropdown('ccategory', $category, isset($default['category']) ? $default['category'] : '', $js); ?> &nbsp; <br /> </td>
-			</tr>
-						
-			<tr> <td> <label for="tname"> Model / Name (*)</label></td> <td>:</td> 
-			<td> <input type="text" class="required" name="tname" size="45" title="Product Model" 
-			     value="<?php echo set_value('tname', isset($default['name']) ? $default['name'] : ''); ?>" /> <br /> </td> </tr>
-				 
-		    <tr> <td> <label for="tshortdesc"> Short Description </label></td> <td>:</td> 
-			<td> <textarea name="tshortdesc" cols="30" rows="2"><?php echo set_value('tshortdesc', isset($default['shortdesc']) ? $default['shortdesc'] : ''); ?></textarea> 
-			      <br /> </td> </tr>
-			
-			<tr> <td> <label for="tdesc"> Description </label> </td> <td>:</td> <td>
-	                 <textarea name="tdesc" class="required" id="content" ><?php echo set_value('tdesc', isset($default['desc']) ? $default['desc'] : ''); ?></textarea> 
-					 <?php echo display_ckeditor($ckeditor); ?> 
-			<br /> </td></tr>	
-	
-			<tr> <td> <label for="tprice"> Price </label></td> <td>:</td> 
-			<td> <input type="text" class="required" id="tprice" name="tprice" size="10" title="Price" onKeyUp="checkdigit(this.value, 'tprice')"
-			     value="<?php echo set_value('tprice', isset($default['price']) ? $default['price'] : ''); ?>" /> <br /> </td> </tr>
-			
-			<tr> <td> <label> Publish </label> </td> <td>:</td> 
-                 <td> Y <input name="rpublish" type="radio" class="required" value="1" 
-				        <?php echo set_radio('rpublish', '1',    isset($default['publish']) && $default['publish'] == '1' ? TRUE : FALSE); ?> />  
-						
-				      N <input name="rpublish" type="radio" class="required" value="0"
-					    <?php echo set_radio('rpublish', '0',    isset($default['publish']) && $default['publish'] == '0' ? TRUE : FALSE); ?> /> <br/>
-				 </td> 
-			</tr>
-			
-			<tr> <td> <span> Image</span> </td> <td>:</td> <td> 
-				<a class="fancy" href="<?php echo isset($default['image']) ? $default['image'] : ''; ?>"> 
-				<img alt="" width="250" src="<?php echo set_value('tket', isset($default['image']) ? $default['image'] : ''); ?>" >
-				</a>  </td> </tr>
-			
-			<tr> <td> <span class="label"> Image </span> </td> <td>:</td> 
-				<td> <input type="file" size="30" title="Upload image" name="userfile"  /> <br /> <?php echo isset($error) ? $error : '';?> 
-				<small>*) Leave it blank if not upload images.</small> </td> </tr>
-			
-			<tr> <td> <label for="turl1"> Image Url 1 </label></td> <td>:</td> 
-			<td> <a class="fancy" href="<?php echo isset($default['url1']) ? $default['url1'] : ''; ?>"> 
-				  <img alt="" width="250" src="<?php echo set_value('tket', isset($default['url1']) ? $default['url1'] : ''); ?>" >
-				 </a>
-			 <textarea name="turl1" cols="35" rows="3"><?php echo set_value('turl1', isset($default['url1']) ? $default['url1'] : ''); ?></textarea> <br /> </td> </tr>
-			
-			<tr> <td> <label for="turl2"> Image Url 2 </label></td> <td>:</td> 
-			<td> <a class="fancy" href="<?php echo isset($default['url2']) ? $default['url2'] : ''; ?>"> 
-				  <img alt="" width="250" src="<?php echo set_value('tket', isset($default['url2']) ? $default['url2'] : ''); ?>" >
-				 </a>
-			
-			     <textarea name="turl2" cols="35" rows="3"><?php echo set_value('turl2', isset($default['url2']) ? $default['url2'] : ''); ?></textarea> <br /> </td> </tr>
-			
-			<tr> <td> <label for="turl3"> Image Url 3 </label></td> <td>:</td> 
-			<td>  <a class="fancy" href="<?php echo isset($default['url3']) ? $default['url3'] : ''; ?>"> 
-				  <img alt="" width="250" src="<?php echo set_value('tket', isset($default['url3']) ? $default['url3'] : ''); ?>" >
-				 </a>
-			      <textarea name="turl3" cols="35" rows="3"><?php echo set_value('turl3', isset($default['url3']) ? $default['url3'] : ''); ?></textarea> <br /> </td> </tr>
-										   
-				</table>
-				<p style="margin:15px 0 0 0; float:right;">
-					<input type="submit" name="submit" class="button" value=" Save " /> 
-					<input type="reset" name="reset" class="button" value=" Cancel " />
-				</p>	
-			</form>			  
-	</fieldset>
+<div class="modal-dialog">
+        
+<!-- Modal content-->
+<div class="modal-content">
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal">&times;</button>
+  <h4 class="modal-title"> Add New Component </h4>
 </div>
-</body>
+<div class="modal-body">
+
+ <!-- error div -->
+ <div class="alert alert-success success"> </div>
+ <div class="alert alert-warning warning"> </div>
+ <div class="alert alert-error error"> </div>
+ 
+ <!-- form add -->
+<div class="x_panel" >
+<div class="x_title">
+  
+  <div class="clearfix"></div> 
+</div>
+<div class="x_content">
+
+<form id="upload_form_edit" data-parsley-validate class="form-horizontal form-label-left" method="POST" action="<?php echo $form_action_update; ?>" enctype="multipart/form-data">
+   
+                  <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+                    <input type="text" class="form-control has-feedback-left" id="tname_update" name="tname" placeholder="Modul Name">
+                    <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span> 
+                    <input type="hidden" id="tid_update" name="tid_update">
+                  </div>
+                  
+                  <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+                    <input type="text" class="form-control has-feedback-left" id="ttitle_update" name="ttitle" placeholder="Modul Title">
+                    <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span> 
+                  </div>
+                  
+                  <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12"> Active </label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                       TRUE <input name="raktif" id="raktif0" class="required" type="radio" value="Y" /> 
+                       FALSE <input name="raktif" id="raktif1" class="required" type="radio" value="N" />  
+                    </div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12"> Publish </label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                       TRUE <input name="rpublish" id="rpublish0" class="required" type="radio" value="Y" /> 
+                       FALSE <input name="rpublish" id="rpublish1" class="required" type="radio" value="N" />  
+                    </div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12"> Status </label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                      <select name="cstatus" id="cstatus_update" class="select2_single form-control" title="Status">
+                         <option value="user"> User </option>
+                         <option value="admin"> Admin </option>
+                      </select>
+                    </div>
+                  </div>
+                                      
+                  <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12"> Role </label>
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                    
+       <?php $js = "class='select2_multiple form-control' id='crole_update' multiple='multiple' tabindex='-1' style='width:100%;' "; 
+	         echo form_dropdown('crole[]', $options, $array, $js); ?>
+                    
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+                    <input type="tel" name="tlimit" class="form-control" id="tlimit_update" placeholder="Limit">
+                  </div>
+                  
+                   <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+                    <input type="tel" name="torder" class="form-control" id="torder_update" placeholder="Order">
+                  </div>
+                  
+      <div class="form-group">
+      <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12"> Image </label>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+            <input type="file" id="uploadImage" accept="image/*" class="input-medium" title="Upload" name="userfile" /> <br>
+            <img id="catimg_update" style="max-width:50px; height:auto;">
+      </div>
+      </div>
+       
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+              <button type="submit" class="btn btn-primary" id="button">Save</button>
+              <button type="button" id="bclose" class="btn btn-danger" data-dismiss="modal">Close</button>
+              <button type="reset" id="breset" class="btn btn-warning">Reset</button>
+            </div>
+          </div>
+</form> 
+
+</div>
+</div>
+<!-- form add -->
+
+</div>
+    <div class="modal-footer"> </div>
+</div>
+  
+</div>

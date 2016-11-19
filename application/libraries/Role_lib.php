@@ -2,8 +2,9 @@
 
 class Role_lib extends Custom_Model {
 
-    public function __construct()
+    public function __construct($deleted=NULL)
     {
+        $this->deleted = $deleted;
         $this->tableName = 'role';
     }
     

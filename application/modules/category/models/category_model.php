@@ -14,7 +14,7 @@ class Category_model extends Custom_Model
     
     
     protected $table = 'category';
-    protected $field = array('id', 'name', 'parent_id', 'image');
+    protected $field = array('id', 'name', 'parent_id', 'publish', 'image', 'created', 'updated', 'deleted');
     protected $com;
             
     function count_all_num_rows()

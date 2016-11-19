@@ -163,7 +163,7 @@ class Newscategory extends MX_Controller
         if ($this->form_validation->run($this) == TRUE)
         {
             $category = array('name' => strtolower($this->input->post('tname')),'parent_id' => $this->input->post('cparent'), 
-                              'desc' => $this->input->post('tdesc'));
+                              'desc' => $this->input->post('tdesc'), 'created' => date('Y-m-d H:i:s'));
 
             $this->Newscategory_model->add($category);
             $this->session->set_flashdata('message', "One $this->title data successfully saved!");
