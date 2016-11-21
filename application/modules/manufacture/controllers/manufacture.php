@@ -214,7 +214,7 @@ class Manufacture extends MX_Controller
 
     public function valid_manufacture($name)
     {
-        if ($this->Manufacture_model->valid($name) == FALSE)
+        if ($this->Manufacture_model->valid('name',$name) == FALSE)
         {
             $this->form_validation->set_message('valid', "This $this->title is already registered.!");
             return FALSE;
@@ -225,7 +225,7 @@ class Manufacture extends MX_Controller
     function validation_manufacture($name)
     {
 	$id = $this->session->userdata('langid');
-	if ($this->Manufacture_model->validating($name,$id) == FALSE)
+	if ($this->Manufacture_model->validating('name',$name,$id) == FALSE)
         {
             $this->form_validation->set_message('validation', 'This manufacture is already registered!');
             return FALSE;

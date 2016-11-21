@@ -46,7 +46,7 @@ $(document).ready(function (e) {
 		return false;
 	});
 	
-	$('#ajaxformdata').submit(function() {
+	$('#ajaxformdata,#ajaxformdata2').submit(function() {
 		$.ajax({
 			type: 'POST',
 			url: $(this).attr('action'),

@@ -1,67 +1,38 @@
-<?php
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Slider_model extends CI_Model
+class Slider_model extends Custom_Model
 {
+    protected $logs;
+    
     function __construct()
     {
         parent::__construct();
+        $this->logs = new Log_lib();
+        $this->com = new Components();
+        $this->com = $this->com->get_id('slider');
+        $this->tableName = 'slider';
     }
     
-    var $table = 'slider';
     
-    
-    function get_last_slider()
+    protected $field = array('id', 'name', 'image', 'url','created', 'updated', 'deleted');
+    protected $com;
+            
+    function count_all_num_rows()
     {
-        $this->db->select('id, name, image, url');
-        $this->db->from($this->table); // from table dengan join nya
-        $this->db->order_by('id', 'desc');
-        return $this->db->get(); // mengembalikan isi dari db
-    }
-
-    function cek_null($val,$field)
-    {
-        if ($val == ""){return null;}
-        else {return $this->db->where($field, $val);}
+        //method untuk mengembalikan nilai jumlah baris dari database.
+        return $this->db->count_all($this->tableName);
     }
     
-    function delete($uid)
+    function get_last($limit, $offset=null)
     {
-        $this->db->where('id', $uid);
-        $this->db->delete($this->table); // perintah untuk delete data dari db
+        $this->db->select($this->field);
+        $this->db->from($this->tableName); 
+        $this->db->where('deleted', $this->deleted);
+        $this->db->order_by('name', 'asc'); 
+        $this->db->limit($limit, $offset);
+        return $this->db->get(); 
     }
     
-    function add($users)
-    {
-        $this->db->insert($this->table, $users);
-    }
-    
-    function get_slider_by_id($uid)
-    {
-        $this->db->select('id, name, image, url');
-        $this->db->where('id', $uid);
-        return $this->db->get($this->table);
-    }
-    
-    function update($uid, $users)
-    {
-        $this->db->where('id', $uid);
-        $this->db->update($this->table, $users);
-    }
-    
-    function valid_name($name)
-    {
-        $this->db->where('name', $name);
-        $query = $this->db->get($this->table)->num_rows();
-        if($query > 0) { return FALSE; } else { return TRUE; }
-    }
-
-    function validating_name($name,$id)
-    {
-        $this->db->where('name', $name);
-        $this->db->where_not_in('id', $id);
-        $query = $this->db->get($this->table)->num_rows();
-        if($query > 0) { return FALSE; } else { return TRUE; }
-    }
 
 }
 

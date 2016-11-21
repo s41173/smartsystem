@@ -187,7 +187,7 @@ class Widget extends MX_Controller
 
     function valid_widget($val)
     {
-        if ($this->Widget_model->valid_widget($val) == FALSE)
+        if ($this->Widget_model->valid('name',$val) == FALSE)
         {
             $this->form_validation->set_message('valid_widget', $this->title.' registered');
             return FALSE;
@@ -198,7 +198,7 @@ class Widget extends MX_Controller
     function validating_widget($val)
     {
 	$id = $this->session->userdata('langid');
-	if ($this->Widget_model->validating_widget($val,$id) == FALSE)
+	if ($this->Widget_model->validating('name',$val,$id) == FALSE)
         {
             $this->form_validation->set_message('validating_widget', "This $this->title name is already registered!");
             return FALSE;
@@ -240,7 +240,7 @@ class Widget extends MX_Controller
             echo "true|One $this->title has successfully updated..!";
 
         }
-        else{ echo 'invalid|'.validation_errors(); }
+        else{ echo 'error|'.validation_errors(); }
         }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
     }
 

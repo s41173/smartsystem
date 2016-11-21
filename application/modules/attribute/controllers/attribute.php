@@ -175,7 +175,7 @@ class Attribute extends MX_Controller
 
     function valid($cat,$attr)
     {   
-        if ($this->Attribute_model->valid($cat,$attr) == FALSE)
+        if ($this->Attribute_model->valid_attribute($cat,$attr) == FALSE)
         {
             $this->form_validation->set_message('valid', 'This '.$this->title.' is already registered.!');
             return FALSE;
@@ -186,7 +186,7 @@ class Attribute extends MX_Controller
     function validation($cat,$attr)
     {
 	$id = $this->session->userdata('langid');
-	if ($this->Attribute_model->validation($cat,$attr,$id) == FALSE)
+	if ($this->Attribute_model->validation_attribute($cat,$attr,$id) == FALSE)
         {
             $this->form_validation->set_message('validation', 'This '.$this->title.' is already registered!');
             return FALSE;

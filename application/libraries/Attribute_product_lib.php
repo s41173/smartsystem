@@ -51,6 +51,12 @@ class Attribute_product_lib extends Custom_Model {
         $this->db->delete($this->tableName);
     }
     
+    function force_delete_by_product($uid)
+    {
+        $this->db->where('product_id', $uid);
+        $this->db->delete($this->tableName);
+    }
+    
     function valid($attribute,$pid)
     {
         $this->db->where('product_id', $pid);

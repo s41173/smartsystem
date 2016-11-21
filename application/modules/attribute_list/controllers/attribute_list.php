@@ -195,7 +195,7 @@ class Attribute_list extends MX_Controller
 
     function valid($code)
     {
-        if ($this->Attribute_list_model->valid($code) == FALSE)
+        if ($this->Attribute_list_model->valid('name',$code) == FALSE)
         {
             $this->form_validation->set_message('valid_code', "This $this->title is already registered.!");
             return FALSE;
@@ -206,7 +206,7 @@ class Attribute_list extends MX_Controller
     function validation($code)
     {
 	$id = $this->session->userdata('langid');
-	if ($this->Attribute_list_model->validating($code,$id) == FALSE)
+	if ($this->Attribute_list_model->validating('name',$code,$id) == FALSE)
         {
             $this->form_validation->set_message('validation_code', 'This attribute is already registered!');
             return FALSE;

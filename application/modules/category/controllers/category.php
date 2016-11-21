@@ -13,7 +13,7 @@ class Category extends MX_Controller
 
         $this->modul = $this->components->get(strtolower(get_class($this)));
         $this->title = strtolower(get_class($this));
-        $this->product = new Products();
+        $this->product = new Product_lib();
         $this->category = new Categoryproduct_lib();
         $this->model = new Categorys();
 
@@ -57,7 +57,7 @@ class Category extends MX_Controller
     function publish($uid = null)
     {
        if ($this->acl->otentikasi2($this->title,'ajax') == TRUE){ 
-       $val = $this->Category_model->get_category_by_id($uid)->row();
+       $val = $this->Category_model->get_by_id($uid)->row();
        if ($val->publish == 0){ $lng = array('publish' => 1); }else { $lng = array('publish' => 0); }
        $this->Category_model->update($uid,$lng);
        echo 'true|Status Changed...!';
@@ -116,7 +116,7 @@ class Category extends MX_Controller
         {
            if ( $this->cek_relation($cek[$i]) == TRUE ) 
            {
-              $img = $this->Category_model->get_category_by_id($cek[$i])->row();
+              $img = $this->Category_model->get_by_id($cek[$i])->row();
               $img = $img->image;
               if ($img){ $img = "./images/category/".$img; unlink("$img"); }
 
@@ -151,7 +151,7 @@ class Category extends MX_Controller
        {
         if ( $this->cek_relation($uid) == TRUE )
         {
-           $img = $this->Category_model->get_category_by_id($uid)->row();
+           $img = $this->Category_model->get_by_id($uid)->row();
            $img = $img->image;
            if ($img){ $img = "./images/category/".$img; unlink("$img"); }
 
@@ -233,7 +233,7 @@ class Category extends MX_Controller
     function update($uid=null)
     {        
         $data['parent'] = $this->category->combo_update($uid);
-        $category = $this->Category_model->get_category_by_id($uid)->row();
+        $category = $this->Category_model->get_by_id($uid)->row();
         $data['default']['name'] = $category->name;
         $data['default']['parent'] = $category->parent_id;
         $data['default']['image'] = base_url().'images/category/'.$category->image;
@@ -247,7 +247,7 @@ class Category extends MX_Controller
 
     public function valid_category($name)
     {
-        if ($this->Category_model->valid_category($name) == FALSE)
+        if ($this->Category_model->valid('name',$name) == FALSE)
         {
             $this->form_validation->set_message('valid_category', "This $this->title is already registered.!");
             return FALSE;
@@ -258,7 +258,7 @@ class Category extends MX_Controller
     function validation_category($name)
     {
 	$id = $this->session->userdata('langid');
-	if ($this->Category_model->validating_category($name,$id) == FALSE)
+	if ($this->Category_model->validating('name',$name,$id) == FALSE)
         {
             $this->form_validation->set_message('validation_category', 'This category is already registered!');
             return FALSE;
@@ -321,7 +321,7 @@ class Category extends MX_Controller
     
     function remove_image($uid)
     {
-       $img = $this->Category_model->get_category_by_id($uid)->row();
+       $img = $this->Category_model->get_by_id($uid)->row();
        $img = $img->image;
        if ($img){ $img = "./images/category/".$img; unlink("$img"); } 
     }

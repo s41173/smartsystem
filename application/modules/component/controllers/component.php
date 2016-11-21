@@ -230,7 +230,7 @@ class Component extends MX_Controller
     
     function valid_modul($val)
     {
-        if ($this->Component_model->valid_modul($val) == FALSE)
+        if ($this->Component_model->valid('name',$val) == FALSE)
         {
             $this->form_validation->set_message('valid_modul', $this->title.' registered');
             return FALSE;
@@ -241,7 +241,7 @@ class Component extends MX_Controller
     function validating_component($val)
     {
 	$id = $this->session->userdata('langid');
-	if ($this->Component_model->validating_modul($val,$id) == FALSE)
+	if ($this->Component_model->validating('name',$val,$id) == FALSE)
         {
             $this->form_validation->set_message('validating_component', "This $this->title name is already registered!");
             return FALSE;

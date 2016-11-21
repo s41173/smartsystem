@@ -13,13 +13,12 @@ class Newscategory extends MX_Controller
 
         $this->modul = $this->components->get(strtolower(get_class($this)));
         $this->title = strtolower(get_class($this));
-        $this->product = new Products();
         $this->category = new News_category_lib();
 
     }
 
     private $properti, $modul, $title;
-    private $product,$category,$model;
+    private $category,$model;
 
     function index()
     {
@@ -179,7 +178,7 @@ class Newscategory extends MX_Controller
     function update($uid=null)
     {        
         $data['parent'] = $this->category->combo_update($uid);
-        $category = $this->Newscategory_model->get_category_by_id($uid)->row();
+        $category = $this->Newscategory_model->get_by_id($uid)->row();
 //
 	$this->session->set_userdata('langid', $category->id);
 //        $this->load->view('category_update', $data);
@@ -190,7 +189,7 @@ class Newscategory extends MX_Controller
 
     public function valid_category($name)
     {
-        if ($this->Newscategory_model->valid_category($name) == FALSE)
+        if ($this->Newscategory_model->valid('name',$name) == FALSE)
         {
             $this->form_validation->set_message('valid_category', "This $this->title is already registered.!");
             return FALSE;
@@ -201,7 +200,7 @@ class Newscategory extends MX_Controller
     function validation_category($name)
     {
 	$id = $this->session->userdata('langid');
-	if ($this->Newscategory_model->validating_category($name,$id) == FALSE)
+	if ($this->Newscategory_model->validating('name',$name,$id) == FALSE)
         {
             $this->form_validation->set_message('validation_category', 'This category is already registered!');
             return FALSE;

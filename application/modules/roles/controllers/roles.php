@@ -59,6 +59,9 @@ class Roles extends MX_Controller
             case 3:
               $re = "full control";
               break;
+            case 4:
+              $re = "approval";
+              break;
         }
         return $re;
     }
@@ -185,7 +188,7 @@ class Roles extends MX_Controller
     // Fungsi update untuk menset texfield dengan nilai dari database
     function update($uid=null)
     {        
-        $role = $this->Role_model->get_role_by_id($uid)->row();
+        $role = $this->Role_model->get_by_id($uid)->row();
                
 	$this->session->set_userdata('langid', $role->id);
         echo $uid.'|'.$role->name.'|'.$role->desc.'|'.$role->rules.'|'.$role->granted_menu;
@@ -194,7 +197,7 @@ class Roles extends MX_Controller
 
     function valid_roles($val)
     {
-        if ($this->Role_model->valid_role($val) == FALSE)
+        if ($this->Role_model->valid('name',$val) == FALSE)
         {
             $this->form_validation->set_message('valid_roles', $this->title.' registered');
             return FALSE;
@@ -205,7 +208,7 @@ class Roles extends MX_Controller
     function validating_roles($val)
     {
 	$id = $this->session->userdata('langid');
-	if ($this->Role_model->validating_role($val,$id) == FALSE)
+	if ($this->Role_model->validating('name',$val,$id) == FALSE)
         {
             $this->form_validation->set_message('validating_roles', "This $this->title name is already registered!");
             return FALSE;

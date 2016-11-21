@@ -151,6 +151,18 @@ class Custom_Model extends CI_Model {
         else {return $this->db->where($field, $val);}
     }
     
+    function count_all_num_rows()
+    {
+        //method untuk mengembalikan nilai jumlah baris dari database.
+        return $this->db->count_all($this->tableName);
+    }
+    
+    function counter($field='id')
+    {
+        $this->db->select_max($field);
+        return $this->db->get($this->tableName);
+    }
+    
     function valid($field,$val)
     {
         $this->db->where($field, $val);

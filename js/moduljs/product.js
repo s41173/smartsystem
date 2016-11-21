@@ -41,24 +41,22 @@ $(document).ready(function (e) {
 		
 		$("#myModal2").modal('show');
 		$('#frame').attr('src',url);
+		$('#frame_title').html('Product Attribute');	
+	});
+	
+	$(document).on('click','.text-img',function(e)
+	{	
+		e.preventDefault();
+		var element = $(this);
+		var del_id = element.attr("id");
+		var url = sites_image +"/"+ del_id;
+		$(".error").fadeOut();
 		
-		$.ajax({
-			type: 'POST',
-			url: url,
-    	    cache: false,
-			headers: { "cache-control": "no-cache" },
-			success: function(result) {
-				
-				res = result.split("|");
-				
-				resets();
-				$("#tid_update").val(res[0]);
-				$("#tname_update").val(res[1]);
-				$('#cparent_update').val(res[2]).change();
-				$("#catimg_update").attr("src",res[3]);
-			}
-		})
-		return false;	
+		console.log(url);
+		
+		$("#myModal2").modal('show');
+		$('#frame').attr('src',url);
+		$('#frame_title').html('Product Image');	
 	});
 	
 	// publish status
@@ -120,6 +118,23 @@ $(document).ready(function (e) {
 		
 	});
 	
+	// fungsi kalkulasi persen
+	$('#tdisc_p').keyup(function() {
+		
+		var percent = $('#tdisc_p').val();
+		var price = $("#tprice").val();
+		//var discount = $("#tdiscount").val();
+		$("#tdiscount").val(price*percent/100);		
+	});
+	
+	$('#tdiscount').keyup(function() {
+		
+		//var percent = $('#tdisc_p').val();
+		var price = $("#tprice").val();
+		var discount = $("#tdiscount").val();
+		$("#tdisc_p").val(discount/price*100);		
+	});
+	
 		
 // document ready end	
 });
@@ -163,6 +178,7 @@ $(document).ready(function (e) {
 										s[i][7],
 '<a href="" class="'+stts+' btn-xs primary_status" id="' +s[i][0]+ '" title="Primary Status"> <i class="fa fa-wrench"> </i> </a> '+
 '<a href="" class="text-attribute" id="' +s[i][0]+'/'+s[i][9]+ '" title="Attribute Status"> <i class="fa fa-cogs"> </i> </a> &nbsp; '+
+'<a href="" class="text-img" id="'+s[i][0]+'" title="Product Image"> <i class="fa fa-picture-o"> </i> </a> '+
 '<a href="" class="text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a> '+
 '<a href="#" class="text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'
 										    ]);										
@@ -216,6 +232,7 @@ $(document).ready(function (e) {
 										s[i][7],
 '<a href="" class="'+stts+' btn-xs primary_status" id="' +s[i][0]+ '" title="Primary Status"> <i class="fa fa-wrench"> </i> </a> '+
 '<a href="" class="text-attribute" id="' +s[i][0]+'/'+s[i][9]+ '" title="Attribute Status"> <i class="fa fa-cogs"> </i> </a> &nbsp; '+
+'<a href="" class="text-img" id="'+s[i][0]+'" title="Product Image"> <i class="fa fa-picture-o"> </i> </a> '+
 '<a href="" class="text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a> '+
 '<a href="#" class="text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'
 										    ]);										

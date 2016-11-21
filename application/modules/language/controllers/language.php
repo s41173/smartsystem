@@ -198,7 +198,7 @@ class Language extends MX_Controller
 
     function valid($code)
     {
-        if ($this->Language_model->valid($code) == FALSE)
+        if ($this->Language_model->valid('code',$code) == FALSE)
         {
             $this->form_validation->set_message('valid_code', "This $this->title is already registered.!");
             return FALSE;
@@ -209,7 +209,7 @@ class Language extends MX_Controller
     function validation($code)
     {
 	$id = $this->session->userdata('langid');
-	if ($this->Language_model->validating($code,$id) == FALSE)
+	if ($this->Language_model->validating('code',$code,$id) == FALSE)
         {
             $this->form_validation->set_message('validation_code', 'This language is already registered!');
             return FALSE;

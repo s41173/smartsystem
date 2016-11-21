@@ -20,9 +20,10 @@ class Product extends MX_Controller
         $this->attribute_product = new Attribute_product_lib();
         $this->attribute_list = new Attribute_list_lib();
         $this->currency = new Currency_lib();
+        $this->product = new Product_lib();
     }
 
-    private $properti, $modul, $title;
+    private $properti, $modul, $title, $product;
     private $role, $category, $manufacture, $attribute, $attribute_product, $attribute_list, $currency;
 
     function index()
@@ -70,6 +71,7 @@ class Product extends MX_Controller
         $data['category'] = $this->category->combo_all();
         $data['manufacture'] = $this->manufacture->combo_all();
         $data['currency'] = $this->currency->combo();
+        $data['array'] = array('','');
         
 	// ---------------------------------------- //
  
@@ -105,7 +107,7 @@ class Product extends MX_Controller
        }else{ echo "error|Sorry, you do not have the right to change publish status..!"; }
     }
     
-    function delete_all()
+    function delete_all($type='soft')
     {
       if ($this->acl->otentikasi_admin($this->title,'ajax') == TRUE){
       
@@ -118,7 +120,10 @@ class Product extends MX_Controller
           $x = 0;
           for ($i=0; $i<$jumlah; $i++)
           {
-             $this->Product_model->delete($cek[$i]);
+             if ($type == 'soft') { $this->Product_model->delete($cek[$i]); }
+             else { $this->remove_img($cek[$i],'force');
+                    $this->attribute_product->force_delete_by_product($cek[$i]);
+                    $this->Product_model->force_delete($cek[$i]);  }
              $x=$x+1;
           }
           $res = intval($jumlah-$x);
@@ -202,7 +207,7 @@ class Product extends MX_Controller
             {
                 $info['file_name'] = null;
                 $data['error'] = $this->upload->display_errors();
-                $product = array('name' => strtolower($this->input->post('tname')),
+                $product = array('name' => strtolower($this->input->post('tname')), 'permalink' => split_space($this->input->post('tname')),
                                   'sku' => $this->input->post('tsku'), 'model' => $this->input->post('tmodel'), 
                                   'currency' => $this->input->post('ccur'), 'category' => $this->input->post('ccategory'),
                                   'manufacture' => $this->input->post('cmanufacture'),
@@ -212,7 +217,7 @@ class Product extends MX_Controller
             {
                 $info = $this->upload->data();
                 
-                $product = array('name' => strtolower($this->input->post('tname')),
+                $product = array('name' => strtolower($this->input->post('tname')), 'permalink' => split_space($this->input->post('tname')),
                                   'sku' => $this->input->post('tsku'), 'model' => $this->input->post('tmodel'), 
                                   'currency' => $this->input->post('ccur'), 'category' => $this->input->post('ccategory'),
                                   'manufacture' => $this->input->post('cmanufacture'),
@@ -242,11 +247,21 @@ class Product extends MX_Controller
     private function split_array($val)
     { return implode(",",$val); }
     
-    function remove_img($id)
+    function remove_img($id,$type='primary')
     {
         $img = $this->Product_model->get_by_id($id)->row();
-        $img = $img->icon;
-        if ($img){ $img = "./images/component/".$img; unlink("$img"); }
+        
+        if ($type == 'primary'){
+            $img = $img->image;
+            if ($img){ $img = "./images/product/".$img; @unlink("$img"); }
+        }else{
+            $image = "./images/product/".$img->image; @unlink("$image");
+            $img1 = "./images/product/".$img->url1; @unlink("$img1"); 
+            $img2 = "./images/product/".$img->url2; @unlink("$img2");
+            $img3 = "./images/product/".$img->url3; @unlink("$img3");
+            $img4 = "./images/product/".$img->url4; @unlink("$img4");
+            $img5 = "./images/product/".$img->url5; @unlink("$img5");
+        }
     }
 
     // Fungsi update untuk menset texfield dengan nilai dari database
@@ -254,32 +269,177 @@ class Product extends MX_Controller
     {        
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
         $data['h2title'] = 'Edit '.$this->modul['title'];
-        $data['main_view'] = 'article_form';
+        $data['main_view'] = 'product_update';
 	$data['form_action'] = site_url($this->title.'/update_process');
         $data['link'] = array('link_back' => anchor($this->title,'Back', array('class' => 'btn btn-danger')));
 
-        $data['language'] = $this->language->combo();
+        $data['manufacture'] = $this->manufacture->combo();
         $data['category'] = $this->category->combo();
+        $data['currency'] = $this->currency->combo();
         $data['source'] = site_url($this->title.'/getdatatable');
+        $data['related'] = $this->product->combo_publish($uid);
+        $data['array'] = array('','');
         
-        $article = $this->Product_model->get_by_id($uid)->row();
-	$this->session->set_userdata('langid', $article->id);
+        $product = $this->Product_model->get_by_id($uid)->row();
+	$this->session->set_userdata('langid', $product->id);
         
-        $data['default']['category'] = $article->category_id;
-        $data['default']['language'] = $article->lang;
-        $data['default']['title'] = $article->title;
-        $data['default']['date'] = $article->dates;
-        $data['default']['coment'] = $article->comment;
-        $data['default']['front'] = $article->front;
-        $data['default']['image'] = base_url().'images/article/'.$article->image;
-        $data['default']['desc'] = $article->text;
+        $data['default']['sku'] = $product->sku;
+        $data['default']['category'] = $product->category;
+        $data['default']['manufacture'] = $product->manufacture;
+        $data['default']['name'] = $product->name;
+        $data['default']['model'] = $product->model;
+        $data['default']['permalink'] = $product->permalink;
+        $data['default']['currency'] = $product->currency;
+        $data['default']['description'] = $product->description;
+        $data['default']['sdesc'] = $product->shortdesc;
+        $data['default']['spec'] = $product->spesification;
+        $data['default']['metatitle'] = $product->meta_title;
+        $data['default']['metadesc'] = $product->meta_desc;
+        $data['default']['metakeywords'] = $product->meta_keywords;
+        $data['default']['price'] = $product->price;
+        $data['default']['discount'] = $product->discount;
+        $data['default']['qty'] = $product->qty;
+        $data['default']['min'] = $product->min_order;
+        $data['default']['image'] = base_url().'images/product/'.$product->image;
+        $data['default']['dclass'] = $product->dimension_class;
+        $data['default']['weight'] = $product->weight;
+        $data['default']['disc_p'] = @intval($product->discount/$product->price*100);
+        $data['default']['dimension'] = $product->dimension;
         
-        echo $article->title;
-        
+        if ($product->dimension)
+        {
+            $dimension = explode('x', $product->dimension);
+            $data['default']['length'] = $dimension[0];
+            $data['default']['width'] = $dimension[1];
+            $data['default']['height'] = $dimension[2];
+        }
+        else{
+            $data['default']['length'] = '';
+            $data['default']['width'] = '';
+            $data['default']['height'] = '';
+        }
+
+        if ($product->related){
+            $related = explode(',', $product->related);
+            $data['default']['related'] = $related;
+        }
+         
         $this->load->helper('editor');
         editor();
-        
         $this->load->view('template', $data);
+    }
+    
+    function image_gallery($pid=null)
+    {        
+        $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
+        $data['h2title'] = 'Edit '.$this->modul['title'];
+        $data['main_view'] = 'article_form';
+	$data['form_action'] = site_url($this->title.'/add_image/'.$pid);
+        $data['link'] = array('link_back' => anchor($this->title,'Back', array('class' => 'btn btn-danger')));
+
+        $result = $this->Product_model->get_by_id($pid)->row();
+        
+        // library HTML table untuk membuat template table class zebra
+        $tmpl = array('table_open' => '<table id="" class="table table-striped table-bordered">');
+
+        $this->table->set_template($tmpl);
+        $this->table->set_empty("&nbsp;");
+
+        //Set heading untuk table
+        $this->table->set_heading('No', 'Name', 'Image');
+        
+        for ($i=1; $i<=5; $i++)
+        {   
+            switch ($i) {
+                case 1:$url = $result->url1; break;
+                case 2:$url = $result->url2; break;
+                case 3:$url = $result->url3; break;
+                case 4:$url = $result->url4; break;
+                case 5:$url = $result->url5; break;
+            }
+            
+            if ($url){ if ($result->url_upload == 1){ $url = base_url().'images/product/'.$url; } }
+            
+            $image_properties = array('src' => $url, 'alt' => 'Image'.$i, 'class' => 'img_product', 'width' => '60', 'title' => 'Image'.$i,);
+            $this->table->add_row
+            (
+               $i, 'Image'.$i, !empty($url) ? img($image_properties) : ''
+            );
+        }
+
+        $data['table'] = $this->table->generate();
+        
+        $this->load->view('product_image', $data);
+    }
+    
+    function valid_image($val)
+    {
+        if ($val == 0)
+        {
+            if (!$this->input->post('turl')){ $this->form_validation->set_message('valid_image','Image Url Required..!'); return FALSE; }
+            else { return TRUE; }            
+        }
+    }
+    
+    function add_image($pid)
+    {
+        if ($this->acl->otentikasi2($this->title) == TRUE){
+
+            $data['title'] = $this->properti['name'].' | Administrator  '.ucwords('Product Manager');
+            $data['h2title'] = 'Product Manager';
+            $data['link'] = array('link_back' => anchor('admin/','<span>back</span>', array('class' => 'back')));
+
+            // Form validation
+            
+            $this->form_validation->set_rules('cname', 'Image Attribute', 'required|');
+            $this->form_validation->set_rules('userfile', 'Image Value', '');
+
+            if ($this->form_validation->run($this) == TRUE)
+            {  
+                $result = $this->Product_model->get_by_id($pid)->row();
+                if ($result->url_upload == 1)               
+                {
+                    switch ($this->input->post('cname')) {
+                    case 1:$img = "./images/product/".$result->url1; break;
+                    case 2:$img = "./images/product/".$result->url2; break;
+                    case 3:$img = "./images/product/".$result->url3; break;
+                    case 4:$img = "./images/product/".$result->url4; break;
+                    case 5:$img = "./images/product/".$result->url5; break;
+                  }
+                  @unlink("$img"); 
+                }
+                
+                    $config['upload_path'] = './images/product/';
+                    $config['file_name'] = split_space($result->name.'_'.$this->input->post('cname'));
+                    $config['allowed_types'] = 'jpg|gif|png';
+                    $config['overwrite']  = true;
+                    $config['max_size']   = '1000';
+                    $config['max_width']  = '30000';
+                    $config['max_height'] = '30000';
+                    $config['remove_spaces'] = TRUE;
+
+                    $this->load->library('upload', $config);
+                    
+                    if ( !$this->upload->do_upload("userfile")) // if upload failure
+                    {
+                        $attr = array('url'.$this->input->post('cname') => null, 'url_upload' => 1);
+                    }
+                    else {$info = $this->upload->data();
+                         $attr = array('url'.$this->input->post('cname') => $info['file_name'], 'url_upload' => 1); 
+                    } 
+                
+                $this->Product_model->update($pid, $attr);
+                $this->session->set_flashdata('message', "One $this->title data successfully saved!");
+                
+                echo 'true|Data successfully saved..!'; 
+            }
+            else
+            {
+    //            echo validation_errors();
+                echo 'error|'.validation_errors();
+            }
+        }
+        else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
     }
     
     function attribute($pid=null,$category=null)
@@ -440,70 +600,116 @@ class Product extends MX_Controller
     }
 
     // Fungsi update untuk mengupdate db
-    function update_process()
+    function update_process($param=0)
     {
         if ($this->acl->otentikasi_admin($this->title) == TRUE){
 
         $data['title'] = $this->properti['name'].' | Productistrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'];
-        $data['main_view'] = 'admin_update';
+        $data['main_view'] = 'product_update';
 	$data['form_action'] = site_url($this->title.'/update_process');
 	$data['link'] = array('link_back' => anchor('admin/','<span>back</span>', array('class' => 'back')));
 
 	// Form validation
-        $this->form_validation->set_rules('ttitle', 'Product Title', 'required|maxlength[100]|callback_validating_modul');
-        $this->form_validation->set_rules('ccategory', 'Category', 'required');
-        $this->form_validation->set_rules('clang', 'Language', 'required');
-        $this->form_validation->set_rules('tdates', 'Product Dates', 'required');
-        $this->form_validation->set_rules('tdesc', 'Product Content', 'required');
-
-        if ($this->form_validation->run($this) == TRUE)
+        if ($param == 1)
         {
-            $config['upload_path']   = './images/article/';
-            $config['file_name']     = split_space($this->input->post('ttitle'));
-            $config['allowed_types'] = 'png|jpg';
-            $config['overwrite']     = TRUE;
-            $config['max_size']	 = '10000';
-            $config['max_width']     = '10000';
-            $config['max_height']    = '10000';
-            $config['remove_spaces'] = TRUE;
+            $this->form_validation->set_rules('tsku', 'SKU', 'required|callback_validating_sku');
+            $this->form_validation->set_rules('ccategory', 'Category', 'required');
+            $this->form_validation->set_rules('cmanufacture', 'Manufacture', 'required');
+            $this->form_validation->set_rules('tname', 'Product Name', 'required|callback_validating_name');
+            $this->form_validation->set_rules('tmodel', 'Product Model', 'required|callback_validating_model');
+            $this->form_validation->set_rules('ccurrency', 'Currency', 'required');
+            $this->form_validation->set_rules('tdesc', 'Description', '');
+            $this->form_validation->set_rules('tshortdesc', 'Short Description', '');
             
-            $this->load->library('upload', $config);
-            
-            if ( !$this->upload->do_upload("userfile"))
+            if ($this->form_validation->run($this) == TRUE)
             {
-                $data['error'] = $this->upload->display_errors();
-                $article = array(
-                'title' => $this->input->post('ttitle'), 'category_id' => $this->input->post('ccategory'),
-                'permalink' => split_space($this->input->post('ttitle')),
-                'lang' => $this->input->post('clang'), 'user' => $this->session->userdata('username'),
-                'comment' => $this->cek_tick($this->input->post('ccoment')), 'front' => $this->cek_tick($this->input->post('cfront')),
-                'dates' => setnull($this->input->post('tdates')), 'time' => waktuindo(), 'text' => $this->input->post('tdesc'),
-                'created' => date('Y-m-d H:i:s'));
-            }
-            else
-            {
-                $info = $this->upload->data();
-                $article = array(
-                'title' => $this->input->post('ttitle'), 'category_id' => $this->input->post('ccategory'),
-                'permalink' => split_space($this->input->post('tpermalink')),
-                'lang' => $this->input->post('clang'), 'image' => $info['file_name'], 'user' => $this->session->userdata('username'),
-                'comment' => $this->cek_tick($this->input->post('ccoment')), 'front' => $this->cek_tick($this->input->post('cfront')),
-                'dates' => setnull($this->input->post('tdates')), 'time' => waktuindo(), 'text' => $this->input->post('tdesc'),
-                'created' => date('Y-m-d H:i:s'));
-            }
+                // start update 1
+                $config['upload_path'] = './images/product/';
+                $config['file_name'] = split_space($this->input->post('tname'));
+                $config['allowed_types'] = 'jpg|gif|png';
+                $config['overwrite'] = true;
+                $config['max_size']	= '10000';
+                $config['max_width']  = '30000';
+                $config['max_height']  = '30000';
+                $config['remove_spaces'] = TRUE;
 
-	    $this->Product_model->update($this->session->userdata('langid'), $article);
+                $this->load->library('upload', $config);
+
+                if ( !$this->upload->do_upload("userfile")) // if upload failure
+                {
+                    $info['file_name'] = null;
+                    $data['error'] = $this->upload->display_errors();
+                    $product = array('name' => strtolower($this->input->post('tname')), 'permalink' => split_space($this->input->post('tname')),
+                                     'sku' => $this->input->post('tsku'), 'model' => $this->input->post('tmodel'), 
+                                     'currency' => $this->input->post('ccurrency'), 'category' => $this->input->post('ccategory'),
+                                     'manufacture' => $this->input->post('cmanufacture'), 'shortdesc' => $this->input->post('tshortdesc'),
+                                     'description' => $this->input->post('tdesc'));
+                }
+                else
+                {
+                    $info = $this->upload->data();
+
+                    $product = array('name' => strtolower($this->input->post('tname')), 'permalink' => split_space($this->input->post('tname')),
+                                      'sku' => $this->input->post('tsku'), 'model' => $this->input->post('tmodel'), 
+                                      'currency' => $this->input->post('ccurrency'), 'category' => $this->input->post('ccategory'),
+                                      'manufacture' => $this->input->post('cmanufacture'), 'shortdesc' => $this->input->post('tshortdesc'),
+                                      'description' => $this->input->post('tdesc'),
+                                      'image' => $info['file_name']);
+                }
+                
+                $this->Product_model->update($this->session->userdata('langid'), $product);
+                $this->session->set_flashdata('message', "One $this->title has successfully updated!");
+                redirect($this->title.'/update/'.$this->session->userdata('langid'));
+                
+                // end update 1
+            }
+            else{ $this->session->set_flashdata('message', validation_errors());
+                  redirect($this->title.'/update/'.$this->session->userdata('langid'));
+                }
+        }
+        elseif ($param == 2)
+        {
+            $product = array('meta_title' => $this->input->post('tmetatitle'), 'meta_desc' => $this->input->post('tmetadesc'),
+                             'meta_keywords' => $this->input->post('tmetakeywords'), 'spesification' => $this->input->post('tspec')
+                             );
+            $this->Product_model->update($this->session->userdata('langid'), $product);
             $this->session->set_flashdata('message', "One $this->title has successfully updated!");
             redirect($this->title.'/update/'.$this->session->userdata('langid'));
-          //  $this->session->unset_userdata('langid');
-//             if ($this->upload->display_errors()){ echo "warning|".$this->upload->display_errors(); }
-//             else { echo 'true|Data successfully saved..!|'.base_url().'images/component/'.$info['file_name']; }
-
         }
-        else{ $this->load->view('template', $data); echo 'error|'.validation_errors(); }
+        elseif ($param == 3)
+        {
+            $this->form_validation->set_rules('tprice', 'Price', 'required|numeric');
+            $this->form_validation->set_rules('tdisc_p', 'Discount Percentage', 'numeric');
+            $this->form_validation->set_rules('tdiscount', 'Discount', 'required|numeric');
+            $this->form_validation->set_rules('tmin', 'Minimum Order', 'required|numeric');
+            
+            $product = array('price' => $this->input->post('tprice'), 'discount' => $this->input->post('tdiscount'),
+                             'min_order' => $this->input->post('tmin')
+                             );
+            $this->Product_model->update($this->session->userdata('langid'), $product);
+            echo 'true|One '.$this->title.' price and qty has successfully updated!';
+        }
+        elseif ($param == 4)
+        {
+            $this->form_validation->set_rules('tlength', 'Length (Dimension)', 'numeric');
+            $this->form_validation->set_rules('twidth', 'Width (Dimension)', 'numeric');
+            $this->form_validation->set_rules('theight', 'Height (Dimension)', 'numeric');
+            $this->form_validation->set_rules('cdimension', 'Dimension Class', '');
+            $this->form_validation->set_rules('tweight', 'Weight', 'numeric');
+            
+            $dimension = $this->input->post('tlength').'x'.$this->input->post('twidth').'x'.$this->input->post('theight');
+            $product = array('dimension' => $dimension, 'dimension_class' => $this->input->post('cdimension'),
+                             'weight' => $this->input->post('tweight'), 'related' => !empty($this->input->post('crelated')) ? split_array($this->input->post('crelated')) : null
+                             );
+            $this->Product_model->update($this->session->userdata('langid'), $product);
+            echo 'true|One '.$this->title.' dimension has successfully updated!';
+        }
+
+        
         }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
     }
+   
 
 }
 

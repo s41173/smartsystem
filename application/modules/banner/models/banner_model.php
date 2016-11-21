@@ -18,11 +18,6 @@ class Banner_model extends Custom_Model
                              'created', 'updated', 'deleted');
     protected $com;
             
-    function count_all_num_rows()
-    {
-        //method untuk mengembalikan nilai jumlah baris dari database.
-        return $this->db->count_all($this->tableName);
-    }
     
     function get_last($limit, $offset=null)
     {

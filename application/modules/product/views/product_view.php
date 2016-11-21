@@ -30,6 +30,7 @@
 	var sites_get  = "<?php echo site_url('product/update/');?>";
     var sites_primary  = "<?php echo site_url('product/publish/');?>";
 	var sites_attribute  = "<?php echo site_url('product/attribute/');?>";
+	var sites_image  = "<?php echo site_url('product/image_gallery/');?>";
 	var source = "<?php echo $source;?>";
 	
 </script>
@@ -124,7 +125,8 @@
       
       <!-- Modal Attribute -->
       <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	     <?php $this->load->view('product_attribute_frame'); ?> 
+	     
+		 <?php $this->load->view('product_attribute_frame'); ?> 
       </div>
       <!-- Modal Attribute -->
       

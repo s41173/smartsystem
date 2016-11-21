@@ -229,7 +229,7 @@ class Adminmenu extends MX_Controller
     
     function valid_name($name)
     {
-        if ($this->Adminmenu_model->valid_name($name) == FALSE)
+        if ($this->Adminmenu_model->valid('name',$name) == FALSE)
         {
             $this->form_validation->set_message('valid_name', $this->title.' name registered');
             return FALSE;
@@ -240,7 +240,7 @@ class Adminmenu extends MX_Controller
     function validating_name($name)
     {
 	$id = $this->session->userdata('langid');
-	if ($this->Adminmenu_model->validating_name($name,$id) == FALSE)
+	if ($this->Adminmenu_model->validating('name',$name,$id) == FALSE)
         {
             $this->form_validation->set_message('validating_name', "This $this->title name is already registered!");
             return FALSE;

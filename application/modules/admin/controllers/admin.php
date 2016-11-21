@@ -190,7 +190,7 @@ class Admin extends MX_Controller
     {
         $uname = $this->input->post('tusername');
         
-        if ($this->Admin_model->valid_name($uname) == FALSE)
+        if ($this->Admin_model->valid('username',$uname) == FALSE)
         {
             $this->form_validation->set_message('valid_username', 'This user is already registered.!');
             return FALSE;
@@ -201,7 +201,7 @@ class Admin extends MX_Controller
     function validation_username($name)
     {
 	$id = $this->session->userdata('langid');
-	if ($this->Admin_model->validation_username($name,$id) == FALSE)
+	if ($this->Admin_model->validating('username',$name,$id) == FALSE)
         {
             $this->form_validation->set_message('validation_username', 'This user is already registered!');
             return FALSE;

@@ -173,7 +173,7 @@ class Article extends MX_Controller
 
             // Form validation
             
-            $this->form_validation->set_rules('ttitle', 'Article Title', 'required|maxlength[100]|callback_valid_modul');
+            $this->form_validation->set_rules('ttitle', 'Article Title', 'required|maxlength[100]|callback_valid');
             $this->form_validation->set_rules('ccategory', 'Category', 'required');
             $this->form_validation->set_rules('clang', 'Language', 'required');
             $this->form_validation->set_rules('tdates', 'Article Dates', 'required');
@@ -282,20 +282,10 @@ class Article extends MX_Controller
         
         $this->load->view('template', $data);
     }
-
-    function valid_role($val)
+ 
+    function valid($val)
     {
-        if(!$val)
-        {
-          $this->form_validation->set_message('valid_role', "role type required.");
-          return FALSE;
-        }
-        else{ return TRUE; }
-    }
-    
-    function valid_modul($val)
-    {
-        if ($this->Article_model->valid_modul($val) == FALSE)
+        if ($this->Article_model->valid('title',$val) == FALSE)
         {
             $this->form_validation->set_message('valid_modul', $this->title.' registered');
             return FALSE;
@@ -303,10 +293,10 @@ class Article extends MX_Controller
         else{ return TRUE; }
     }
 
-    function validating_modul($val)
+    function validating($val)
     {
 	$id = $this->session->userdata('langid');
-	if ($this->Article_model->validating_modul($val,$id) == FALSE)
+	if ($this->Article_model->validating('title',$val,$id) == FALSE)
         {
             $this->form_validation->set_message('validating_modul', "This $this->title name is already registered!");
             return FALSE;
@@ -326,7 +316,7 @@ class Article extends MX_Controller
 	$data['link'] = array('link_back' => anchor('admin/','<span>back</span>', array('class' => 'back')));
 
 	// Form validation
-        $this->form_validation->set_rules('ttitle', 'Article Title', 'required|maxlength[100]|callback_validating_modul');
+        $this->form_validation->set_rules('ttitle', 'Article Title', 'required|maxlength[100]|callback_validating');
         $this->form_validation->set_rules('ccategory', 'Category', 'required');
         $this->form_validation->set_rules('clang', 'Language', 'required');
         $this->form_validation->set_rules('tdates', 'Article Dates', 'required');
