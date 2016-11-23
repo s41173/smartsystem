@@ -89,7 +89,7 @@ $(document).ready(function (e) {
 
 <style type="text/css">
 
-  #forgot{ color:#fff; font-size:12px; text-decoration:none; }
+  #forgot{ color:#000; font-size:12px; text-decoration:none; }
   #forgot:hover { text-decoration:underline; }
 
 </style>
