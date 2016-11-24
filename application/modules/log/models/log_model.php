@@ -14,11 +14,7 @@ class Log_model extends Custom_Model
     }
     
     protected $field = array('id', 'userid', 'date', 'time', 'component_id', 'activity', 
-<<<<<<< HEAD
                              'created', 'updated', 'deleted', 'description'
-=======
-                             'created', 'updated', 'deleted'
->>>>>>> dc1a4a0223e2bbad8b5035370e6de53955d358de
                             );
     protected $com;
     

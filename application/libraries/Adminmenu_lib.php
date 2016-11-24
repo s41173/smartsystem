@@ -27,14 +27,12 @@ class Adminmenu_lib extends Main_Model {
         $this->db->where('parent_status', 1);
         $this->db->order_by('name', 'asc');
         $val = $this->db->get($this->table)->result();
-<<<<<<< HEAD
+
         if ($val){
           foreach($val as $row){$data['options'][$row->id] = $row->name;}
         }
         else { $data['options'][''] = '--'; }
-=======
         foreach($val as $row){$data['options'][$row->id] = $row->name;}
->>>>>>> dc1a4a0223e2bbad8b5035370e6de53955d358de
         return $data;
     }
     

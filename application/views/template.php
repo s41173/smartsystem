@@ -25,11 +25,7 @@
   
   <script src="<?php echo base_url(); ?>js/moduljs/main.js"></script>
   <script type="text/javascript">
-<<<<<<< HEAD
         var site = "<?php echo base_url();?>js/datatables/swf/copy_csv_xls_pdf.swf";
-=======
-          var site = "<?php echo base_url();?>js/datatables/swf/copy_csv_xls_pdf.swf";
->>>>>>> dc1a4a0223e2bbad8b5035370e6de53955d358de
 		  var base_url = "<?php echo base_url(); ?>";
   </script>
 
@@ -45,12 +41,7 @@
 
 </head>
 
-
-<<<<<<< HEAD
-<body class="nav-md" onLoad="show_time();">
-=======
 <body class="nav-md" onLoad="show_time()">
->>>>>>> dc1a4a0223e2bbad8b5035370e6de53955d358de
 
   <div class="container body">
   <div id="loading" style="display:none">Loading...</div>

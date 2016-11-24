@@ -42,7 +42,11 @@
 </head>
 
 
+<<<<<<< HEAD
 <body class="nav-md" onLoad="show_time();">
+=======
+<body class="nav-md" onLoad="show_time()">
+>>>>>>> dc1a4a0223e2bbad8b5035370e6de53955d358de
 
   <div class="container body">
   <div id="loading" style="display:none">Loading...</div>
@@ -100,7 +104,7 @@
               <!-- error message -->   
                 
              <!-- pure content -->
-              <?php //$this->load->view($main_view); ?>
+              <?php $this->load->view($main_view); ?>
              <!-- pure content -->
              
              <!-- pace loading bar -->
