@@ -154,10 +154,17 @@ $config['permitted_uri_chars'] = 'a-z 0-9~%.:_\-';
 | use segment based URLs.
 |
 */
+<<<<<<< HEAD
 $config['allow_get_array']	= TRUE;
 $config['enable_query_strings'] = FALSE;
 $config['controller_trigger']	= 'c';
 $config['function_trigger']	= 'm';
+=======
+$config['allow_get_array']		= TRUE;
+$config['enable_query_strings'] = FALSE;
+$config['controller_trigger']	= 'c';
+$config['function_trigger']		= 'm';
+>>>>>>> dc1a4a0223e2bbad8b5035370e6de53955d358de
 $config['directory_trigger']	= 'd'; // experimental not currently in use
 
 /*

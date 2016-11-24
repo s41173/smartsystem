@@ -58,7 +58,11 @@ class Article extends MX_Controller
 
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords('Article Manager');
         $data['h2title'] = 'Article Manager';
+<<<<<<< HEAD
         $data['main_view'] = 'article_view';
+=======
+        $data['main_view'] = 'Article_view';
+>>>>>>> dc1a4a0223e2bbad8b5035370e6de53955d358de
 	$data['form_action'] = site_url($this->title.'/add_process');
         $data['form_action_update'] = site_url($this->title.'/update_process');
         $data['form_action_del'] = site_url($this->title.'/delete_all');
