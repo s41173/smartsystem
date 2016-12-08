@@ -3222,7 +3222,6 @@ select.parsley-error {
     width: auto;
 }
 
-//----
 .daterangepicker .daterangepicker_start_input label,
 .daterangepicker .daterangepicker_end_input label {
     color: #333;
@@ -3299,7 +3298,6 @@ select.parsley-error {
     border: none;
 }
 
-//----
 .daterangepicker.single .ranges,
 .daterangepicker.single .calendar {
     float: none;
