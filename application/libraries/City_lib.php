@@ -5,79 +5,11 @@ class City_lib extends Main_model {
     public function __construct($deleted=NULL)
     {
         $this->deleted = $deleted;
-        $this->tableName = 'city';
+        $this->tableName = 'kabupaten';
     }
 
     private $ci;
-
-    function combo()
-    {
-        $this->db->select('id, name');
-        $val = $this->db->get('city')->result();
-        foreach($val as $row){$data['options'][$row->name] = $row->name;}
-        return $data;
-    }
-    
-    function combo_zip()
-    {
-        $this->db->select('zip');
-        $val = $this->db->get('city')->result();
-        foreach($val as $row){$data['options'][$row->zip] = $row->zip;}
-        return $data;
-    }
-    
-    function combo_district()
-    {
-        $this->db->select('district');
-        $val = $this->db->get('city')->result();
-        foreach($val as $row){$data['options'][$row->district] = $row->district;}
-        return $data;
-    }
-    
-    function combo_village()
-    {
-        $this->db->select('village');
-        $val = $this->db->get('city')->result();
-        foreach($val as $row){$data['options'][$row->zip] = $row->village;}
-        return $data;
-    }
-    
-    function get_from_zip($zip,$type)
-    {
-       $this->db->select($type); 
-       $this->db->where('zip', $zip);
-       $val = $this->db->get('city')->row();
-       if ($val){ return $val; }
-    }
-    
-    function combo_city_ongkir()
-    {
-        $this->db->select('ongkir_cityname');
-        $this->db->order_by('ongkir_cityname', 'asc');
-        $val = $this->db->get('ongkir')->result();
-        foreach($val as $row){$data['options'][$row->ongkir_cityname] = $this->splits($row->ongkir_cityname);}
-        return $data;
-    }
-    
-    function combo_all_city_ongkir()
-    {
-        $this->db->select('ongkir_cityname');
-        $this->db->order_by('ongkir_cityname', 'asc');
-        $val = $this->db->get('ongkir')->result();
-        $data['options'][""] = " -- Pilih Wilayah -- ";
-        foreach($val as $row){$data['options'][$row->ongkir_cityname] = $this->splits($row->ongkir_cityname);}
-        return $data;
-    }
-    
-    function get_ongkir($city)
-    {
-        $this->db->select('ongkir_price');
-        $this->db->where('ongkir_service', 'OKE');
-        $this->db->where('ongkir_cityname', $city);
-        $val = $this->db->get('ongkir')->row();
-        return intval($val->ongkir_price);
-    }
-    
+       
     private function splits($val)
     {
       $res = explode(",",$val); 
@@ -86,7 +18,7 @@ class City_lib extends Main_model {
     
     // ==================================== API ==============================
     
-    private function get_province()
+    private function get_city()
     {
 
         $curl = curl_init();
@@ -116,19 +48,37 @@ class City_lib extends Main_model {
     
     function combo_province()
     {
-        $json = $this->get_province();
+        $json = $this->get_city();
         $datax = json_decode($json, true);
         $data['options'][""] = " -- Pilih Wilayah -- ";
+        foreach ($datax['rajaongkir']['results'] as $row)
+        {$data[$row['province']] = $row['province'];}
+        return $data;
+    }
+    
+    function combo_city()
+    {
+        $json = $this->get_city();
+        $datax = json_decode($json, true);
+        $data['options'][""] = " -- Pilih Kabupaten / Kota -- ";
         foreach ($datax['rajaongkir']['results'] as $row)
         {$data[$row['city_id']] = $row['city_name'];}
         return $data;
     }
     
-    function combo_province_name()
+    function combo_city_db()
     {
-        $json = $this->get_province();
+//        $this->db->select('nama');
+        $val = $this->db->get($this->tableName)->result();
+        foreach($val as $row){$data['options'][$row->id] = $row->nama;}
+        return $data;
+    }
+    
+    function combo_city_name()
+    {
+        $json = $this->get_city();
         $datax = json_decode($json, true);
-        $data['options'][""] = " -- Pilih Wilayah -- ";
+        $data['options'][""] = " -- Pilih Kabupaten / Kota -- ";
         foreach ($datax['rajaongkir']['results'] as $row)
         {$data[$row['city_name']] = $row['city_name'];}
         return $data;

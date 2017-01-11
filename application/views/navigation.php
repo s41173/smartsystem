@@ -20,7 +20,7 @@
                     <h3>General</h3>
                     
                     <ul class="nav side-menu">
-                    <li><a href="<?php echo site_url('main'); ?>"> <i class="fa fa-home"></i> Home </a> </li>
+                    <li><a href="<?php echo site_url('main'); ?>"> <i class="fa fa-bar-chart"></i> Dashboard </a> </li>
 					<?php 
 					
 					     $lib = new Adminmenu_lib();

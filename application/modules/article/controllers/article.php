@@ -61,8 +61,6 @@ class Article extends MX_Controller
 
         $data['main_view'] = 'article_view';
 
-        $data['main_view'] = 'Article_view';
-
 	$data['form_action'] = site_url($this->title.'/add_process');
         $data['form_action_update'] = site_url($this->title.'/update_process');
         $data['form_action_del'] = site_url($this->title.'/delete_all');

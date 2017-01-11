@@ -24,20 +24,20 @@
 <form id="upload_form_non" data-parsley-validate class="form-horizontal form-label-left" method="POST" action="<?php echo $form_action; ?>" 
       enctype="multipart/form-data">
    
-                  <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-                    <input type="text" class="form-control has-feedback-left" id="tname" name="tname" placeholder="Name">
-                    <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span> 
-                  </div>
-                    
-                  <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-                    <input type="email" class="form-control" id="tmail" name="tmail" placeholder="Email">
-                    <span class="fa fa-envelope form-control-feedback right" aria-hidden="true"></span> 
-                  </div>
+          <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+            <input type="text" class="form-control has-feedback-left" id="tname" name="tname" placeholder="Name">
+            <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span> 
+          </div>
+
+          <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+            <input type="email" class="form-control" id="tmail" name="tmail" placeholder="Email">
+            <span class="fa fa-envelope form-control-feedback right" aria-hidden="true"></span> 
+          </div>
                   
-                  <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-               <input type="text" class="form-control has-feedback-left" id="tusername" required name="tusername" placeholder="Username">
-               <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span> 
-                  </div>
+          <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
+       <input type="text" class="form-control has-feedback-left" id="tusername" required name="tusername" placeholder="Username">
+       <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span> 
+          </div>
                   
                   <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
                     <input type="password" class="form-control" id="tpassword" name="tpassword" required placeholder="Password">

@@ -8,7 +8,7 @@
 <link href="<?php echo base_url(); ?>js/datatables/dataTables.tableTools.css" rel="stylesheet" type="text/css" />
 <link href="<?php echo base_url(); ?>css/icheck/flat/green.css" rel="stylesheet" type="text/css">
 
-<script src="<?php echo base_url(); ?>js/moduljs/product.js"></script>
+<script src="<?php echo base_url(); ?>js/moduljs/customer.js"></script>
 <script src="<?php echo base_url(); ?>js-old/register.js"></script>
 
 <!-- Date time picker -->
@@ -30,13 +30,12 @@
 
 <script type="text/javascript">
 
-	var sites_add  = "<?php echo site_url('product/add_process/');?>";
-	var sites_edit = "<?php echo site_url('product/update_process/');?>";
-	var sites_del  = "<?php echo site_url('product/delete/');?>";
-	var sites_get  = "<?php echo site_url('product/update/');?>";
-    var sites_primary  = "<?php echo site_url('product/publish/');?>";
-	var sites_attribute  = "<?php echo site_url('product/attribute/');?>";
-	var sites_image  = "<?php echo site_url('product/image_gallery/');?>";
+	var sites_add  = "<?php echo site_url('customer/add_process/');?>";
+	var sites_edit = "<?php echo site_url('customer/update_process/');?>";
+	var sites_del  = "<?php echo site_url('customer/delete/');?>";
+	var sites_get  = "<?php echo site_url('customer/update/');?>";
+    var sites_primary = "<?php echo site_url('customer/publish/');?>";
+    var sites_ajax  = "<?php echo site_url('customer/');?>";
 	var source = "<?php echo $source;?>";
 	
 </script>
@@ -67,7 +66,7 @@
            <form id="searchform" class="form-inline">
               <div class="form-group">
                 <?php $js = "class='select2_single form-control' id='ccategory' tabindex='-1' style='min-width:150px;' "; 
-			        echo form_dropdown('ccategory', $category, isset($default['category']) ? $default['category'] : '', $js); ?>
+			        echo form_dropdown('ccity', $city, isset($default['city']) ? $default['city'] : '', $js); ?>
               </div>
               
               <div class="form-group">
@@ -125,21 +124,21 @@
     
       <!-- Modal - Add Form -->
       <div class="modal fade" id="myModal" role="dialog">
-         <?php $this->load->view('product_form'); ?>      
+         <?php $this->load->view('customer_form'); ?>      
       </div>
       <!-- Modal - Add Form -->
       
       <!-- Modal Attribute -->
       <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	     
-		 <?php $this->load->view('product_attribute_frame'); ?> 
+		 <?php //$this->load->view('product_attribute_frame'); ?> 
       </div>
       <!-- Modal Attribute -->
       
       
       <!-- Modal - Report Form -->
       <div class="modal fade" id="myModal3" role="dialog">
-         <?php $this->load->view('product_report_panel'); ?>    
+         <?php //$this->load->view('product_report_panel'); ?>    
       </div>
       <!-- Modal - Report Form -->
       

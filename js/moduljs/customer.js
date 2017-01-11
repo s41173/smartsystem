@@ -12,12 +12,6 @@ $(document).ready(function (e) {
 		 // locale: {format: 'YYYY/MM/DD'}
     // }); 
 	
-    $('#ds1,#ds2').daterangepicker({
-        locale: {format: 'YYYY/MM/DD'},
-		singleDatePicker: true,
-        showDropdowns: true
-     });
-	
 	load_data();  
 	
 	// batas dtatable
@@ -32,6 +26,57 @@ $(document).ready(function (e) {
 		
 		window.location.href = url;
 		
+	});
+	
+	// fungsi attribute status
+	$(document).on('click','.text-attribute',function(e)
+	{	
+		e.preventDefault();
+		var element = $(this);
+		var del_id = element.attr("id");
+		var url = sites_attribute +"/"+ del_id;
+		$(".error").fadeOut();
+		
+		console.log(url);
+		
+		$("#myModal2").modal('show');
+		$('#frame').attr('src',url);
+		$('#frame_title').html('Product Attribute');	
+	});
+	
+	$(document).on('click','.text-img',function(e)
+	{	
+		e.preventDefault();
+		var element = $(this);
+		var del_id = element.attr("id");
+		var url = sites_image +"/"+ del_id;
+		$(".error").fadeOut();
+		
+		console.log(url);
+		
+		$("#myModal2").modal('show');
+		$('#frame').attr('src',url);
+		$('#frame_title').html('Product Image');	
+	});
+	
+		// fungsi ajax combo
+	$(document).on('change','#ccity,#ccity_update',function(e)
+	{	
+		e.preventDefault();
+		var value = $(this).val();
+		var url = sites_ajax+'/ajaxcombo_district/'+value;
+		
+		// // batas
+		$.ajax({
+			type: 'POST',
+			url: url,
+    	    cache: false,
+			headers: { "cache-control": "no-cache" },
+			success: function(result) {
+				$(".select_box").html(result);
+			}
+		})
+		return false;	
 	});
 	
 	// publish status
@@ -69,10 +114,8 @@ $(document).ready(function (e) {
 	$('#searchform').submit(function() {
 		
 		var cat = $("#ccategory").val();
-		var lang = $("#clanguage").val();
 		var publish = $("#cpublish").val();
-		var dates = $("#d1").val();
-		var param = ['searching',cat,lang,publish,dates];
+		var param = ['searching',cat,publish];
 		
 		// alert(publish+" - "+dates);
 		
@@ -87,14 +130,29 @@ $(document).ready(function (e) {
 				
 				if (!param[1]){ param[1] = 'null'; }
 				if (!param[2]){ param[2] = 'null'; }
-				if (!param[3]){ param[3] = 'null'; }
-				if (!param[4]){ param[4] = 'null'; }
 				load_data_search(param);
 			}
 		})
 		return false;
 		swal('Error Load Data...!', "", "error");
 		
+	});
+	
+	// fungsi kalkulasi persen
+	$('#tdisc_p').keyup(function() {
+		
+		var percent = $('#tdisc_p').val();
+		var price = $("#tprice").val();
+		//var discount = $("#tdiscount").val();
+		$("#tdiscount").val(price*percent/100);		
+	});
+	
+	$('#tdiscount').keyup(function() {
+		
+		//var percent = $('#tdisc_p').val();
+		var price = $("#tprice").val();
+		var discount = $("#tdiscount").val();
+		$("#tdisc_p").val(discount/price*100);		
 	});
 	
 		
@@ -109,11 +167,11 @@ $(document).ready(function (e) {
 			var oTable = $('#datatable-buttons').dataTable();
 			var stts = 'btn btn-danger';
 			
-				console.log(source+"/"+search[0]+"/"+search[1]+"/"+search[2]+"/"+search[3]+"/"+search[4]);
+				console.log(source+"/"+search[0]+"/"+search[1]+"/"+search[2]);
 			
 		    $.ajax({
 				type : 'GET',
-				url: source+"/"+search[0]+"/"+search[1]+"/"+search[2]+"/"+search[3]+"/"+search[4]+"/",
+				url: source+"/"+search[0]+"/"+search[1]+"/"+search[2],
 				//force to handle it as text
 				contentType: "application/json",
 				dataType: "json",
@@ -127,18 +185,16 @@ $(document).ready(function (e) {
 		$("#chkbox").append('<input type="checkbox" name="newsletter" value="accept1" onclick="cekall('+s.length+')" id="chkselect" class="chkselect">');
 							
 						  for(var i = 0; i < s.length; i++) {
-						  if (s[i][13] == 1){ stts = 'btn btn-success'; }else { stts = 'btn btn-danger'; }	
+						  if (s[i][17] == 1){ stts = 'btn btn-success'; }else { stts = 'btn btn-danger'; }
 						  oTable.fnAddData([
 '<input type="checkbox" name="cek[]" value="'+s[i][0]+'" id="cek'+i+'" style="margin:0px"  />',
 										i+1,
-										s[i][1],
+'<img src="'+s[i][16]+'" class="img_product" alt="'+s[i][1]+'">',
 										s[i][3],
-										s[i][5],
-										s[i][8],
-										s[i][9],
-										s[i][2],
-										s[i][12],
-'<a href="" class="'+stts+' btn-xs primary_status" id="' +s[i][0]+ '" title="Primary Status"> <i class="fa fa-wrench"> </i> </a>  <a href="" class="text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a> <a href="#" class="text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'
+										s[i][1]+' '+s[i][2],
+'<a href="" class="'+stts+' btn-xs primary_status" id="' +s[i][0]+ '" title="Primary Status"> <i class="fa fa-power-off"> </i> </a> '+
+'<a href="" class="btn btn-primary btn-xs text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a> '+
+'<a href="#" class="btn btn-danger btn-xs text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'
 										    ]);										
 											} // End For 
 											
@@ -177,25 +233,23 @@ $(document).ready(function (e) {
 		$("#chkbox").append('<input type="checkbox" name="newsletter" value="accept1" onclick="cekall('+s.length+')" id="chkselect" class="chkselect">');
 							
 							for(var i = 0; i < s.length; i++) {
-						  if (s[i][13] == 1){ stts = 'btn btn-success'; }else { stts = 'btn btn-danger'; }	
+						  if (s[i][17] == 1){ stts = 'btn btn-success'; }else { stts = 'btn btn-danger'; }
 						  oTable.fnAddData([
 '<input type="checkbox" name="cek[]" value="'+s[i][0]+'" id="cek'+i+'" style="margin:0px"  />',
 										i+1,
-										s[i][1],
+'<img src="'+s[i][16]+'" class="img_product" alt="'+s[i][1]+'">',
 										s[i][3],
-										s[i][5],
-										s[i][8],
-										s[i][9],
-										s[i][2],
-										s[i][12],
-'<a href="" class="'+stts+' btn-xs primary_status" id="' +s[i][0]+ '" title="Primary Status"> <i class="fa fa-wrench"> </i> </a>  <a href="" class="text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a> <a href="#" class="text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'
+										s[i][1]+' '+s[i][2],
+'<a href="" class="'+stts+' btn-xs primary_status" id="' +s[i][0]+ '" title="Primary Status"> <i class="fa fa-power-off"> </i> </a> '+
+'<a href="" class="btn btn-primary btn-xs text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a> '+
+'<a href="#" class="btn btn-danger btn-xs text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'
 										    ]);										
 											} // End For 
 											
 				},
 				error: function(e){
 				   oTable.fnClearTable();  
-				   //console.log(e.responseText);	
+				   console.log(e.responseText);	
 				}
 				
 			});  // end document ready	
@@ -208,11 +262,8 @@ $(document).ready(function (e) {
 	{  
 	   $(document).ready(function (e) {
 		  // reset form
-		  $("#ttitle, #ds1, #uploadImage").val("");
-		  $("#clanguange option:selected").prop("selected", false);
-		  $("#ccategory option:selected").prop("selected", false);
+		  $("#tname, #tmodel, #tsku").val("");
 		  $("#catimg").attr("src","");
-		  $('textarea[name="tdesc"]').html("");
 	  });
 	}
 	

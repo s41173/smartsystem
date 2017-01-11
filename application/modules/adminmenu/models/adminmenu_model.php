@@ -26,6 +26,12 @@ class Adminmenu_model extends Custom_Model
         $this->db->limit($limit, $offset);
         return $this->db->get(); 
     }
+    
+    function delete_child($parent)
+    {
+       $this->db->where('parent_id', $parent);
+       $this->db->delete($this->tableName);
+    }
 
 }
 

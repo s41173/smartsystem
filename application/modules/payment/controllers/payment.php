@@ -1,12 +1,12 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Testimonial extends MX_Controller
+class Payment extends MX_Controller
 {
     function __construct()
     {
         parent::__construct();
         
-        $this->load->model('Testimonial_model', '', TRUE);
+        $this->load->model('Payment_model', '', TRUE);
 
         $this->properti = $this->property->get();
         $this->acl->otentikasi();
@@ -25,12 +25,12 @@ class Testimonial extends MX_Controller
     
     public function getdatatable($search=null)
     {
-        if(!$search){ $result = $this->Testimonial_model->get_last($this->modul['limit'])->result(); }
+        if(!$search){ $result = $this->Payment_model->get_last($this->modul['limit'])->result(); }
         
         if ($result){
 	foreach($result as $res)
 	{
-	   $output[] = array ($res->id, $res->name, $res->dates, $res->desc, base_url().'images/testimonial/'.$res->image, $res->url, $res->status, $res->created, $res->updated, $res->deleted);
+	   $output[] = array ($res->id, $res->name, base_url().'images/payment/'.$res->image, $res->orders, $res->acc_no, $res->acc_name, $res->created, $res->updated, $res->deleted);
 	}
             $this->output
             ->set_status_header(200)
@@ -47,7 +47,7 @@ class Testimonial extends MX_Controller
 
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'];
-        $data['main_view'] = 'testimonial_view';
+        $data['main_view'] = 'payment_view';
 	$data['form_action'] = site_url($this->title.'/add_process');
         $data['form_action_update'] = site_url($this->title.'/update_process');
         $data['form_action_del'] = site_url($this->title.'/delete_all');
@@ -67,10 +67,10 @@ class Testimonial extends MX_Controller
         $this->table->set_empty("&nbsp;");
 
         //Set heading untuk table
-        $this->table->set_heading('#','No', 'Img', 'Name', 'Date', 'Url', 'Action');
+        $this->table->set_heading('#','No', '#', 'Name', 'Order', 'Account', 'Action');
 
         $data['table'] = $this->table->generate();
-        $data['source'] = site_url('testimonial/getdatatable');
+        $data['source'] = site_url('payment/getdatatable');
             
         // Load absen view dengan melewatkan var $data sbgai parameter
 	$this->load->view('template', $data);
@@ -91,11 +91,11 @@ class Testimonial extends MX_Controller
         {
            if ( $this->cek_relation($cek[$i]) == TRUE ) 
            {
-              $img = $this->Testimonial_model->get_by_id($cek[$i])->row();
+              $img = $this->Payment_model->get_payment_by_id($cek[$i])->row();
               $img = $img->image;
-              if ($img){ $img = "./images/testimonial/".$img; unlink("$img"); }
+              if ($img){ $img = "./images/payment/".$img; unlink("$img"); }
 
-              $this->Testimonial_model->delete($cek[$i]); 
+              $this->Payment_model->delete($cek[$i]); 
            }
            else { $x=$x+1; }
            
@@ -113,11 +113,11 @@ class Testimonial extends MX_Controller
       }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
     }
 
-    function delete($uid,$type='hard')
+    function delete($uid,$type='soft')
     {
         if ($this->acl->otentikasi_admin($this->title,'ajax') == TRUE){
         if ($type == 'soft'){
-           $this->Testimonial_model->delete($uid);
+           $this->Payment_model->delete($uid);
            $this->session->set_flashdata('message', "1 $this->title successfully removed..!");
            
            echo "true|1 $this->title successfully soft removed..!";
@@ -126,11 +126,11 @@ class Testimonial extends MX_Controller
        {
         if ( $this->cek_relation($uid) == TRUE )
         {
-           $img = $this->Testimonial_model->get_by_id($uid)->row();
+           $img = $this->Payment_model->get_by_id($uid)->row();
            $img = $img->image;
-           if ($img){ $img = "./images/testimonial/".$img; unlink("$img"); }
+           if ($img){ $img = "./images/payment/".$img; unlink("$img"); }
 
-           $this->Testimonial_model->force_delete($uid);
+           $this->Payment_model->delete($uid);
            $this->session->set_flashdata('message', "1 $this->title successfully removed..!");
            
            echo "true|1 $this->title successfully removed..!";
@@ -143,9 +143,8 @@ class Testimonial extends MX_Controller
 
     private function cek_relation($id)
     {
-//        $product = $this->product->cek_relation($id, $this->title);
-//        if ($product == TRUE) { return TRUE; } else { return FALSE; }
-        return TRUE;
+        $product = $this->product->cek_relation($id, $this->title);
+        if ($product == TRUE) { return TRUE; } else { return FALSE; }
     }
 
     function add_process()
@@ -154,19 +153,19 @@ class Testimonial extends MX_Controller
 
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'];
-        $data['main_view'] = 'testimonial_view';
+        $data['main_view'] = 'payment_view';
 	$data['form_action'] = site_url($this->title.'/add_process');
-	$data['link'] = array('link_back' => anchor('testimonial/','<span>back</span>', array('class' => 'back')));
+	$data['link'] = array('link_back' => anchor('payment/','<span>back</span>', array('class' => 'back')));
 
 	// Form validation
-        $this->form_validation->set_rules('tname', 'Name', 'required|callback_valid_testimonial');
-        $this->form_validation->set_rules('tdates', 'Date', 'required');
-        $this->form_validation->set_rules('tdesc', 'Description', 'required');
-        $this->form_validation->set_rules('turl', 'Url', '');
+        $this->form_validation->set_rules('tname', 'Name', 'required|callback_valid_payment');
+        $this->form_validation->set_rules('torder', 'Order', 'required|numeric');
+        $this->form_validation->set_rules('taccno', 'Account No', '');
+        $this->form_validation->set_rules('taccname', 'Account Name', '');
 
         if ($this->form_validation->run($this) == TRUE)
         {
-            $config['upload_path'] = './images/testimonial/';
+            $config['upload_path'] = './images/payment/';
             $config['file_name'] = split_space($this->input->post('tname'));
             $config['allowed_types'] = 'jpg|gif|png';
             $config['overwrite'] = true;
@@ -181,28 +180,28 @@ class Testimonial extends MX_Controller
             {
                 $info['file_name'] = null;
                 $data['error'] = $this->upload->display_errors();
-                $testimonial = array('name' => strtolower($this->input->post('tname')),
-                                     'dates' => $this->input->post('tdates'),
-                                     'desc' => $this->input->post('tdesc'),
-                                     'url' => $this->input->post('turl'),
-                                     'image' => null, 'created' => date('Y-m-d H:i:s'));
+                $payment = array('name' => strtolower($this->input->post('tname')),
+                                 'orders' => $this->input->post('torder'), 
+                                 'acc_no' => $this->input->post('taccno'), 
+                                 'acc_name' => $this->input->post('taccname'), 
+                                 'image' => null, 'created' => date('Y-m-d H:i:s'));
             }
             else
             {
                 $info = $this->upload->data();
-                $testimonial = array('name' => strtolower($this->input->post('tname')), 
-                                     'dates' => $this->input->post('tdates'),
-                                     'desc' => $this->input->post('tdesc'),
-                                     'url' => $this->input->post('turl'),
-                                     'image' => $info['file_name'], 'created' => date('Y-m-d H:i:s'));
+                $payment = array('name' => strtolower($this->input->post('tname')), 
+                                 'orders' => $this->input->post('torder'), 
+                                 'acc_no' => $this->input->post('taccno'), 
+                                 'acc_name' => $this->input->post('taccname'), 
+                                 'image' => $info['file_name'], 'created' => date('Y-m-d H:i:s'));
             }
 
-            $this->Testimonial_model->add($testimonial);
+            $this->Payment_model->add($payment);
             $this->session->set_flashdata('message', "One $this->title data successfully saved!");
 //            redirect($this->title);
             
             if ($this->upload->display_errors()){ echo "warning|".$this->upload->display_errors(); }
-            else { echo 'true|'.$this->title.' successfully saved..!|'.base_url().'images/testimonial/'.$info['file_name']; }
+            else { echo 'true|'.$this->title.' successfully saved..!|'.base_url().'images/payment/'.$info['file_name']; }
             
           //  echo 'true';
         }
@@ -214,26 +213,17 @@ class Testimonial extends MX_Controller
     // Fungsi update untuk menset texfield dengan nilai dari database
     function update($uid=null)
     {        
-        $testimonial = $this->Testimonial_model->get_by_id($uid)->row();
-	$this->session->set_userdata('langid', $testimonial->id);
-//        $this->load->view('testimonial_update', $data);
-        echo $uid.'|'.$testimonial->name.'|'.$testimonial->dates.'|'.$testimonial->desc.'|'.base_url().'images/testimonial/'.$testimonial->image.'|'.$testimonial->url;
-    }
-    
-    function publish($uid = null)
-    {
-       if ($this->acl->otentikasi2($this->title,'ajax') == TRUE){ 
-       $val = $this->Testimonial_model->get_by_id($uid)->row();
-       if ($val->status == 0){ $lng = array('status' => 1); }else { $lng = array('status' => 0); }
-       $this->Testimonial_model->update($uid,$lng);
-       echo 'true|Status Changed...!';
-       }else{ echo "error|Sorry, you do not have the right to change publish status..!"; }
+        $payment = $this->Payment_model->get_by_id($uid)->row();
+	$this->session->set_userdata('langid', $payment->id);
+//        $this->load->view('payment_update', $data);
+        echo $uid.'|'.$payment->name.'|'.$payment->orders.'|'.$payment->acc_no.'|'.$payment->acc_name.'|'.
+             base_url().'images/payment/'.$payment->image;
     }
 
 
-    public function valid_testimonial($name)
+    public function valid_payment($name)
     {
-        if ($this->Testimonial_model->valid('name',$name) == FALSE)
+        if ($this->Payment_model->valid('name',$name) == FALSE)
         {
             $this->form_validation->set_message('valid', "This $this->title is already registered.!");
             return FALSE;
@@ -241,12 +231,12 @@ class Testimonial extends MX_Controller
         else{ return TRUE; }
     }
 
-    function validation_testimonial($name)
+    function validation_payment($name)
     {
 	$id = $this->session->userdata('langid');
-	if ($this->Testimonial_model->validating('name',$name,$id) == FALSE)
+	if ($this->Payment_model->validating('name',$name,$id) == FALSE)
         {
-            $this->form_validation->set_message('validation', 'This testimonial is already registered!');
+            $this->form_validation->set_message('validation', 'This payment is already registered!');
             return FALSE;
         }
         else { return TRUE; }
@@ -259,19 +249,19 @@ class Testimonial extends MX_Controller
 
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'];
-        $data['main_view'] = 'testimonial_update';
+        $data['main_view'] = 'payment_update';
 	$data['form_action'] = site_url($this->title.'/update_process');
-	$data['link'] = array('link_back' => anchor('testimonial/','<span>back</span>', array('class' => 'back')));
+	$data['link'] = array('link_back' => anchor('payment/','<span>back</span>', array('class' => 'back')));
 
 	// Form validation
-        $this->form_validation->set_rules('tname', 'Name', 'required|max_length[100]|callback_validation_testimonial');
-        $this->form_validation->set_rules('tdates', 'Date', 'required');
-        $this->form_validation->set_rules('tdesc', 'Description', 'required');
-        $this->form_validation->set_rules('turl', 'Url', '');
+        $this->form_validation->set_rules('tname', 'Name', 'required|max_length[100]|callback_validation_payment');
+        $this->form_validation->set_rules('torder', 'Order', 'required|numeric');
+        $this->form_validation->set_rules('taccno', 'Account No', '');
+        $this->form_validation->set_rules('taccname', 'Account Name', '');
 
         if ($this->form_validation->run($this) == TRUE)
         {
-            $config['upload_path'] = './images/testimonial/';
+            $config['upload_path'] = './images/payment/';
             $config['file_name'] = split_space($this->input->post('tname'));
             $config['allowed_types'] = 'gif|jpg|png';
             $config['overwrite'] = true;
@@ -286,30 +276,30 @@ class Testimonial extends MX_Controller
             {
                 $data['error'] = $this->upload->display_errors();
                 
-                $testimonial = array('name' => strtolower($this->input->post('tname')),
-                                     'dates' => $this->input->post('tdates'),
-                                     'desc' => $this->input->post('tdesc'),
-                                     'url' => $this->input->post('turl'));
+                $payment = array('name' => strtolower($this->input->post('tname')),
+                                 'orders' => $this->input->post('torder'), 
+                                 'acc_no' => $this->input->post('taccno'), 
+                                 'acc_name' => $this->input->post('taccname'));
                 
                 $img = null;
             }
             else
             {
                 $info = $this->upload->data();
-                $testimonial = array('name' => strtolower($this->input->post('tname')),
-                                     'dates' => $this->input->post('tdates'),
-                                     'desc' => $this->input->post('tdesc'),
-                                     'url' => $this->input->post('turl'),
-                                     'image' => $info['file_name']);
-            
-                $img = base_url().'images/testimonial/'.$info['file_name'];
+                $payment = array('name' => strtolower($this->input->post('tname')),
+                                 'orders' => $this->input->post('torder'), 
+                                 'acc_no' => $this->input->post('taccno'), 
+                                 'acc_name' => $this->input->post('taccname'), 
+                                 'image' => $info['file_name']);
+                
+                $img = base_url().'images/payment/'.$info['file_name'];
             }
 
-	    $this->Testimonial_model->update($this->session->userdata('langid'), $testimonial);
+	    $this->Payment_model->update($this->session->userdata('langid'), $payment);
             $this->session->set_flashdata('message', "One $this->title has successfully updated!");
             
             if ($this->upload->display_errors()){ echo "warning|".$this->upload->display_errors(); }
-            else { echo 'true|Data successfully saved..!|'.base_url().'images/testimonial/'.$info['file_name']; }
+            else { echo 'true|Data successfully saved..!|'.base_url().'images/payment/'.$info['file_name']; }
             
         }
         else{ echo 'error|'.validation_errors(); }
@@ -318,9 +308,9 @@ class Testimonial extends MX_Controller
     
     function remove_image($uid)
     {
-       $img = $this->Testimonial_model->get_testimonial_by_id($uid)->row();
+       $img = $this->Payment_model->get_payment_by_id($uid)->row();
        $img = $img->image;
-       if ($img){ $img = "./images/testimonial/".$img; unlink("$img"); } 
+       if ($img){ $img = "./images/payment/".$img; unlink("$img"); } 
     }
 
 }

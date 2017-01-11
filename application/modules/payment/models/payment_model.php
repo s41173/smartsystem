@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Testimonial_model extends Custom_Model
+class Payment_model extends Custom_Model
 {
     protected $logs;
     
@@ -9,11 +9,11 @@ class Testimonial_model extends Custom_Model
         parent::__construct();
         $this->logs = new Log_lib();
         $this->com = new Components();
-        $this->com = $this->com->get_id('testimonial');
-        $this->tableName = 'testimonial';
+        $this->com = $this->com->get_id('payment');
+        $this->tableName = 'payment';
     }
     
-    protected $field = array('id', 'name', 'dates', 'desc', 'image', 'url', 'status', 'created', 'updated', 'deleted');
+    protected $field = array('id', 'name', 'image', 'orders', 'acc_no', 'acc_name', 'created', 'updated', 'deleted');
     protected $com;
             
     function count_all_num_rows()

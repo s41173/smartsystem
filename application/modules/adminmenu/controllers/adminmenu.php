@@ -167,7 +167,8 @@ class Adminmenu extends MX_Controller
     function delete($uid)
     {
         if ($this->acl->otentikasi_admin($this->title,'ajax') == TRUE){
-            $this->Adminmenu_model->delete($uid);
+            $this->Adminmenu_model->delete_child($uid); // delete child related parent menu
+            $this->Adminmenu_model->force_delete($uid);
             $this->session->set_flashdata('message', "1 $this->title successfully removed..!");
 
             echo "true|1 $this->title successfully removed..!";

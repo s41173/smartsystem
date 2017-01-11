@@ -141,6 +141,7 @@ $(document).ready(function (e) {
 				data: $(this).serialize(),
 				success: function(data)
 				{
+					console.log(data);
 					res = data.split("|");
 					if (res[0] == 'true'){ error_mess(1,res[1],0); }
 					else if(res[0] == 'error') { error_mess(3,res[1],0); }
