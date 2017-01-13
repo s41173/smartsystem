@@ -36,7 +36,7 @@
       </div>
     
       <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
-        <select name="ctype" class="form-control"> 
+        <select name="ctype" id="ctype" class="form-control"> 
             <option value="customer"> Customer </option> 
             <option value="member"> Member </option>  
         </select>
@@ -81,6 +81,11 @@ echo form_dropdown('ccity', $city, isset($default['city']) ? $default['city'] : 
         <input type="text" class="form-control" id="twebsite" name="twebsite" placeholder="Website">
         <span class="fa fa-internet-explorer form-control-feedback right" aria-hidden="true"></span> 
       </div>
+    
+      <div class="col-md-9 col-sm-9 col-xs-12 form-group has-feedback">
+        <input type="file" id="uploadImage" accept="image/*" class="input-medium" title="Upload" name="userfile" /> <br>
+        <img id="catimg" style=" max-width:50px; height:auto;">
+      </div>
       
       <!-- pembatas div -->
       <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
@@ -94,7 +99,7 @@ echo form_dropdown('ccity', $city, isset($default['city']) ? $default['city'] : 
         <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
           <button type="submit" class="btn btn-primary" id="button">Save</button>
           <button type="button" id="bclose" class="btn btn-danger" data-dismiss="modal">Close</button>
-          <button type="button" id="breset" class="btn btn-warning" onClick="reset();">Reset</button>
+          <button type="reset" id="breset" class="btn btn-warning">Reset</button>
         </div>
       </div>
 </form> 

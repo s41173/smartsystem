@@ -66,6 +66,7 @@ class Product extends MX_Controller
         $data['form_action_update'] = site_url($this->title.'/update_process');
         $data['form_action_del'] = site_url($this->title.'/delete_all');
         $data['form_action_report'] = site_url($this->title.'/report_process');
+        $data['form_action_import'] = site_url($this->title.'/import');
         $data['link'] = array('link_back' => anchor('main/','Back', array('class' => 'btn btn-danger')));
 
         $data['category'] = $this->category->combo_all();
@@ -708,6 +709,108 @@ class Product extends MX_Controller
 
         
         }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
+    }
+    
+    function report_process()
+    {
+        $this->acl->otentikasi2($this->title);
+        $data['title'] = $this->properti['name'].' | Report '.ucwords($this->modul['title']);
+
+        $data['rundate'] = tglin(date('Y-m-d'));
+        $data['log'] = $this->session->userdata('log');
+        $data['category'] = $this->category->get_name($this->input->post('ccategory'));
+        $data['manufacture'] = $this->manufacture->get_name($this->input->post('cmanufacture'));
+        $data['year'] = $this->input->post('tyear');
+        $data['month'] = $this->input->post('cmonth');
+
+//        Property Details
+        $data['company'] = $this->properti['name'];
+        $data['reports'] = $this->Product_model->report($this->input->post('ccategory'), $this->input->post('cmanufacture'))->result();
+        
+        if ($this->input->post('ctype') == 0){ $this->load->view('product_report', $data); }
+        else { $this->load->view('product_pivot', $data); }
+    }
+    
+    function import()
+    {
+        $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
+        $data['h2title'] = $this->modul['title'];
+        $data['main_view'] = 'attendance_import';
+	$data['form_action_import'] = site_url($this->title.'/import');
+        $data['error'] = null;
+	
+//        $this->form_validation->set_rules('userfile', 'Import File', '');
+        
+             // ==================== upload ========================
+            
+            $config['upload_path']   = './uploads/';
+            $config['file_name']     = 'product';
+            $config['allowed_types'] = '*';
+//            $config['allowed_types'] = 'csv';
+            $config['overwrite']     = TRUE;
+            $config['max_size']	     = '10000';
+            $config['remove_spaces'] = TRUE;
+            $this->load->library('upload', $config);
+            
+            if ( !$this->upload->do_upload("userfile"))
+            { 
+               $data['error'] = $this->upload->display_errors(); 
+               $this->session->set_flashdata('message', "Error imported!");
+               echo 'error|'.$this->upload->display_errors(); 
+            }
+            else
+            { 
+               // success page 
+              $this->import_product($config['file_name'].'.csv');
+              $info = $this->upload->data(); 
+              $this->session->set_flashdata('message', "One $this->title data successfully imported!");
+              echo 'true|CSV Successful Uploaded';
+            }                
+        
+       // redirect($this->title);
+        
+    }
+    
+    private function import_product($filename)
+    {
+        $stts = null;
+        $this->load->helper('file');
+//        $csvreader = new CSVReader();
+        $csvreader = $this->load->library('csvreader');
+        $filename = './uploads/'.$filename;
+        
+        $result = $csvreader->parse_file($filename);
+        
+        foreach($result as $res)
+        {
+           if(isset($res['SKU']) && isset($res['CATEGORY']) && isset($res['MANUFACTURE']) && isset($res['NAME']) && isset($res['MODEL']) && isset($res['QTY']) && isset($res['PRICE']))
+           {
+              if ($this->valid_sku($res['SKU']) == TRUE  && $this->valid_name($res['NAME']) == TRUE)
+              {
+                $account = array(
+                             'sku' => $res['SKU'],
+                             'category' => $this->category->get_id(strtoupper($res['CATEGORY'])),
+                             'manufacture' => $this->manufacture->get_id($res['MANUFACTURE']),
+                             'name' => $res['NAME'],
+                             'model' => $res['MODEL'],
+                             'qty' => $res['QTY'],
+                             'price' => $res['PRICE'],
+                             'publish' => 0,
+                             'created' => date('Y-m-d H:i:s'));
+            
+                $this->Product_model->add($account);
+              }
+           }              
+        }
+    }
+    
+    function download()
+    {
+       $this->load->helper('download');
+        
+       $data = file_get_contents("uploads/sample/product_sample.csv"); // Read the file's contents
+       $name = 'product_sample.csv';    
+       force_download($name, $data);
     }
    
 

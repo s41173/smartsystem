@@ -41,6 +41,18 @@ class Product_model extends Custom_Model
         $this->db->order_by('name', 'asc'); 
         return $this->db->get(); 
     }
+    
+    function report($cat=null,$manufacture=null)
+    {   
+        $this->db->select($this->field);
+        $this->db->from($this->tableName); 
+        $this->db->where('deleted', $this->deleted);
+        $this->cek_null($cat, 'category');
+        $this->cek_null($manufacture, 'manufacture');
+        
+        $this->db->order_by('name', 'asc'); 
+        return $this->db->get(); 
+    }
 
 }
 

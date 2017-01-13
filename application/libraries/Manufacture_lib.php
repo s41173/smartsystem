@@ -54,6 +54,18 @@ class Manufacture_lib extends Main_Model {
         else if($id == 0){ return 'Top'; }
         else { return ''; }
     }
+    
+    function get_id($id=null)
+    {
+        if ($id)
+        {
+            $this->db->select('id,name');
+            $this->db->where('name', $id);
+            $val = $this->db->get($this->tableName)->row();
+            if ($val){ return $val->id; }else { return 0; }
+        }
+        else { return 0; }
+    }
 
 }
 

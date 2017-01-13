@@ -28,36 +28,6 @@ $(document).ready(function (e) {
 		
 	});
 	
-	// fungsi attribute status
-	$(document).on('click','.text-attribute',function(e)
-	{	
-		e.preventDefault();
-		var element = $(this);
-		var del_id = element.attr("id");
-		var url = sites_attribute +"/"+ del_id;
-		$(".error").fadeOut();
-		
-		console.log(url);
-		
-		$("#myModal2").modal('show');
-		$('#frame').attr('src',url);
-		$('#frame_title').html('Product Attribute');	
-	});
-	
-	$(document).on('click','.text-img',function(e)
-	{	
-		e.preventDefault();
-		var element = $(this);
-		var del_id = element.attr("id");
-		var url = sites_image +"/"+ del_id;
-		$(".error").fadeOut();
-		
-		console.log(url);
-		
-		$("#myModal2").modal('show');
-		$('#frame').attr('src',url);
-		$('#frame_title').html('Product Image');	
-	});
 	
 		// fungsi ajax combo
 	$(document).on('change','#ccity,#ccity_update',function(e)
@@ -73,7 +43,8 @@ $(document).ready(function (e) {
     	    cache: false,
 			headers: { "cache-control": "no-cache" },
 			success: function(result) {
-				$(".select_box").html(result);
+			$('#cdistrict_update').hide();
+			$(".select_box").html(result);
 			}
 		})
 		return false;	
@@ -113,11 +84,9 @@ $(document).ready(function (e) {
 	
 	$('#searchform').submit(function() {
 		
-		var cat = $("#ccategory").val();
+		var city = $("#ccity").val();
 		var publish = $("#cpublish").val();
-		var param = ['searching',cat,publish];
-		
-		// alert(publish+" - "+dates);
+		var param = ['searching',city,publish];
 		
 		$.ajax({
 			type: 'POST',
@@ -137,28 +106,9 @@ $(document).ready(function (e) {
 		swal('Error Load Data...!', "", "error");
 		
 	});
-	
-	// fungsi kalkulasi persen
-	$('#tdisc_p').keyup(function() {
-		
-		var percent = $('#tdisc_p').val();
-		var price = $("#tprice").val();
-		//var discount = $("#tdiscount").val();
-		$("#tdiscount").val(price*percent/100);		
-	});
-	
-	$('#tdiscount').keyup(function() {
-		
-		//var percent = $('#tdisc_p').val();
-		var price = $("#tprice").val();
-		var discount = $("#tdiscount").val();
-		$("#tdisc_p").val(discount/price*100);		
-	});
-	
 		
 // document ready end	
 });
-
 
 	function load_data_search(search=null)
 	{
@@ -192,6 +142,9 @@ $(document).ready(function (e) {
 '<img src="'+s[i][16]+'" class="img_product" alt="'+s[i][1]+'">',
 										s[i][3],
 										s[i][1]+' '+s[i][2],
+										s[i][9],
+										s[i][12],
+										s[i][18],
 '<a href="" class="'+stts+' btn-xs primary_status" id="' +s[i][0]+ '" title="Primary Status"> <i class="fa fa-power-off"> </i> </a> '+
 '<a href="" class="btn btn-primary btn-xs text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a> '+
 '<a href="#" class="btn btn-danger btn-xs text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'
@@ -240,6 +193,9 @@ $(document).ready(function (e) {
 '<img src="'+s[i][16]+'" class="img_product" alt="'+s[i][1]+'">',
 										s[i][3],
 										s[i][1]+' '+s[i][2],
+										s[i][9],
+										s[i][12],
+										s[i][18],
 '<a href="" class="'+stts+' btn-xs primary_status" id="' +s[i][0]+ '" title="Primary Status"> <i class="fa fa-power-off"> </i> </a> '+
 '<a href="" class="btn btn-primary btn-xs text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a> '+
 '<a href="#" class="btn btn-danger btn-xs text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'
@@ -262,50 +218,9 @@ $(document).ready(function (e) {
 	{  
 	   $(document).ready(function (e) {
 		  // reset form
-		  $("#tname, #tmodel, #tsku").val("");
+		  $("#breset").click();
 		  $("#catimg").attr("src","");
 	  });
 	}
 	
-	function load_form()
-	{
-		$(document).ready(function (e) {
-			
-		  	$.ajax({
-				type : 'GET',
-				url: source,
-				//force to handle it as text
-				contentType: "application/json",
-				dataType: "json",
-				success: function(data) 
-				{   
-					// alert(data[0][1]);
-					$("#tname").val(data[0][1]);
-					$("#taddress").val(data[0][2]);
-					$("#ccity").val(data[0][13]).change();
-					$("#tzip").val(data[0][9]);
-					$("#tphone").val(data[0][3]);
-					$("#tphone2").val(data[0][4]);
-					$("#tmail").val(data[0][5]);
-					$("#tbillmail").val(data[0][6]);
-					$("#ttechmail").val(data[0][7]);
-					$("#tccmail").val(data[0][8]);
-					$("#taccount_name").val(data[0][10]);
-					$("#taccount_no").val(data[0][11]);
-					$("#tbank").val(data[0][12]);
-					$("#tsitename").val(data[0][14]);
-					$("#tmetadesc").val(data[0][15]);
-					$("#tmetakey").val(data[0][16]);
-					$("#catimg_update").attr("src","");
-					$("#catimg_update").attr("src",base_url+"images/property/"+data[0][17]);
-			   
-				},
-				error: function(e){
-				   //console.log(e.responseText);	
-				}
-				
-			});  
-			
-	    });  // end document ready	
-	}
 	

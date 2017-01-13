@@ -37,9 +37,9 @@ class Customer extends MX_Controller
          foreach($result as $res)
 	 {   
 	   $output[] = array ($res->id, $res->first_name, $res->last_name, $res->type, $res->address, $res->shipping_address, 
-                              $res->phone1, $res->phone2, $res->fax, $res->email, $res->password, $res->website, $res->city,
+                              $res->phone1, $res->phone2, $res->fax, $res->email, $res->password, $res->website, $this->city->get_name($res->city),
                               $res->region, $res->zip, $res->notes, 
-                              base_url().'images/customer/'.$res->image, $res->status
+                              base_url().'images/customer/'.$res->image, $res->status , tglin($res->joined)
                              );
 	 } 
          
@@ -83,7 +83,7 @@ class Customer extends MX_Controller
         $this->table->set_empty("&nbsp;");
 
         //Set heading untuk table
-        $this->table->set_heading('#','No', 'Image', 'Type', 'Name', 'Action');
+        $this->table->set_heading('#','No', 'Image', 'Type', 'Name', 'Email', 'City', 'Joined', 'Action');
 
         $data['table'] = $this->table->generate();
         $data['source'] = site_url($this->title.'/getdatatable');
@@ -178,17 +178,22 @@ class Customer extends MX_Controller
 	$data['link'] = array('link_back' => anchor('category/','<span>back</span>', array('class' => 'back')));
 
 	// Form validation
-        $this->form_validation->set_rules('tsku', 'SKU', 'required|callback_valid_sku');
-        $this->form_validation->set_rules('tname', 'Name', 'required|callback_valid_name');
-        $this->form_validation->set_rules('tmodel', 'Model', 'required|callback_valid_model');
-        $this->form_validation->set_rules('ccur', 'Currency', 'required');
-        $this->form_validation->set_rules('ccategory', 'Category', 'required');
-        $this->form_validation->set_rules('cmanufacture', 'Manufacture', 'required');
+        $this->form_validation->set_rules('tfname', 'SKU', 'required');
+        $this->form_validation->set_rules('tlname', 'Name', 'required');
+        $this->form_validation->set_rules('ctype', 'Customer Type', 'required');
+        $this->form_validation->set_rules('taddress', 'Address', 'required');
+        $this->form_validation->set_rules('tphone1', 'Phone 1', 'required');
+        $this->form_validation->set_rules('tphone2', 'Phone 2', '');
+        $this->form_validation->set_rules('temail', 'Email', 'required|valid_email|callback_valid_email');
+        $this->form_validation->set_rules('twebsite', 'Website', '');
+        $this->form_validation->set_rules('ccity', 'City', 'required');
+        $this->form_validation->set_rules('cdistrict', 'District', 'required');
+        $this->form_validation->set_rules('tzip', 'Zip', '');
 
         if ($this->form_validation->run($this) == TRUE)
         {
             $config['upload_path'] = './images/customer/';
-            $config['file_name'] = split_space($this->input->post('tname'));
+            $config['file_name'] = split_space($this->input->post('tfname').'_'.waktuindo());
             $config['allowed_types'] = 'jpg|gif|png';
             $config['overwrite'] = true;
             $config['max_size']	= '10000';
@@ -202,20 +207,28 @@ class Customer extends MX_Controller
             {
                 $info['file_name'] = null;
                 $data['error'] = $this->upload->display_errors();
-                $customer = array('name' => strtolower($this->input->post('tname')), 'permalink' => split_space($this->input->post('tname')),
-                                  'sku' => $this->input->post('tsku'), 'model' => $this->input->post('tmodel'), 
-                                  'currency' => $this->input->post('ccur'), 'category' => $this->input->post('ccategory'),
-                                  'manufacture' => $this->input->post('cmanufacture'),
+                $customer = array('first_name' => strtolower($this->input->post('tfname')), 
+                                  'last_name' => strtolower($this->input->post('tlname')),
+                                  'type' => $this->input->post('ctype'), 'address' => $this->input->post('taddress'),
+                                  'shipping_address' => $this->input->post('taddress'), 'phone1' => $this->input->post('tphone1'), 'phone2' => $this->input->post('tphone2'),
+                                  'email' => $this->input->post('temail'), 'password' => 'password', 
+                                  'website' => $this->input->post('twebsite'), 'region' => $this->input->post('cdistrict'),
+                                  'city' => $this->input->post('ccity'), 'state' => $this->city->get_province_based_city($this->input->post('ccity')),
+                                  'zip' => $this->input->post('tzip'), 'joined' => date('Y-m-d H:i:s'),
                                   'image' => null, 'created' => date('Y-m-d H:i:s'));
             }
             else
             {
                 $info = $this->upload->data();
                 
-                $customer = array('name' => strtolower($this->input->post('tname')), 'permalink' => split_space($this->input->post('tname')),
-                                  'sku' => $this->input->post('tsku'), 'model' => $this->input->post('tmodel'), 
-                                  'currency' => $this->input->post('ccur'), 'category' => $this->input->post('ccategory'),
-                                  'manufacture' => $this->input->post('cmanufacture'),
+                $customer = array('first_name' => strtolower($this->input->post('tfname')), 
+                                  'last_name' => strtolower($this->input->post('tlname')),
+                                  'type' => $this->input->post('ctype'), 'address' => $this->input->post('taddress'),
+                                  'shipping_address' => $this->input->post('taddress'), 'phone1' => $this->input->post('tphone1'), 'phone2' => $this->input->post('tphone2'),
+                                  'email' => $this->input->post('temail'), 'password' => 'password', 
+                                  'website' => $this->input->post('twebsite'), 'region' => $this->input->post('cdistrict'),
+                                  'city' => $this->input->post('ccity'), 'state' => $this->city->get_province_based_city($this->input->post('ccity')),
+                                  'zip' => $this->input->post('tzip'), 'joined' => date('Y-m-d H:i:s'),
                                   'image' => $info['file_name'], 'created' => date('Y-m-d H:i:s'));
             }
 
@@ -241,23 +254,7 @@ class Customer extends MX_Controller
     
     private function split_array($val)
     { return implode(",",$val); }
-    
-    function remove_img($id,$type='primary')
-    {
-        $img = $this->Customer_model->get_by_id($id)->row();
-        
-        if ($type == 'primary'){
-            $img = $img->image;
-            if ($img){ $img = "./images/customer/".$img; @unlink("$img"); }
-        }else{
-            $image = "./images/customer/".$img->image; @unlink("$image");
-            $img1 = "./images/customer/".$img->url1; @unlink("$img1"); 
-            $img2 = "./images/customer/".$img->url2; @unlink("$img2");
-            $img3 = "./images/customer/".$img->url3; @unlink("$img3");
-            $img4 = "./images/customer/".$img->url4; @unlink("$img4");
-            $img5 = "./images/customer/".$img->url5; @unlink("$img5");
-        }
-    }
+   
 
     // Fungsi update untuk menset texfield dengan nilai dari database
     function update($uid=null)
@@ -267,60 +264,30 @@ class Customer extends MX_Controller
         $data['main_view'] = 'customer_update';
 	$data['form_action'] = site_url($this->title.'/update_process');
         $data['link'] = array('link_back' => anchor($this->title,'Back', array('class' => 'btn btn-danger')));
-
-        $data['manufacture'] = $this->manufacture->combo();
-        $data['category'] = $this->category->combo();
-        $data['currency'] = $this->currency->combo();
         $data['source'] = site_url($this->title.'/getdatatable');
-        $data['related'] = $this->customer->combo_publish($uid);
+
+        $data['city'] = $this->city->combo_city_db();
+        $data['district'] = $this->disctrict->combo_district_db(null);
         $data['array'] = array('','');
         
         $customer = $this->Customer_model->get_by_id($uid)->row();
 	$this->session->set_userdata('langid', $customer->id);
         
-        $data['default']['sku'] = $customer->sku;
-        $data['default']['category'] = $customer->category;
-        $data['default']['manufacture'] = $customer->manufacture;
-        $data['default']['name'] = $customer->name;
-        $data['default']['model'] = $customer->model;
-        $data['default']['permalink'] = $customer->permalink;
-        $data['default']['currency'] = $customer->currency;
-        $data['default']['description'] = $customer->description;
-        $data['default']['sdesc'] = $customer->shortdesc;
-        $data['default']['spec'] = $customer->spesification;
-        $data['default']['metatitle'] = $customer->meta_title;
-        $data['default']['metadesc'] = $customer->meta_desc;
-        $data['default']['metakeywords'] = $customer->meta_keywords;
-        $data['default']['price'] = $customer->price;
-        $data['default']['discount'] = $customer->discount;
-        $data['default']['qty'] = $customer->qty;
-        $data['default']['min'] = $customer->min_order;
+        $data['default']['fname'] = $customer->first_name;
+        $data['default']['lname'] = $customer->last_name;
+        $data['default']['type'] = $customer->type;
+        $data['address'] = $customer->address;
+        $data['shipping'] = $customer->shipping_address;
+        $data['default']['phone1'] = $customer->phone1;
+        $data['default']['phone2'] = $customer->phone2;
+        $data['default']['email'] = $customer->email;
+        $data['default']['password'] = $customer->password;
+        $data['default']['website'] = $customer->website;
+        $data['default']['city'] = $customer->city;
+        $data['default']['district'] = $customer->region;
+        $data['default']['zip'] = $customer->zip;
         $data['default']['image'] = base_url().'images/customer/'.$customer->image;
-        $data['default']['dclass'] = $customer->dimension_class;
-        $data['default']['weight'] = $customer->weight;
-        $data['default']['disc_p'] = @intval($customer->discount/$customer->price*100);
-        $data['default']['dimension'] = $customer->dimension;
-        
-        if ($customer->dimension)
-        {
-            $dimension = explode('x', $customer->dimension);
-            $data['default']['length'] = $dimension[0];
-            $data['default']['width'] = $dimension[1];
-            $data['default']['height'] = $dimension[2];
-        }
-        else{
-            $data['default']['length'] = '';
-            $data['default']['width'] = '';
-            $data['default']['height'] = '';
-        }
 
-        if ($customer->related){
-            $related = explode(',', $customer->related);
-            $data['default']['related'] = $related;
-        }
-         
-        $this->load->helper('editor');
-        editor();
         $this->load->view('template', $data);
     }
     
@@ -502,98 +469,27 @@ class Customer extends MX_Controller
         else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
     }
     
-    function delete_attribute($id)
+    function valid_email($val)
     {
-        if ($this->acl->otentikasi2($this->title) == TRUE){
-        $this->attribute_customer->force_delete($id);
-        echo 'true|Attribute Deleted..!';
-        }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
-    }
-    
-    function valid_attribute($attr,$pid)
-    {
-        
-        if($this->attribute_customer->valid($attr, $pid) == FALSE)
+        if ($this->Customer_model->valid('email',$val) == FALSE)
         {
-          $this->form_validation->set_message('valid_attribute', "Attribute Registered..!");
-          return FALSE;
-        }
-        else{ return TRUE; }
-    }
-
-    function valid_role($val)
-    {
-        if(!$val)
-        {
-          $this->form_validation->set_message('valid_role', "role type required.");
-          return FALSE;
-        }
-        else{ return TRUE; }
-    }
-    
-    function valid_sku($val)
-    {
-        if ($this->Customer_model->valid('sku',$val) == FALSE)
-        {
-            $this->form_validation->set_message('valid_sku','SKU registered..!');
+            $this->form_validation->set_message('valid_email','Email registered..!');
             return FALSE;
         }
         else{ return TRUE; }
     }
 
-    function validating_sku($val)
+    function validating_email($val)
     {
 	$id = $this->session->userdata('langid');
-	if ($this->Customer_model->validating('sku',$val,$id) == FALSE)
+	if ($this->Customer_model->validating('email',$val,$id) == FALSE)
         {
-            $this->form_validation->set_message('validating_sku', "SKU registered!");
+            $this->form_validation->set_message('validating_email', "Email registered!");
             return FALSE;
         }
         else{ return TRUE; }
     }
     
-    function valid_name($val)
-    {
-        if ($this->Customer_model->valid('name',$val) == FALSE)
-        {
-            $this->form_validation->set_message('valid_name','Name registered..!');
-            return FALSE;
-        }
-        else{ return TRUE; }
-    }
-
-    function validating_name($val)
-    {
-	$id = $this->session->userdata('langid');
-	if ($this->Customer_model->validating('name',$val,$id) == FALSE)
-        {
-            $this->form_validation->set_message('validating_name', "Name registered!");
-            return FALSE;
-        }
-        else{ return TRUE; }
-    }
-    
-    function valid_model($val)
-    {
-        if ($this->Customer_model->valid('model',$val) == FALSE)
-        {
-            $this->form_validation->set_message('valid_model','Model registered..!');
-            return FALSE;
-        }
-        else{ return TRUE; }
-    }
-
-    function validating_model($val)
-    {
-	$id = $this->session->userdata('langid');
-	if ($this->Customer_model->validating('model',$val,$id) == FALSE)
-        {
-            $this->form_validation->set_message('validating_model', "Model registered!");
-            return FALSE;
-        }
-        else{ return TRUE; }
-    }
-
     // Fungsi update untuk mengupdate db
     function update_process($param=0)
     {
@@ -606,101 +502,71 @@ class Customer extends MX_Controller
 	$data['link'] = array('link_back' => anchor('admin/','<span>back</span>', array('class' => 'back')));
 
 	// Form validation
-        if ($param == 1)
-        {
-            $this->form_validation->set_rules('tsku', 'SKU', 'required|callback_validating_sku');
-            $this->form_validation->set_rules('ccategory', 'Category', 'required');
-            $this->form_validation->set_rules('cmanufacture', 'Manufacture', 'required');
-            $this->form_validation->set_rules('tname', 'Customer Name', 'required|callback_validating_name');
-            $this->form_validation->set_rules('tmodel', 'Customer Model', 'required|callback_validating_model');
-            $this->form_validation->set_rules('ccurrency', 'Currency', 'required');
-            $this->form_validation->set_rules('tdesc', 'Description', '');
-            $this->form_validation->set_rules('tshortdesc', 'Short Description', '');
+
+        $this->form_validation->set_rules('tfname', 'SKU', 'required');
+        $this->form_validation->set_rules('tlname', 'Name', 'required');
+        $this->form_validation->set_rules('ctype', 'Customer Type', 'required');
+        $this->form_validation->set_rules('taddress', 'Address', 'required');
+        $this->form_validation->set_rules('tphone1', 'Phone 1', 'required');
+        $this->form_validation->set_rules('tphone2', 'Phone 2', '');
+        $this->form_validation->set_rules('temail', 'Email', 'required|valid_email|callback_validating_email');
+        $this->form_validation->set_rules('twebsite', 'Website', '');
+        $this->form_validation->set_rules('ccity', 'City', 'required');
+        $this->form_validation->set_rules('cdistrict', 'District', 'required');
+        $this->form_validation->set_rules('tzip', 'Zip', '');
             
-            if ($this->form_validation->run($this) == TRUE)
-            {
-                // start update 1
-                $config['upload_path'] = './images/customer/';
-                $config['file_name'] = split_space($this->input->post('tname'));
-                $config['allowed_types'] = 'jpg|gif|png';
-                $config['overwrite'] = true;
-                $config['max_size']	= '10000';
-                $config['max_width']  = '30000';
-                $config['max_height']  = '30000';
-                $config['remove_spaces'] = TRUE;
-
-                $this->load->library('upload', $config);
-
-                if ( !$this->upload->do_upload("userfile")) // if upload failure
-                {
-                    $info['file_name'] = null;
-                    $data['error'] = $this->upload->display_errors();
-                    $customer = array('name' => strtolower($this->input->post('tname')), 'permalink' => split_space($this->input->post('tname')),
-                                     'sku' => $this->input->post('tsku'), 'model' => $this->input->post('tmodel'), 
-                                     'currency' => $this->input->post('ccurrency'), 'category' => $this->input->post('ccategory'),
-                                     'manufacture' => $this->input->post('cmanufacture'), 'shortdesc' => $this->input->post('tshortdesc'),
-                                     'description' => $this->input->post('tdesc'));
-                }
-                else
-                {
-                    $info = $this->upload->data();
-
-                    $customer = array('name' => strtolower($this->input->post('tname')), 'permalink' => split_space($this->input->post('tname')),
-                                      'sku' => $this->input->post('tsku'), 'model' => $this->input->post('tmodel'), 
-                                      'currency' => $this->input->post('ccurrency'), 'category' => $this->input->post('ccategory'),
-                                      'manufacture' => $this->input->post('cmanufacture'), 'shortdesc' => $this->input->post('tshortdesc'),
-                                      'description' => $this->input->post('tdesc'),
-                                      'image' => $info['file_name']);
-                }
-                
-                $this->Customer_model->update($this->session->userdata('langid'), $customer);
-                $this->session->set_flashdata('message', "One $this->title has successfully updated!");
-                redirect($this->title.'/update/'.$this->session->userdata('langid'));
-                
-                // end update 1
-            }
-            else{ $this->session->set_flashdata('message', validation_errors());
-                  redirect($this->title.'/update/'.$this->session->userdata('langid'));
-                }
-        }
-        elseif ($param == 2)
+        if ($this->form_validation->run($this) == TRUE)
         {
-            $customer = array('meta_title' => $this->input->post('tmetatitle'), 'meta_desc' => $this->input->post('tmetadesc'),
-                             'meta_keywords' => $this->input->post('tmetakeywords'), 'spesification' => $this->input->post('tspec')
-                             );
+            // start update 1
+            $config['upload_path'] = './images/customer/';
+            $config['file_name'] = split_space($this->input->post('tfname').'_'.waktuindo());
+            $config['allowed_types'] = 'jpg|gif|png';
+            $config['overwrite'] = true;
+            $config['max_size']	= '10000';
+            $config['max_width']  = '30000';
+            $config['max_height']  = '30000';
+            $config['remove_spaces'] = TRUE;
+
+            $this->load->library('upload', $config);
+
+            if ( !$this->upload->do_upload("userfile")) // if upload failure
+            {
+                $info['file_name'] = null;
+                $data['error'] = $this->upload->display_errors();
+
+                $customer = array('first_name' => strtolower($this->input->post('tfname')), 
+                              'last_name' => strtolower($this->input->post('tlname')),
+                              'type' => $this->input->post('ctype'), 'address' => $this->input->post('taddress'),
+                              'shipping_address' => $this->input->post('tshipping'), 'phone1' => $this->input->post('tphone1'), 'phone2' => $this->input->post('tphone2'),
+                              'email' => $this->input->post('temail'), 'password' => 'password', 
+                              'website' => $this->input->post('twebsite'), 'region' => $this->input->post('cdistrict'),
+                              'city' => $this->input->post('ccity'), 'state' => $this->city->get_province_based_city($this->input->post('ccity')),
+                              'zip' => $this->input->post('tzip'));
+
+            }
+            else
+            {
+                $info = $this->upload->data();
+
+                $customer = array('first_name' => strtolower($this->input->post('tfname')), 
+                              'last_name' => strtolower($this->input->post('tlname')),
+                              'type' => $this->input->post('ctype'), 'address' => $this->input->post('taddress'),
+                              'shipping_address' => $this->input->post('tshipping'), 'phone1' => $this->input->post('tphone1'), 'phone2' => $this->input->post('tphone2'),
+                              'email' => $this->input->post('temail'), 'password' => 'password', 
+                              'website' => $this->input->post('twebsite'), 'region' => $this->input->post('cdistrict'),
+                              'city' => $this->input->post('ccity'), 'state' => $this->city->get_province_based_city($this->input->post('ccity')),
+                              'zip' => $this->input->post('tzip'), 'image' => $info['file_name']);
+            }
+
             $this->Customer_model->update($this->session->userdata('langid'), $customer);
             $this->session->set_flashdata('message', "One $this->title has successfully updated!");
             redirect($this->title.'/update/'.$this->session->userdata('langid'));
-        }
-        elseif ($param == 3)
-        {
-            $this->form_validation->set_rules('tprice', 'Price', 'required|numeric');
-            $this->form_validation->set_rules('tdisc_p', 'Discount Percentage', 'numeric');
-            $this->form_validation->set_rules('tdiscount', 'Discount', 'required|numeric');
-            $this->form_validation->set_rules('tmin', 'Minimum Order', 'required|numeric');
-            
-            $customer = array('price' => $this->input->post('tprice'), 'discount' => $this->input->post('tdiscount'),
-                             'min_order' => $this->input->post('tmin')
-                             );
-            $this->Customer_model->update($this->session->userdata('langid'), $customer);
-            echo 'true|One '.$this->title.' price and qty has successfully updated!';
-        }
-        elseif ($param == 4)
-        {
-            $this->form_validation->set_rules('tlength', 'Length (Dimension)', 'numeric');
-            $this->form_validation->set_rules('twidth', 'Width (Dimension)', 'numeric');
-            $this->form_validation->set_rules('theight', 'Height (Dimension)', 'numeric');
-            $this->form_validation->set_rules('cdimension', 'Dimension Class', '');
-            $this->form_validation->set_rules('tweight', 'Weight', 'numeric');
-            
-            $dimension = $this->input->post('tlength').'x'.$this->input->post('twidth').'x'.$this->input->post('theight');
-            $customer = array('dimension' => $dimension, 'dimension_class' => $this->input->post('cdimension'),
-                             'weight' => $this->input->post('tweight'), 'related' => !empty($this->input->post('crelated')) ? split_array($this->input->post('crelated')) : null
-                             );
-            $this->Customer_model->update($this->session->userdata('langid'), $customer);
-            echo 'true|One '.$this->title.' dimension has successfully updated!';
-        }
 
+            // end update 1
+        }
+        else{ $this->session->set_flashdata('message', validation_errors());
+              redirect($this->title.'/update/'.$this->session->userdata('langid'));
+            }
         
         }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
     }
@@ -710,7 +576,7 @@ class Customer extends MX_Controller
         if ($cityid != null){
             $district = $this->disctrict->combo_district_db($cityid);
             $js = "class='select2_single form-control' id='cdistrict' tabindex='-1' style='width:100%;' "; 
-            echo form_dropdown('caccount', $district, isset($default['district']) ? $default['district'] : '', $js);
+            echo form_dropdown('cdistrict', $district, isset($default['district']) ? $default['district'] : '', $js);
         }
     }
    

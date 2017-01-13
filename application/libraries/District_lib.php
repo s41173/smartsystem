@@ -22,7 +22,6 @@ class District_lib extends Main_model {
         foreach($val as $row){$data['options'][$row->id] = $row->nama;}
         return $data;
     }
-   
     
     private function splits($val)
     {

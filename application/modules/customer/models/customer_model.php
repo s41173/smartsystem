@@ -13,8 +13,8 @@ class Customer_model extends Custom_Model
         $this->tableName = 'customer';
     }
     
-    protected $field = array('id', 'first_name', 'last_name', 'type', 'address', 'shipping_address', 'phone1', 'phone2',
-                             'fax', 'email', 'password', 'website', 'city', 'region', 'zip', 'notes', 'image', 'status',
+    protected $field = array('id', 'first_name', 'last_name', 'type', 'address', 'shipping_address', 'phone1', 'phone2', 'joined',
+                             'fax', 'email', 'password', 'website', 'state', 'city', 'region', 'zip', 'notes', 'image', 'status',
                              'created', 'updated', 'deleted');
     protected $com;
     
@@ -33,10 +33,10 @@ class Customer_model extends Custom_Model
         $this->db->select($this->field);
         $this->db->from($this->tableName); 
         $this->db->where('deleted', $this->deleted);
-        $this->cek_null_string($cat, 'category');
-        $this->cek_null_string($publish, 'publish');
+        $this->cek_null_string($cat, 'city');
+        $this->cek_null_string($publish, 'status');
         
-        $this->db->order_by('name', 'asc'); 
+        $this->db->order_by('id', 'asc'); 
         return $this->db->get(); 
     }
 

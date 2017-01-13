@@ -118,6 +118,95 @@ class City_lib extends Main_model {
           return intval($data['rajaongkir']['results'][0]['costs'][1]['cost'][0]['value']); 
         }
     }
+    
+    function get_province_based_city($city,$type='id')
+    {
+       $this->db->where('id', $city);
+       $val = $this->db->get($this->tableName)->row(); 
+       if ($type == 'id'){ return $val->id_prov; }
+    }
+    
+    function get_name($id)
+    {
+      $this->db->where('id', $id);
+      $val = $this->db->get($this->tableName)->row();   
+      return $val->nama;
+    }
+    
+    function import()
+    {
+        $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
+        $data['h2title'] = $this->modul['title'];
+        $data['main_view'] = 'attendance_import';
+	$data['form_action_import'] = site_url($this->title.'/import_process');
+        $data['error'] = null;
+	
+//        $this->form_validation->set_rules('cmonth', 'Period Month', 'required|callback_valid_period['.$this->input->post('tyear').']');
+        $this->form_validation->set_rules('cparent', 'Account Category', 'required|callback_valid_year');
+        $this->form_validation->set_rules('userfile', 'Import File', '');
+        
+        if ($this->form_validation->run($this) == TRUE)
+        {
+             // ==================== upload ========================
+            
+            $config['upload_path']   = './uploads/';
+            $config['file_name']     = 'account';
+            $config['allowed_types'] = '*';
+//            $config['allowed_types'] = 'csv';
+            $config['overwrite']     = TRUE;
+            $config['max_size']	     = '1000';
+            $config['remove_spaces'] = TRUE;
+            $this->load->library('upload', $config);
+            
+            if ( !$this->upload->do_upload("userfile"))
+            { 
+               $data['error'] = $this->upload->display_errors(); 
+               $this->session->set_flashdata('message', "Error imported!");
+               echo 'error|'.$data['error'];
+            }
+            else
+            { 
+               // success page 
+              $this->import_account($this->input->post('cparent'),$config['file_name'].'.csv');
+              $info = $this->upload->data(); 
+              $this->session->set_flashdata('message', "One $this->title data successfully imported!");
+              echo 'true|CSV Successful Uploaded';
+            }                
+        }
+        else { $this->session->set_flashdata('message', "Error imported!"); echo 'error|'.validation_errors(); }
+       // redirect($this->title);
+        
+    }
+    
+    private function import_customer($parent,$filename)
+    {
+        $stts = null;
+        $this->load->helper('file');
+//        $csvreader = new CSVReader();
+        $csvreader = $this->load->library('csvreader');
+        $filename = './uploads/'.$filename;
+        
+        $result = $csvreader->parse_file($filename);
+        
+        foreach($result as $res)
+        {
+           if(isset($res['CODE']) && isset($res['NAME']))
+           {
+              if ($this->valid_code($res['CODE']) == TRUE)
+              {
+                $account = array('name' => $res['NAME'],
+                             'code' => $res['CODE'],
+                             'category' => $this->account->get_category($parent),
+                             'parent_id' => $parent,
+                             'description' => $res['NAME'],
+                             'publish' => 1,
+                             'created' => date('Y-m-d H:i:s'));
+            
+                $this->Account_model->add($account);
+              }
+           }              
+        }
+    }
 
 
 }
