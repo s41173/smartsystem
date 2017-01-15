@@ -8,7 +8,7 @@
 <link href="<?php echo base_url(); ?>js/datatables/dataTables.tableTools.css" rel="stylesheet" type="text/css" />
 <link href="<?php echo base_url(); ?>css/icheck/flat/green.css" rel="stylesheet" type="text/css">
 
-<script src="<?php echo base_url(); ?>js/moduljs/product.js"></script>
+<script src="<?php echo base_url(); ?>js/moduljs/product_ledger.js"></script>
 <script src="<?php echo base_url(); ?>js-old/register.js"></script>
 
 <!--canvas js-->
@@ -32,17 +32,7 @@
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>-->
 
 <script type="text/javascript">
-
-	var sites_add  = "<?php echo site_url('product/add_process/');?>";
-	var sites_edit = "<?php echo site_url('product/update_process/');?>";
-	var sites_del  = "<?php echo site_url('product/delete/');?>";
-	var sites_get  = "<?php echo site_url('product/update/');?>";
-    var sites_ledger  = "<?php echo site_url('product/ledger/');?>";
-    var sites_primary  = "<?php echo site_url('product/publish/');?>";
-	var sites_attribute  = "<?php echo site_url('product/attribute/');?>";
-	var sites_image  = "<?php echo site_url('product/image_gallery/');?>";
 	var source = "<?php echo $source;?>";
-    
     var url  = "<?php echo $graph;?>";
 	
     $(document).ready(function (e) {
@@ -77,8 +67,34 @@
           <div class="row"> 
           
             <div class="col-md-12 col-sm-12 col-xs-12">
-                
+                   
               <div class="x_panel">
+                  
+                  <!-- searching form -->
+           
+           <form id="xsearchform" class="form-inline" method="post" action="<?php echo $form_action; ?>">
+              <div class="form-group">
+                <?php $js = "class='select2_single form-control' id='ccategory' tabindex='-1' style='min-width:150px;' "; 
+			        echo form_dropdown('cproduct', $product, isset($default['product']) ? $default['product'] : '', $js); ?>
+              </div>
+               
+              <div class="form-group">
+<input type="text" readonly style="width: 200px" name="reservation" id="d1" class="form-control active" value=""> 
+              </div>
+              
+<!--              <div class="form-group">
+              <input type="text" readonly style="width: 200px" name="reservation" id="d1" class="form-control active" value="">
+                 &nbsp; 
+              </div>-->
+              
+              <div class="form-group">
+               <button type="submit" class="btn btn-primary button_inline"> Filter </button>
+               <a class="btn btn-danger button_inline" href="<?php echo site_url('product/ledger'); ?>"> Reset </a>
+              </div>
+          </form> <br>
+
+           
+           <!-- searching form -->
                     
                    <!-- xtitle -->
                       <div class="x_title">
@@ -118,62 +134,10 @@
               <!-- xtitle -->
                 
                 <div class="x_content">
-           
-           <!-- searching form -->
-           
-           <form id="searchform" class="form-inline">
-              <div class="form-group">
-                <?php $js = "class='select2_single form-control' id='ccategory' tabindex='-1' style='min-width:150px;' "; 
-			        echo form_dropdown('ccategory', $category, isset($default['category']) ? $default['category'] : '', $js); ?>
-              </div>
-              
-              <div class="form-group">
-                <select name="cpublish" id="cpublish" class="select2_single form-control" style="min-width:150px;">
-                   <option value="1"> Publish </option>
-                   <option value="0"> Unpublish </option>
-                </select>
-              </div>
-              
-<!--              <div class="form-group">
-              <input type="text" readonly style="width: 200px" name="reservation" id="d1" class="form-control active" value="">
-                 &nbsp; 
-              </div>-->
-              
-              <div class="form-group">
-               <button type="submit" class="btn btn-primary button_inline"> Filter </button>
-               <button type="reset" onClick="" class="btn btn-success button_inline"> Clear </button>
-               <button type="button" onClick="load_data();" class="btn btn-danger button_inline"> Reset </button>
-              </div>
-          </form> <br>
-
-           
-           <!-- searching form -->
-           
-              
-          <form class="form-inline" id="cekallform" method="post" action="<?php echo ! empty($form_action_del) ? $form_action_del : ''; ?>">
-                  <!-- table -->
-                  
-                  <div class="table-responsive">
-                    <?php echo ! empty($table) ? $table : ''; ?>            
-                  </div>
-                  
-                  <div class="form-group" id="chkbox">
-                    Check All : 
-                    <button type="submit" id="cekallbutton" class="btn btn-danger btn-xs">
-                       <span class="glyphicon glyphicon-trash"></span>
-                    </button>
-                  </div>
-                  <!-- Check All Function -->
-                  
-          </form>       
+                       
+             <!-- table -->
+            <div class="table-responsive"> <?php echo ! empty($table) ? $table : ''; ?> </div>
              </div>
-
-               <!-- Trigger the modal with a button --> 
-               <button type="button" onClick="resets();" class="btn btn-primary" data-toggle="modal" data-target="#myModal"> <i class="fa fa-plus"></i>&nbsp;Add New </button>
-<!--               <a class="btn btn-primary" href="<?php //echo site_url('product/add'); ?>"> <i class="fa fa-plus"></i>&nbsp;Add New </a>-->
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal3"> Report  </button>
-            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#myModal4"> CSV-Import  </button>
-            <a class="btn btn-success" href="<?php echo site_url('product/ledger'); ?>"> Ledger </a>
                
                <!-- links -->
 	           <?php if (!empty($link)){foreach($link as $links){echo $links . '';}} ?>
@@ -181,32 +145,7 @@
                              
             </div>
           </div>  
-    
-      <!-- Modal - Add Form -->
-      <div class="modal fade" id="myModal" role="dialog">
-         <?php $this->load->view('product_form'); ?>      
-      </div>
-      <!-- Modal - Add Form -->
       
-      <!-- Modal Attribute -->
-      <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	     
-		 <?php $this->load->view('product_attribute_frame'); ?> 
-      </div>
-      <!-- Modal Attribute -->
-      
-      
-      <!-- Modal - Report Form -->
-      <div class="modal fade" id="myModal3" role="dialog">
-         <?php $this->load->view('product_report_panel'); ?>    
-      </div>
-      <!-- Modal - Report Form -->
-              
-      <!-- Modal - Import Form -->
-      <div class="modal fade" id="myModal4" role="dialog">
-        <?php $this->load->view('product_import'); ?>    
-      </div>
-      <!-- Modal - Import Form -->
       
       <script src="<?php echo base_url(); ?>js/icheck/icheck.min.js"></script>
       

@@ -21,14 +21,23 @@ class Product extends MX_Controller
         $this->attribute_list = new Attribute_list_lib();
         $this->currency = new Currency_lib();
         $this->product = new Product_lib();
+        $this->wt = new Warehouse_transaction_lib();
     }
 
-    private $properti, $modul, $title, $product;
+    private $properti, $modul, $title, $product, $wt;
     private $role, $category, $manufacture, $attribute, $attribute_product, $attribute_list, $currency;
 
     function index()
     {
+       $this->session->unset_userdata('start'); 
+       $this->session->unset_userdata('end');
        $this->get_last(); 
+        
+//       $first_day_this_month = date('m-01-Y'); // hard-coded '01' for first day
+//       $last_day_this_month  = date('m-t-Y');
+//       
+//       $last_day_april_2010 = date('m-t-Y', strtotime('April 21, 2010'));
+//       echo $last_day_april_2010;
     }
      
     public function getdatatable($search=null,$cat='null',$publish='null')
@@ -93,9 +102,22 @@ class Product extends MX_Controller
 
         $data['table'] = $this->table->generate();
         $data['source'] = site_url($this->title.'/getdatatable');
+        $data['graph'] = site_url()."/product/chart/";
             
         // Load absen view dengan melewatkan var $data sbgai parameter
 	$this->load->view('template', $data);
+    }
+    
+    function chart()
+    {
+        $data = $this->category->get();
+        $datax = array();
+        foreach ($data as $res) 
+        {  
+           $point = array("label" => $res->name , "y" => $this->product->get_product_based_category($res->id));
+           array_push($datax, $point);      
+        }
+        echo json_encode($datax, JSON_NUMERIC_CHECK);
     }
     
     function publish($uid = null)
@@ -280,6 +302,7 @@ class Product extends MX_Controller
         $data['source'] = site_url($this->title.'/getdatatable');
         $data['related'] = $this->product->combo_publish($uid);
         $data['array'] = array('','');
+        $data['graph'] = site_url()."/product/chart/";
         
         $product = $this->Product_model->get_by_id($uid)->row();
 	$this->session->set_userdata('langid', $product->id);
@@ -685,8 +708,9 @@ class Product extends MX_Controller
             $this->form_validation->set_rules('tdiscount', 'Discount', 'required|numeric');
             $this->form_validation->set_rules('tmin', 'Minimum Order', 'required|numeric');
             
+            $this->edit_qty($this->session->userdata('langid'), $this->input->post('tqty'));
             $product = array('price' => $this->input->post('tprice'), 'discount' => $this->input->post('tdiscount'),
-                             'min_order' => $this->input->post('tmin')
+                             'min_order' => $this->input->post('tmin'), 'qty' => $this->input->post('tqty')
                              );
             $this->Product_model->update($this->session->userdata('langid'), $product);
             echo 'true|One '.$this->title.' price and qty has successfully updated!';
@@ -709,6 +733,19 @@ class Product extends MX_Controller
 
         
         }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
+    }
+    
+    private function edit_qty($pid,$eqty)
+    {
+        $res = $this->Product_model->get_by_id($pid)->row();
+        $begin = $res->qty;
+        if ($begin > $eqty){ // pengurangan
+            $this->wt->add(date('Y-m-d H:i:s'), '', $res->currency, $pid, 0, intval($begin-$eqty), 0, 0, $this->session->userdata('log')); 
+        }
+        elseif ($begin < $eqty) // penambahan
+        {
+           $this->wt->add(date('Y-m-d H:i:s'), '', $res->currency, $pid, intval($eqty-$begin), 0, 0, 0, $this->session->userdata('log')); 
+        }
     }
     
     function report_process()
@@ -811,6 +848,108 @@ class Product extends MX_Controller
        $data = file_get_contents("uploads/sample/product_sample.csv"); // Read the file's contents
        $name = 'product_sample.csv';    
        force_download($name, $data);
+    }
+    
+//    ================================= ledger ==================================
+    
+    function ledger($pid=null)
+    {
+        $this->acl->otentikasi1($this->title);
+        
+        if ($pid == null){ $pid = $this->input->post('cproduct'); }
+        if ($pid){ $product = $this->Product_model->get_by_id($pid)->row(); $pname = ': '.$product->name;}
+        else { $pname = null;}
+        
+        $period = $this->input->post('reservation');  
+        
+        if (!$period)
+        {
+            $start = date('Y-m-01');  $end = date('Y-m-t');
+        }
+        else { 
+            $start = picker_between_split($period, 0);
+            $end = picker_between_split($period, 1);
+        }
+        
+        $this->session->set_userdata('start',$start);
+        $this->session->set_userdata('end',$end);
+        
+        $data['source'] = site_url($this->title.'/getledger/'.$pid);
+        $data['graph'] = site_url($this->title."/chart_ledger/".$pid);
+        
+        
+        $data['title'] = $this->properti['name'].' | Administrator Product Ledger'.strtoupper($pname);
+        $data['h2title'] = 'Product Manager'.strtoupper($pname);
+        $data['main_view'] = 'product_ledger';
+	$data['form_action'] = site_url($this->title.'/ledger');
+        $data['link'] = array('link_back' => anchor('product/','Back', array('class' => 'btn btn-danger')));
+
+        $data['product'] = $this->product->combo();
+        $data['array'] = array('','');
+        
+	// ---------------------------------------- //
+ 
+        $config['first_tag_open'] = $config['last_tag_open']= $config['next_tag_open']= $config['prev_tag_open'] = $config['num_tag_open'] = '<li>';
+        $config['first_tag_close'] = $config['last_tag_close']= $config['next_tag_close']= $config['prev_tag_close'] = $config['num_tag_close'] = '</li>';
+
+        $config['cur_tag_open'] = "<li><span><b>";
+        $config['cur_tag_close'] = "</b></span></li>";
+
+        // library HTML table untuk membuat template table class zebra
+        $tmpl = array('table_open' => '<table id="datatable-buttons" class="table table-striped table-bordered">');
+
+        $this->table->set_template($tmpl);
+        $this->table->set_empty("&nbsp;");
+
+        //Set heading untuk table
+        $this->table->set_heading('#','No', 'Date', 'IN', 'OUT');
+
+        $data['table'] = $this->table->generate();
+            
+        // Load absen view dengan melewatkan var $data sbgai parameter
+	$this->load->view('template', $data);
+    }
+    
+    public function getledger($pid=null)
+    {   
+        if ($pid){ $result = $this->wt->get_transaction($pid, $this->session->userdata('start'), $this->session->userdata('end'))->result(); 
+        
+            $output = null;
+            if ($result){
+
+             foreach($result as $res)
+             {   
+               $output[] = array ($res->id, tglin($res->dates), $res->in, $res->out, $res->log);
+             } 
+
+            $this->output
+             ->set_status_header(200)
+             ->set_content_type('application/json', 'utf-8')
+             ->set_output(json_encode($output, JSON_PRETTY_PRINT))
+             ->_display();
+             exit;  
+            }
+        }
+        
+    }
+    
+    function chart_ledger($pid=null)
+    {   
+        if ($pid){
+            
+        $opening = $this->wt->get_sum_transaction_open_balance($pid,$this->session->userdata('start'));
+        $rest = 0;
+        $data = $this->wt->get_transaction($pid, $this->session->userdata('start'), $this->session->userdata('end'))->result();
+        $datax = array();
+        foreach ($data as $res) 
+        {  
+           if ($res->in > 0){ $rest = intval($rest+$res->in); }
+           if ($res->out > 0){ $rest = intval($rest-$res->out); }
+           $point = array("label" => tglin($res->dates) , "y" => intval($opening+$rest));
+           array_push($datax, $point);      
+        }
+        echo json_encode($datax, JSON_NUMERIC_CHECK);
+        }
     }
    
 

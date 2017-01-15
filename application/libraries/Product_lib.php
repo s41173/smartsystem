@@ -135,6 +135,17 @@ class Product_lib extends Custom_Model {
       return $this->db->get('product');
     }
     
+    function combo()
+    {
+        $this->db->select($this->field);
+        $this->db->where('deleted', $this->deleted);
+        $this->db->where('publish', 1);
+        $val = $this->db->get($this->tableName)->result();
+        if ($val){ foreach($val as $row){$data['options'][$row->id] = ucfirst($row->name);} }
+        else { $data['options'][''] = '--'; }        
+        return $data;
+    }
+    
     function combo_publish($id)
     {
         $this->db->select($this->field);
@@ -145,6 +156,16 @@ class Product_lib extends Custom_Model {
         if ($val){ foreach($val as $row){$data['options'][$row->id] = ucfirst($row->name);} }
         else { $data['options'][''] = '--'; }        
         return $data;
+    }
+    
+    function get_product_based_category($cat)
+    {
+        $this->db->select_sum('qty');
+        $this->db->where('deleted', $this->deleted);
+        $this->db->where('publish', 1);
+        $this->db->where('category', $cat);
+        $res = $this->db->get($this->tableName)->row_array();
+        return intval($res['qty']); 
     }
 
 }

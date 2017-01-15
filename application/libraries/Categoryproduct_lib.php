@@ -7,6 +7,15 @@ class Categoryproduct_lib extends Main_Model {
         $this->deleted = $deleted;
         $this->tableName = 'category';
     }
+    
+    function get()
+    {
+        $this->db->select('id, name');
+        $this->db->where('deleted', NULL);
+        $this->db->where('publish',1);
+        $this->db->order_by('name', 'asc');
+        return $this->db->get($this->tableName)->result();
+    }
 
     function combo()
     {

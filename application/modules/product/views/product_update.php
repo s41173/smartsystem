@@ -30,6 +30,7 @@
 	var sites_del  = "<?php echo site_url('configuration/delete/');?>";
 	var sites_get  = "<?php echo site_url('configuration/update/');?>";
 	var source = "<?php echo $source;?>";
+    var url  = "<?php echo $graph;?>";
 	
 </script>
 

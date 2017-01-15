@@ -60,7 +60,7 @@ class Configuration extends MX_Controller
         $data['link'] = array('link_back' => anchor('main/','Back', array('class' => 'btn btn-danger')));
 
         $data['roles'] = $this->role->combo();
-        $data['city'] = $this->city->combo_province_name();
+        $data['city'] = $this->city->combo_city_name();
 	// ---------------------------------------- //
  
         $config['first_tag_open'] = $config['last_tag_open']= $config['next_tag_open']= $config['prev_tag_open'] = $config['num_tag_open'] = '<li>';
