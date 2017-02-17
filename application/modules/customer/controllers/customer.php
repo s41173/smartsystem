@@ -65,7 +65,7 @@ class Customer extends MX_Controller
         $data['form_action_report'] = site_url($this->title.'/report_process');
         $data['link'] = array('link_back' => anchor('main/','Back', array('class' => 'btn btn-danger')));
 
-        $data['city'] = $this->city->combo_city_db();
+        $data['city'] = $this->city->combo_city_name();
         $data['array'] = array('','');
         
 	// ---------------------------------------- //

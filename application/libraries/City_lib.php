@@ -66,6 +66,19 @@ class City_lib extends Main_model {
         return $data;
     }
     
+     function combo_city_combine()
+    {
+        $json = $this->get_city();
+        $datax = json_decode($json, true);
+        $data['options'][""] = " -- Pilih Kabupaten / Kota -- ";
+        if ($datax)
+        {
+          foreach ($datax['rajaongkir']['results'] as $row)
+          {$data[$row['city_id'].'|'.$row['city_name']] = $row['city_name'];}
+        }
+        return $data;
+    }
+    
     function combo_city_db()
     {
 //        $this->db->select('nama');
@@ -84,7 +97,7 @@ class City_lib extends Main_model {
         return $data;
     }
     
-    function get_cost_fee($ori,$dest,$weight=1000)
+    function get_cost_fee($ori,$dest,$courier='jne',$weight=1000)
     {
         $curl = curl_init();
 
@@ -96,7 +109,7 @@ class City_lib extends Main_model {
         CURLOPT_TIMEOUT => 30,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_CUSTOMREQUEST => "POST",
-        CURLOPT_POSTFIELDS => "origin=".$ori."&destination=".$dest."&weight=".$weight."&courier=jne",
+        CURLOPT_POSTFIELDS => "origin=".$ori."&destination=".$dest."&weight=".$weight."&courier=".$courier,
         CURLOPT_HTTPHEADER => array(
           "content-type: application/x-www-form-urlencoded",
           "key: eb7f7529d68f6a2933b5a042ffeeac9d"
@@ -115,7 +128,32 @@ class City_lib extends Main_model {
         else 
         { 
           $data = json_decode($response, true); 
-          return intval($data['rajaongkir']['results'][0]['costs'][1]['cost'][0]['value']); 
+//          $paket = $data['rajaongkir']['results'][0]['costs'][4]['service']; 
+//          $harga = intval($data['rajaongkir']['results'][0]['costs'][0]['cost'][0]['value']); 
+          $json = $data['rajaongkir']['results'][0]['costs'];
+          
+          $datax = null;
+          for ($i=0; $i<count($json); $i++)
+          {
+            $paket = $json[$i]['service']; 
+            $harga = intval($json[$i]['cost'][0]['value']); 
+            $datax[$i] = $paket.'|'.$harga;
+          }
+          return $datax;
+        }
+    }
+    
+    // mengahasilkan combo box ongkir
+    function get_ongkir_combo($ori,$dest, $courier='jne')
+    {
+        $hasil = $this->get_cost_fee($ori, $dest, $courier);
+        $datax = null;
+        $datax[''] = '--';
+        if ($hasil)
+        {
+          foreach ($hasil as $res){ $paket = explode('|', $res); $datax[$res] = $paket[0]; }
+          $js = "class='form-control' id='cpackage' tabindex='-1' style='min-width:100px;' "; 
+	  return form_dropdown('cpackage', $datax, isset($default['package']) ? $default['package'] : '', $js);
         }
     }
     

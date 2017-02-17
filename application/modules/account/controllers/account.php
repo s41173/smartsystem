@@ -49,7 +49,7 @@ class Account extends MX_Controller
         $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
         $data['h2title'] = $this->modul['title'];
         $data['main_view'] = 'account_view';
-	$data['form_action'] = site_url($this->title.'/add_process');
+	      $data['form_action'] = site_url($this->title.'/add_process');
         $data['form_action_update'] = site_url($this->title.'/update_process');
         $data['form_action_import'] = site_url($this->title.'/import');
         $data['form_action_del'] = site_url($this->title.'/delete_all');

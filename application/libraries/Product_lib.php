@@ -88,10 +88,32 @@ class Product_lib extends Custom_Model {
     {
         if ($id)
         {
-           $this->db->select('id, name, qty');
+           $this->db->select('id, name, qty, weight, price, discount');
            $this->db->where('id', $id);
            $res = $this->db->get('product')->row();
            return $res->name;
+        }
+    }
+    
+    function get_detail_based_id($id=null)
+    {
+        if ($id)
+        {
+           $this->db->select($this->field);
+           $this->db->where('id', $id);
+           $res = $this->db->get('product')->row();
+           return $res;
+        }
+    }
+    
+    function get_weight($id=null)
+    {
+        if ($id)
+        {
+           $this->db->select($this->field);
+           $this->db->where('id', $id);
+           $res = $this->db->get('product')->row();
+           return $res->weight;
         }
     }
 

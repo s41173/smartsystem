@@ -41,27 +41,17 @@ enctype="multipart/form-data">
       </div>
        <!-- pembatas div -->
       
-      <div class="col-md-9 col-sm-9 col-xs-12 form-group">
-        <label class="control-label col-md-3 col-sm-3 col-xs-12"> Currency </label>
-        <div class="col-md-5 col-sm-5 col-xs-12">
-       <?php $js = "class='form-control' id='ccur' tabindex='-1' style='width:100%;' "; 
-       echo form_dropdown('ccur', $currency, isset($default['currency']) ? $default['currency'] : '', $js); ?>
-        </div>
-      </div>
       
       <div class="col-md-9 col-sm-9 col-xs-12 form-group">
         <label class="control-label col-md-3 col-sm-3 col-xs-12"> Category </label>
         <div class="col-md-9 col-sm-9 col-xs-12">
-       <?php $js = "class='select2_single form-control' id='ccategory' tabindex='-1' style='width:100%;' "; 
-       echo form_dropdown('ccategory', $category, isset($default['category']) ? $default['category'] : '', $js); ?>
+
         </div>
       </div>
       
       <div class="col-md-9 col-sm-9 col-xs-12 form-group">
         <label class="control-label col-md-3 col-sm-3 col-xs-12"> Manufacture </label>
         <div class="col-md-9 col-sm-9 col-xs-12">
-       <?php $js = "class='select2_single form-control' id='cmanufacture' tabindex='-1' style='width:100%;' "; 
-       echo form_dropdown('cmanufacture', $manufacture, isset($default['manufacture']) ? $default['manufacture'] : '', $js); ?>
         </div>
       </div>
       
