@@ -36,7 +36,10 @@ class Shipping_lib extends Custom_Model {
            $this->db->select($this->field);
            $this->db->where('sales_id', $sid);
            $res = $this->db->get($this->tableName)->row();
-           if ($res->shipdate){ return true; }else{ return false; }
+           if ($res){
+              if ($res->shipdate){ return true; }else{ return false; } 
+           }
+           
         } 
     }
     
@@ -57,6 +60,12 @@ class Shipping_lib extends Custom_Model {
     {
        $this->db->where('sales_id', $sid);
        $this->db->update($this->tableName, $param); 
+    }
+    
+    function delete_by_sales($sid)
+    {
+       $this->db->where('sales_id', $sid);
+       $this->db->delete($this->tableName);
     }
     
     function total($sid)

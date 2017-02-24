@@ -262,18 +262,6 @@
             }
             
         ?> 
-<!--
-          <tr class="even pointer">
-            <td class=" ">121000040</td>
-            <td class=" ">May 23, 2014 11:47:56 PM </td>
-            <td class=" ">121000210 <i class="success fa fa-long-arrow-up"></i></td>
-            <td class=" ">John Blank L</td>
-            <td class=" ">Paid</td>
-            <td class="a-right a-right ">$7.45</td>
-            <td class=" last"><a href="#">View</a>
-            </td>
-          </tr>
--->
 
         </tbody>
       </table>

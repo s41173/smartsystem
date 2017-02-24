@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Sales_model extends Custom_Model
+class Shipping_model extends Custom_Model
 {
     protected $logs;
     
@@ -9,38 +9,40 @@ class Sales_model extends Custom_Model
         parent::__construct();
         $this->logs = new Log_lib();
         $this->com = new Components();
-        $this->com = $this->com->get_id('sales');
-        $this->tableName = 'sales';
+        $this->com = $this->com->get_id('shipping');
+        $this->tableName = 'shipping';
     }
     
-    protected $field = array('id', 'dates', 'cust_id', 'amount', 'tax', 'cost', 'total', 'shipping',
-                             'payment_id', 'bank_id', 'paid_date', 'paid_contact', 'due_date', 
-                             'cc_no', 'cc_name', 'cc_bank', 'sender_name', 'sender_acc', 'sender_bank', 'sender_amount', 'confirmation',
-                             'approved', 'log', 'created', 'updated', 'deleted');
+    protected $field = array('shipping.id', 'shipping.sales_id', 'shipping.shipdate', 'shipping.courier', 'shipping.awb',
+                             'shipping.origin', 'shipping.origin_id', 'shipping.origin_desc',
+                             'shipping.dest', 'shipping.dest_id', 'shipping.dest_desc', 'shipping.package', 'shipping.rate', 
+                             'shipping.weight', 'shipping.amount', 'shipping.paid_date', 'shipping.status');
     protected $com;
     
     function get_last($limit, $offset=null)
     {
         $this->db->select($this->field);
         $this->db->from($this->tableName); 
-        $this->db->where('deleted', $this->deleted);
         $this->db->order_by('id', 'desc'); 
         $this->db->limit($limit, $offset);
         return $this->db->get(); 
     }
     
-    function search($cust=null,$paid=null,$confirm=null)
+    function search($cust=null,$paid=null,$ship=null)
     {   
         $this->db->select($this->field);
-        $this->db->from($this->tableName); 
-        $this->db->where('deleted', $this->deleted);
-        $this->cek_null_string($cust, 'cust_id');
+        $this->db->from('sales, shipping');
+        $this->db->where('sales.id = shipping.sales_id');
+
+        $this->cek_null_string($cust, 'sales.cust_id');
         
-        if ($paid == '1'){ $this->db->where('paid_date IS NOT NULL'); }
-        elseif ($paid == '0'){ $this->db->where('paid_date IS NULL'); }
+        if ($paid == '1'){ $this->db->where('shipping.paid_date IS NOT NULL'); }
+        elseif ($paid == '0'){ $this->db->where('shipping.paid_date IS NULL'); }
         
-        $this->cek_null_string($confirm, 'confirmation');
-        $this->db->order_by('dates', 'desc'); 
+        if ($ship == '1'){ $this->db->where('shipping.shipdate IS NOT NULL'); }
+        elseif ($ship == '0'){ $this->db->where('shipping.shipdate IS NULL'); }
+        
+        $this->db->order_by('shipping.sales_id', 'desc'); 
         return $this->db->get(); 
     }
     
@@ -65,11 +67,11 @@ class Sales_model extends Custom_Model
        if ($type == 0){ return intval($query['id']+1); }else { return intval($query['id']); }
     }
     
-    function valid_confirm($sid)
+    function valid_payment_confirm($sid)
     {
        $this->db->where('id', $sid);
        $query = $this->db->get($this->tableName)->row();
-       if ($query->confirmation == 1){ return FALSE; }else{ return TRUE; }
+       if ($query->status == 1){ return FALSE; }else{ return TRUE; }
     }
     
     function get_sales_qty_based_category($cat=0,$month=null,$year=null)

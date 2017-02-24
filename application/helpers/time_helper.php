@@ -25,6 +25,17 @@ function tglin($tgl)
     }
 }
 
+function timein($tgl)
+{
+    if ($tgl != "")
+    {
+        // Konversi hari dan tanggal ke dalam format Indonesia
+//        $hari_array = array('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat');
+        $tgl = date('H:i:s', strtotime($tgl));
+        return $tgl;
+    }
+}
+
 function tglshort($tgl)
 {
     if ($tgl != "")

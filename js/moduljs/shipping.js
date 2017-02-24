@@ -15,6 +15,16 @@ $(document).ready(function (e) {
         showDropdowns: true
 	});
 
+	$('#dtime1').daterangepicker({
+        timePicker: true,
+		singleDatePicker: true,
+        showDropdowns: true,
+        timePicker24Hour: true,
+        locale: { format: 'YYYY/MM/DD H:mm'}
+	});
+
+	// // fungsi jquery input mask
+	$("#ttime").mask("99-99");
 
 	load_data();  
 	
@@ -41,14 +51,10 @@ $(document).ready(function (e) {
 				
 				res = result.split("|");
 				
-				$("#taccname").val(res[1]);
-				$("#taccno").val(res[2]);
-				$('#taccbank').val(res[3]);
-				$('#tamount').val(res[4]);
-			    $('#cbank').val(res[5]);
-			    $('#cstts').val(res[6]);
-			    $('#tcdates').val(res[7]);
-			    $('#ttime').val(res[8]);	
+				console.log(res[2]);
+
+			    $('#cstts').val(res[1]);
+			    $('#dtime1').val(res[2]);
 			}
 		})
 		return false;	
@@ -64,25 +70,13 @@ $(document).ready(function (e) {
 		window.location.href = url;
 		
 	});
-	
-		// fungsi jquery update
+
 	$(document).on('click','.text-print',function(e)
 	{	e.preventDefault();
 		var element = $(this);
 		var del_id = element.attr("id");
-		var url = sites_print_invoice +"/"+ del_id +"/invoice";
-		
-		// window.location.href = url;
-		window.open(url, "Invoice SO-0"+del_id, "toolbar=yes,scrollbars=yes,resizable=yes,top=200,left=600,width=800,height=600");
-		
-	});
+		var url = sites_print_invoice +"/"+ del_id;
 
-	$(document).on('click','.text-shipping',function(e)
-	{	e.preventDefault();
-		var element = $(this);
-		var del_id = element.attr("id");
-		var url = sites_print_invoice +"/"+ del_id +"/shipping";
-		
 		// window.location.href = url;
 		window.open(url, "Invoice SO-0"+del_id, "toolbar=yes,scrollbars=yes,resizable=yes,top=200,left=600,width=800,height=600");
 		
@@ -208,32 +202,6 @@ $(document).ready(function (e) {
 
 	});
 
-		// fungsi ajax city ongkir
-	$(document).on('change','#ccity_ongkir,#ccourier',function(e)
-	{	
-		e.preventDefault();
-		var value = $("#ccity_ongkir").val().split('|');
-		var kurir = $("#ccourier").val();
-		var url = sites+'/ongkir/278/'+value[0]+'/'+kurir;
-
-		if (value){ 
-		    // batas
-			$.ajax({
-				type: 'POST',
-				url: url,
-	    	    cache: false,
-				headers: { "cache-control": "no-cache" },
-				success: function(result) {
-			    $("#tpackage").hide();		
-				$("#package_box").html(result);
-				}
-			})
-			return false;
-
-		}else { swal('Error Load Data...!', "", "error"); }
-
-	});
-
 	// ckship
 	$('#ckship').change(function() {
         if($(this).is(":checked")) {
@@ -297,8 +265,8 @@ $(document).ready(function (e) {
 		
 		var cust = $("#ccustomer_search").val();
 		var paid = $("#cpaid").val();
-		var confirm = $("#cconfirm").val();
-		var param = ['searching',cust,paid,confirm];
+		var ship = $("#cship").val();
+		var param = ['searching',cust,paid,ship];
 		
 		$.ajax({
 			type: 'POST',
@@ -350,23 +318,22 @@ $(document).ready(function (e) {
 		$("#chkbox").append('<input type="checkbox" name="newsletter" value="accept1" onclick="cekall('+s.length+')" id="chkselect" class="chkselect">');
 							
 						  for(var i = 0; i < s.length; i++) {
-						  if (s[i][8] == 1){ stts = 'btn btn-success'; }else { stts = 'btn btn-danger'; }
+						  if (s[i][12] == 1){ stts = 'btn btn-success'; }else { stts = 'btn btn-danger'; }
 						  oTable.fnAddData([
 '<input type="checkbox" name="cek[]" value="'+s[i][0]+'" id="cek'+i+'" style="margin:0px"  />',
 										i+1,
-										s[i][1],
-										s[i][2],
+										s[i][1]+'<br>'+s[i][2],
 										s[i][3],
 										s[i][4],
-										s[i][5],
-										s[i][6],
-										s[i][7],
+										s[i][5]+'<br> <b>'+s[i][6]+'</b>',
+										s[i][11],
+'<div class="btn-group" role"group">'+
 '<a href="" class="'+stts+' btn-xs primary_status" id="' +s[i][0]+ '" title="Confirmation Status"> <i class="fa fa-power-off"> </i> </a> '+
 '<a href="" class="btn btn-success btn-xs text-print" id="' +s[i][0]+ '" title="Invoice Status"> <i class="fa fa-print"> </i> </a> '+
-'<a href="" class="btn btn-warning btn-xs text-shipping" id="' +s[i][0]+ '" title="Shipping Status"> <i class="fa fa-truck"> </i> </a> '+
-'<a href="" class="btn btn-default btn-xs text-confirmation" id="' +s[i][0]+ '" title="Payment Confirmation"> <i class="fa fa-credit-card-alt"> </i> </a> '+
+'<a href="" class="btn btn-default btn-xs text-confirmation" id="' +s[i][0]+ '" title="Shipping Confirmation"> <i class="fa fa-truck"> </i> </a> '+
+'<a href="" class="btn btn-warning btn-xs text-email" id="' +s[i][0]+ '" title="Send Invoice"> <i class="fa fa-envelope"> </i> </a> '+
 '<a href="" class="btn btn-primary btn-xs text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a> '+
-'<a href="#" class="btn btn-danger btn-xs text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'
+'</div>'
 										    ]);										
 											} // End For 
 											
@@ -381,7 +348,8 @@ $(document).ready(function (e) {
         });
 	}
 
-    // fungsi load data
+
+	    // fungsi load data
 	function load_data()
 	{
 		$(document).ready(function (e) {
@@ -405,23 +373,22 @@ $(document).ready(function (e) {
 		$("#chkbox").append('<input type="checkbox" name="newsletter" value="accept1" onclick="cekall('+s.length+')" id="chkselect" class="chkselect">');
 							
 							for(var i = 0; i < s.length; i++) {
-						  if (s[i][8] == 1){ stts = 'btn btn-success'; }else { stts = 'btn btn-danger'; }
+						  if (s[i][12] == 1){ stts = 'btn btn-success'; }else { stts = 'btn btn-danger'; }
 						  oTable.fnAddData([
 '<input type="checkbox" name="cek[]" value="'+s[i][0]+'" id="cek'+i+'" style="margin:0px"  />',
 										i+1,
-										s[i][1],
-										s[i][2],
+										s[i][1]+'<br>'+s[i][2],
 										s[i][3],
 										s[i][4],
-										s[i][5],
-										s[i][6],
-										s[i][7],
+										s[i][5]+'<br> <b>'+s[i][6]+'</b>',
+										s[i][11],
+'<div class="btn-group" role"group">'+
 '<a href="" class="'+stts+' btn-xs primary_status" id="' +s[i][0]+ '" title="Confirmation Status"> <i class="fa fa-power-off"> </i> </a> '+
 '<a href="" class="btn btn-success btn-xs text-print" id="' +s[i][0]+ '" title="Invoice Status"> <i class="fa fa-print"> </i> </a> '+
-'<a href="" class="btn btn-warning btn-xs text-shipping" id="' +s[i][0]+ '" title="Shipping Status"> <i class="fa fa-truck"> </i> </a> '+
-'<a href="" class="btn btn-default btn-xs text-confirmation" id="' +s[i][0]+ '" title="Payment Confirmation"> <i class="fa fa-credit-card-alt"> </i> </a> '+
+'<a href="" class="btn btn-default btn-xs text-confirmation" id="' +s[i][0]+ '" title="Shipping Confirmation"> <i class="fa fa-truck"> </i> </a> '+
+'<a href="" class="btn btn-warning btn-xs text-email" id="' +s[i][0]+ '" title="Send Invoice"> <i class="fa fa-envelope"> </i> </a> '+
 '<a href="" class="btn btn-primary btn-xs text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a> '+
-'<a href="#" class="btn btn-danger btn-xs text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'
+'</div>'
 										    ]);										
 											} // End For 
 											
