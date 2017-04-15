@@ -1,4 +1,5 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+require_once 'definer.php';
 
 class Sales extends MX_Controller
 {
@@ -10,7 +11,7 @@ class Sales extends MX_Controller
         $this->load->model('Sales_item_model', 'sitem', TRUE);
 
         $this->properti = $this->property->get();
-        $this->acl->otentikasi();
+//        $this->acl->otentikasi();
 
         $this->modul = $this->components->get(strtolower(get_class($this)));
         $this->title = strtolower(get_class($this));
@@ -28,12 +29,45 @@ class Sales extends MX_Controller
 
     private $properti, $modul, $title, $sales, $wt ,$shipping, $bank;
     private $role, $currency, $customer, $payment, $city, $product ,$category;
-
+    
     function index()
     {
+//         echo constant("RADIUS_API");
        $this->session->unset_userdata('start'); 
        $this->session->unset_userdata('end');
        $this->get_last(); 
+    }
+    
+    // function untuk memeriksa input user dari form sebagai admin
+    function json_process()
+    {
+        $datax = (array)json_decode(file_get_contents('php://input')); 
+
+        $username = $datax['user'];
+        $password = $datax['pass'];
+
+            if ($username == 'admin' && $password == 'admin')
+            {
+                $this->mail_invoice(7);
+                $response = array(
+                  'Success' => true,
+		  'User' => $datax['user'],
+                  'Info' => 'Login Success Lah'); 
+            }
+            else
+            {
+                $response = array(
+                'Success' => false,
+                'Info' => 'Invalid Login..!!');
+            }
+            
+        $this->output
+        ->set_status_header(201)
+        ->set_content_type('application/json', 'utf-8')
+        ->set_output(json_encode($response))
+        ->_display();
+        exit;
+
     }
     
 //     ============== ajax ===========================
@@ -83,7 +117,7 @@ class Sales extends MX_Controller
         $this->output
          ->set_status_header(200)
          ->set_content_type('application/json', 'utf-8')
-         ->set_output(json_encode($output, JSON_PRETTY_PRINT))
+         ->set_output(json_encode($output))
          ->_display();
          exit;  
         }
@@ -486,13 +520,14 @@ class Sales extends MX_Controller
         $this->form_validation->set_rules('tduedates', 'Transaction Due Date', 'required');
         $this->form_validation->set_rules('cpayment', 'Payment Type', 'required');
 
-        if ($this->form_validation->run($this) == TRUE && $this->valid_confirm($param) == TRUE)
+        if ($this->form_validation->run($this) == TRUE && $this->valid_confirm($param) == TRUE && $this->valid_items($param) == TRUE)
         {
             $sales = array('cust_id' => $this->input->post('ccustomer'),
                            'due_date' => $this->input->post('tduedates'), 'payment_id' => $this->input->post('cpayment'), 
                            'updated' => date('Y-m-d H:i:s'));
 
             $this->Sales_model->update($param, $sales);
+            $this->mail_invoice($param); // send email confirmation
             $this->session->set_flashdata('message', "One $this->title data successfully saved!");
             echo "true|One $this->title data successfully saved!|".$param;
         }
@@ -532,18 +567,90 @@ class Sales extends MX_Controller
             if ($this->input->post('cstts') == '1'){
                 $sales = array('confirmation' => 1, 'updated' => date('Y-m-d H:i:s'));
                 $stts = 'confirmed!';
+                // lakukan action pengurangan stock
+                $this->change_product($this->session->userdata('langid'));
+                
+                $this->Sales_model->update($this->session->userdata('langid'), $sales);
+                // lakukan action email ke customer
+                $status = $this->mail_invoice($this->session->userdata('langid'));
             }
             else { $sales = array('confirmation' => 0, 'updated' => date('Y-m-d H:i:s')); 
                    $stts = 'unconfirmed!'; 
+                   // lakukan action pengurangan stock
+                   $this->change_product($this->session->userdata('langid'),0);
+                $status = true;
+                $this->Sales_model->update($this->session->userdata('langid'), $sales);
             }
             
-            // lakukan action email ke customer
-            
-            $this->Sales_model->update($this->session->userdata('langid'), $sales);
-            echo "true|One $this->title data payment successfully ".$stts;
+            if ($status == true){
+               echo "true|One $this->title data payment successfully ".$stts;  
+            }else { echo "error|Error Sending Mail...!! ";   }
         }
         else{ echo "error|". validation_errors(); $this->session->set_flashdata('message', validation_errors()); }
         }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; } 
+    }
+    
+    private function mail_invoice($pid)
+    {   
+        // property display
+       $data['p_logo'] = $this->properti['logo'];
+       $data['p_name'] = $this->properti['name'];
+       $data['p_site_name'] = $this->properti['sitename'];
+       $data['p_address'] = $this->properti['address'];
+       $data['p_zip'] = $this->properti['zip'];
+       $data['p_city'] = $this->properti['city'];
+       $data['sites_url'] = constant("BASE_URL");
+       
+       $sales = $this->Sales_model->get_by_id($pid)->row();
+       $cust = $this->customer->get_details($sales->cust_id)->row();
+       $shipping = $this->shipping->get_detail_based_sales($pid);
+      
+       $data['so_no']   = 'DISO-0'.$pid;
+       $data['so_date'] = tglin($sales->dates).' '. timein($sales->dates);
+       $data['c_name'] = ucfirst($cust->first_name.' '.$cust->last_name);
+       $data['c_phone'] = $cust->phone1.' / '.$cust->phone2;
+       $data['payment'] = $this->payment->get_name($sales->payment_id);
+       $data['courier'] = strtoupper($shipping->courier);
+       $data['package'] = strtoupper($shipping->package);
+       $data['ship_address'] = $shipping->dest_desc;
+       $data['sub_total'] = num_format($sales->amount);
+       $data['shipping_amt'] = num_format($sales->shipping);
+       $data['total'] = num_format(floatval($sales->amount+$sales->shipping));
+       
+       $data['item'] = $this->sitem->get_last_item($pid)->result();
+       
+       if($sales->confirmation == 0){ 
+          $data['status'] = 'Pending'; 
+          $html = $this->load->view('sales_order_credit',$data,true);
+          $subject = 'Konfirmasi Pesanan - '.$data['so_no'].' - '.$data['p_name'];
+       }else{ $data['status'] = 'Lunas'; 
+         $html = $this->load->view('sales_order_lunas',$data,true); 
+         $subject = 'Pembayaran Sukses - '.$data['so_no'].' - '.$data['p_name'];
+       }
+         
+        // email send
+        $this->load->library('email');
+        $config['charset']  = 'utf-8';
+        $config['wordwrap'] = TRUE;
+        $config['mailtype'] = 'html';
+
+        $this->email->initialize($config);
+        $this->email->from($this->properti['billing_email'], $this->properti['name']);
+        $this->email->to($cust->email);
+        $this->email->cc($this->properti['cc_email']); 
+
+        $this->email->subject($subject);
+        $this->email->message($html);
+//        $pdfFilePath = FCPATH."/downloads/".$no.".pdf";
+
+        if (!$this->email->send()){ return false; }else{ return true;  }
+    }
+    
+    private function change_product($sid,$type=1)
+    {
+        $item = $this->sitem->get_last_item($sid)->result();
+        if ($type==1){ foreach ($item as $res) { $this->product->min_qty($res->product_id,$res->qty); } }
+        else{ foreach ($item as $res) { $this->product->add_qty($res->product_id,$res->qty); } }
     }
     
     function valid_product($id,$sid)
@@ -571,6 +678,16 @@ class Sales extends MX_Controller
         if ($this->Sales_model->valid_confirm($sid) == FALSE)
         {
             $this->form_validation->set_message('valid_confirm','Sales Already Confirmed..!');
+            return FALSE;
+        }
+        else{ return TRUE; }
+    }
+    
+    function valid_items($sid)
+    {
+        if ($this->sitem->valid_items($sid) == FALSE)
+        {
+            $this->form_validation->set_message('valid_items',"Empty Transaction..!");
             return FALSE;
         }
         else{ return TRUE; }

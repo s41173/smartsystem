@@ -21,27 +21,27 @@ class Product_lib extends Custom_Model {
        if ($query > 0) { return FALSE; } else { return TRUE; }
     }
 
-    function add_qty($name=null,$amount_qty=null)
+    function add_qty($id=null,$amount_qty=null)
     {
-        $this->db->where('name', $name);
+        $this->db->where('id', $id);
         $qty = $this->db->get('product')->row();
         $qty = $qty->qty;
         $qty = $qty + $amount_qty;
 
         $res = array('qty' => $qty);
-        $this->db->where('name', $name);
+        $this->db->where('id', $id);
         $this->db->update('product', $res);
     }
 
-    function min_qty($name=null,$amount_qty=null)
+    function min_qty($id=null,$amount_qty=null)
     {
-        $this->db->where('name', $name);
+        $this->db->where('id', $id);
         $qty = $this->db->get('product')->row();
         $qty = $qty->qty;
         $qty = $qty - $amount_qty;
 
         $res = array('qty' => $qty);
-        $this->db->where('name', $name);
+        $this->db->where('id', $id);
         $this->db->update('product', $res);
     }
 

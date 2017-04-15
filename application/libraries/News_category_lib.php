@@ -19,14 +19,16 @@ class News_category_lib extends Custom_Model {
         return $data;
     }
 
-    function combo_all()
+    function combo_all($type='id')
     {
         $this->db->select($this->field);
         $this->db->where('deleted', $this->deleted);
         $val = $this->db->get($this->tableName)->result();
         $data['options'][''] = '-- All --';
         foreach($val as $row)
-        {  $data['options'][$row->id] = ucfirst($row->name);}
+        {  if ($type == 'id'){ $data['options'][$row->id] = ucfirst($row->name); }
+           else{ $data['options'][strtolower($row->name)] = ucfirst($row->name); }
+        }
         return $data;
     }
     
@@ -52,6 +54,18 @@ class News_category_lib extends Custom_Model {
             if ($val){ return ucfirst($val->name); }
         }
         else if($id == 0){ return 'Top'; }
+        else { return ''; }
+    }
+    
+    function get_id($name=null)
+    {
+        if ($name)
+        {
+            $this->db->select($this->field);
+            $this->db->where('name', $name);
+            $val = $this->db->get($this->tableName)->row();
+            if ($val){ return $val->id; }
+        }
         else { return ''; }
     }
 

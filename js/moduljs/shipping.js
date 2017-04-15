@@ -1,13 +1,25 @@
 $(document).ready(function (e) {
 	
+
+	var favorite = [];
     // function general
 	
 	$('#datatable-buttons').dataTable({dom: 'T<"clear">lfrtip', tableTools: {"sSwfPath": site}});
 	 
 	// // date time picker
 	$('#d1,#d2,#d3,#d4,#d5').daterangepicker({
-		 locale: {format: 'YYYY/MM/DD'}
-    }); 
+		 locale: {format: 'YYYY/MM/DD'},
+		 autoUpdateInput: false
+    });
+
+
+    $('#d1,#d2,#d3,#d4,#d5').on('apply.daterangepicker', function(ev, picker) {
+      $(this).val(picker.startDate.format('YYYY/MM/DD') + ' - ' + picker.endDate.format('YYYY/MM/DD'));
+    });
+
+	  $('#d1,#d2,#d3,#d4,#d5').on('cancel.daterangepicker', function(ev, picker) {
+	      $(this).val('');
+	  }); 
 	
 	$('#ds1,#ds2').daterangepicker({
         locale: {format: 'YYYY/MM/DD'},
@@ -15,7 +27,7 @@ $(document).ready(function (e) {
         showDropdowns: true
 	});
 
-	$('#dtime1').daterangepicker({
+	$('#dtime1,#dtime2').daterangepicker({
         timePicker: true,
 		singleDatePicker: true,
         showDropdowns: true,
@@ -67,7 +79,30 @@ $(document).ready(function (e) {
 		var del_id = element.attr("id");
 		var url = sites_get +"/"+ del_id;
 		
-		window.location.href = url;
+		$(".error").fadeOut();
+		$("#myModal2").modal('show');
+
+		// batas
+		$.ajax({
+			type: 'POST',
+			url: url,
+    	    cache: false,
+			headers: { "cache-control": "no-cache" },
+			success: function(result) {
+				
+				// 4|7|19-02-2017|jne|REG|AWB2384679|Jakarta Timur|JL.Bunga Cempaka X No.22
+				res = result.split("|");
+
+				$('#tid_update').val(res[0]);
+			    $('#tsales').val("SO-0"+res[1]);
+			    $('#tsales_date').val(res[2]);
+			    $('#tcourier').val(res[3]);
+			    $('#tpackage').val(res[4]);
+			    $('#tdesc').val(res[6]);
+			    $('#taddress').val(res[7]);
+			}
+		})
+		return false;	
 		
 	});
 
@@ -81,6 +116,86 @@ $(document).ready(function (e) {
 		window.open(url, "Invoice SO-0"+del_id, "toolbar=yes,scrollbars=yes,resizable=yes,top=200,left=600,width=800,height=600");
 		
 	});
+
+	$(document).on('click','.text-email',function(e)
+	{	e.preventDefault();
+		var element = $(this);
+		var del_id = element.attr("id");
+
+		$.ajax({
+		    type: "POST",
+        	url: sites_email_invoice +"/"+ del_id+"/ajax",
+        	cache: false,
+			success: function(data)
+		    {
+				res = data.split("|");
+				if(res[0]=='true')
+				{
+					// invalid file format.
+					error_mess(1,res[1],0);
+				}
+				else if(res[0] == 'warning'){ error_mess(2,res[1],0); }
+				else if(res[0] == 'error'){ error_mess(3,res[1],0); }
+				console.log(res[0]);
+		    },
+		  	error: function(e) 
+	    	{
+				//$("#error").html(e).fadeIn();
+				error_mess(3,e);
+				console.log(e.responseText);	
+	    	} 	        
+	   });
+
+		// window.location.href = url;
+		// window.open(url, "Invoice SO-0"+del_id, "toolbar=yes,scrollbars=yes,resizable=yes,top=200,left=600,width=800,height=600");
+		
+	});
+
+	$(document).on('click','#bconfirm',function(e)
+	{	e.preventDefault();
+		$(".error").fadeOut();
+
+        // fungsi looping
+    	favorite = [];
+        $.each($("input[name='cek[]']:checked"), function(){            
+            favorite.push($(this).val());
+        });
+        // alert("My favourite sports are: " + favorite.join(", "));
+        $("#myModal4").modal('show');
+	});
+
+	// ajax form non upload data
+	$("#shipping_confirm").on('submit',(function(e) {
+		
+		var dates = $("#dtime2").val();
+		var confirm = $("#cpaid_stts").val();
+
+		e.preventDefault();
+		$.ajax({
+		    type: "POST",
+        	url: sites_payment_confirmation,
+            data: "dates="+ dates + "&confirm=" + confirm + "&nilai=" + favorite,
+			success: function(data)
+		    {
+				res = data.split("|");
+				
+				if(res[0]=='true')
+				{
+					// invalid file format.
+					error_mess(1,res[1]);
+				}
+				else if(res[0] == 'warning'){ error_mess(2,res[1]); }
+				else if(res[0] == 'error'){ error_mess(3,res[1]); }
+		    },
+		  	error: function(e) 
+	    	{
+				//$("#error").html(e).fadeIn();
+				error_mess(3,e);
+				console.log(e.responseText);	
+	    	} 	        
+	   });
+	     
+	}));
 	
 	
 	// publish status

@@ -110,7 +110,6 @@ $(document).ready(function (e) {
 	
 	// ================================================== delete ajax ===============================================
 	
-	
 	$(document).on('click','.text-danger',function(e){
 	
 	e.preventDefault();

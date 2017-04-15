@@ -12,13 +12,14 @@ class District_lib extends Main_model {
     
     function combo_district_db($cityid=null)
     {
+        $data = null;
         if ($cityid != null)
         {
             $this->db->where('id_kabupaten', $cityid);
             $val = $this->db->get($this->tableName)->result();
         }
         else {$val = $this->db->get($this->tableName)->result(); }
-        
+//        
         foreach($val as $row){$data['options'][$row->id] = $row->nama;}
         return $data;
     }

@@ -66,19 +66,19 @@
                     datafields:
                     [
                         { name: "No", type: "string" },
-						{ name: "Code", type: "string" },
-						{ name: "Date", type: "string" },
-						{ name: "Due Date", type: "string" },
-						{ name: "Customer", type: "string" },
-						{ name: "Total", type: "number" },
-                        { name: "Tax", type: "number" },
-                        { name: "Cost", type: "number" },
+						{ name: "Sales No", type: "string" },
+						{ name: "Sales Date", type: "string" },
+						{ name: "Ship Date", type: "string" },
+						{ name: "Courier", type: "string" },
+						{ name: "Package", type: "number" },
+                        { name: "Rate", type: "number" },
+                        { name: "Weight", type: "number" },
+                        { name: "AWB", type: "string" },
+                        { name: "Destination", type: "string" },
+                        { name: "Destination Desc", type: "string" },
                         { name: "Amount", type: "number" },
-                        { name: "Shipping", type: "number" },
-                        { name: "Payment Type", type: "string" },
                         { name: "Paid Date", type: "string" },
-                        { name: "Confirmation", type: "string" },
-                        { name: "Log", type: "string" }
+                        { name: "Status", type: "string" }
                     ]
                 };
 			
@@ -102,19 +102,19 @@
 				autoshowfiltericon: false,
                 columns: [
                   { text: 'No', dataField: 'No', width: 50 },
-				  { text: 'Code', dataField: 'Code', width : 100 },
-				  { text: 'Date', dataField: 'Date', width : 150 },
-  				  { text: 'Due Date', dataField: 'Due Date', width : 150 },
-				  { text: 'Customer', dataField: 'Customer', width : 250 },
-    { text: 'Total', dataField: 'Total', width : 150, cellsalign: 'right', cellsformat: 'number', aggregates: ['sum'] },
-    { text: 'Tax', datafield: 'Tax', width: 150, cellsalign: 'right', cellsformat: 'number', aggregates: ['sum'] },
-    { text: 'Cost', dataField: 'Cost', width : 150, cellsalign: 'right', cellsformat: 'number', aggregates: ['sum'] },
+				  { text: 'Sales No', dataField: 'Sales No', width : 100 },
+				  { text: 'Sales Date', dataField: 'Sales Date', width : 150 },
+  				  { text: 'Ship Date', dataField: 'Ship Date', width : 150 },
+				  { text: 'Courier', dataField: 'Courier', width : 100 },
+                  { text: 'Package', dataField: 'Package', width : 150 },
+    { text: 'Rate', dataField: 'Rate', width : 150, cellsalign: 'right', cellsformat: 'number', aggregates: ['sum'] },
+    { text: 'Weight', datafield: 'Weight', width: 100, cellsalign: 'right', cellsformat: 'number', aggregates: ['sum'] },
+    { text: 'AWB', dataField: 'AWB', width : 100},
+    { text: 'Destination', dataField: 'Destination', width : 150 },
+    { text: 'Destination Desc', dataField: 'Destination Desc', width : 150 },
     { text: 'Amount', dataField: 'Amount', width : 150, cellsalign: 'right', cellsformat: 'number', aggregates: ['sum'] },
-    { text: 'Shipping', dataField: 'Shipping', width : 150, cellsalign: 'right', cellsformat: 'number', aggregates: ['sum'] },
-                  { text: 'Payment Type', dataField: 'Payment Type', width : 150 },
-                  { text: 'Paid Date', dataField: 'Paid Date', width : 150 },
-                  { text: 'Confirmation', dataField: 'Confirmation', width : 100 },
-                  { text: 'Log', dataField: 'Log', width : 100 }
+    { text: 'Paid Date', dataField: 'Paid Date', width : 150 },
+    { text: 'Status', dataField: 'Status', width : 80 }
                 ]
             });
 			
@@ -123,10 +123,10 @@
 			$("#bexport").click(function() {
 				
 				var type = $("#crtype").val();	
-				if (type == 0){ $("#jqxgrid").jqxGrid('exportdata', 'html', 'Sales-Summary'); }
-				else if (type == 1){ $("#jqxgrid").jqxGrid('exportdata', 'xls', 'Sales-Summary'); }
-				else if (type == 2){ $("#jqxgrid").jqxGrid('exportdata', 'pdf', 'Sales-Summary'); }
-				else if (type == 3){ $("#jqxgrid").jqxGrid('exportdata', 'csv', 'Sales-Summary'); }
+				if (type == 0){ $("#jqxgrid").jqxGrid('exportdata', 'html', 'Shipping-Summary'); }
+				else if (type == 1){ $("#jqxgrid").jqxGrid('exportdata', 'xls', 'Shipping-Summary'); }
+				else if (type == 2){ $("#jqxgrid").jqxGrid('exportdata', 'pdf', 'Shipping-Summary'); }
+				else if (type == 3){ $("#jqxgrid").jqxGrid('exportdata', 'csv', 'Shipping-Summary'); }
 			});
 			
 			$('#jqxgrid').on('celldoubleclick', function (event) {
@@ -161,9 +161,9 @@
 	
 	<div style="border:0px solid red; float:left;">
 		<table border="0">
-			<tr> <td> Period </td> <td> : </td> <td> <?php echo $start.' - '.$end; ?> </td> </tr>
-            <tr> <td> Paid Status </td> <td> : </td> <td> <?php echo $paid; ?> </td> </tr>
-            <tr> <td> Confirmation Status </td> <td> : </td> <td> <?php echo $confirm; ?> </td> </tr>
+			<tr> <td> Sales Period </td> <td> : </td> <td> <?php echo $sales_start.' - '.$sales_end; ?> </td> </tr>
+            <tr> <td> Shipping Period </td> <td> : </td> <td> <?php echo $shipping_start.' - '.$shipping_end; ?> </td> </tr>
+            <tr> <td> Confirmation Status </td> <td> : </td> <td> <?php echo $paid; ?> </td> </tr>
 			<tr> <td> Run Date </td> <td> : </td> <td> <?php echo $rundate; ?> </td> </tr>
 			<tr> <td> Log </td> <td> : </td> <td> <?php echo $log; ?> </td> </tr>
 		</table>
@@ -171,7 +171,7 @@
 
 	<center>
 	   <div style="border:0px solid green; width:230px;">	
-	       <h4> <?php echo isset($company) ? $company : ''; ?> <br> Sales Report </h4>
+	       <h4> <?php echo isset($company) ? $company : ''; ?> <br> Shipping Report </h4>
 	   </div>
 	</center>
 	
@@ -196,27 +196,22 @@
     </div>
     
 		<table id="table" border="0" width="100%">
-		   <thead>
+		   
+            <thead>
            <tr>
-<th> No </th> <th> Code </th> <th> Date </th> <th> Due Date </th> <th> Customer </th> <th> Total </th> <th> Tax </th>
-<th> Cost </th> <th> Amount </th> <th> Shipping </th> <th> Payment Type </th> <th> Paid Date </th> <th> Confirmation </th> 
-<th> Log </th>
+<th> No </th> <th> Sales No </th> <th> Sales Date </th> <th> Ship Date </th> <th> Courier </th> <th> Package </th> <th> Rate </th> <th> Weight </th>  <th> AWB </th> <th> Destination </th> <th> Destination Desc </th> <th> Amount </th> <th> Paid Date </th>
+<th> Status </th> 
            </tr>
            </thead>
 		  
           <tbody> 
 		  <?php 
               
-              function customer($val)
+              function get_sales_date($val)
               {
-                  $res = new Customer_lib(); 
-                  return strtoupper($res->get_name($val));
-              }
-              
-              function payment($val)
-              {
-                  $res = new Payment_lib(); 
-                  return strtoupper($res->get_name($val));
+                  $res = new Sales_lib(); 
+                  $result = $res->get_detail_sales($val);
+                  return tglin($result->dates);
               }
               
               function pstatus($val){ if ($val == 0){ return 'N'; }else{ return 'Y'; } }
@@ -229,19 +224,19 @@
 				   echo " 
 				   <tr> 
 				       <td class=\"strongs\">".$i."</td> 
-                       <td class=\"strongs\"> SO-0".$res->id."</td> 
-                       <td class=\"strongs\">".tglin($res->dates)."</td> 
-					   <td class=\"strongs\">".tglin($res->due_date)."</td>
-                       <td class=\"strongs\">".customer($res->cust_id)."</td>
-                       <td class=\"strongs\">".$res->total."</td>
-                       <td class=\"strongs\">".$res->tax."</td>
-                       <td class=\"strongs\">".$res->cost."</td>
+                       <td class=\"strongs\"> SO-0".$res->sales_id."</td> 
+                       <td class=\"strongs\">".get_sales_date($res->sales_id)."</td> 
+					   <td class=\"strongs\">".tglin($res->shipdate)."</td>
+                       <td class=\"strongs\">".strtoupper($res->courier)."</td>
+                       <td class=\"strongs\">".$res->package."</td>
+                       <td class=\"strongs\">".$res->rate."</td>
+                       <td class=\"strongs\">".$res->weight."</td>
+                       <td class=\"strongs\">".$res->awb."</td>
+                       <td class=\"strongs\">".$res->dest."</td>
+                       <td class=\"strongs\">".$res->dest_desc."</td>
                        <td class=\"strongs\">".$res->amount."</td>
-                       <td class=\"strongs\">".$res->shipping."</td>
-                       <td class=\"strongs\">".payment($res->payment_id)."</td>
                        <td class=\"strongs\">".tglin($res->paid_date)."</td>
-                       <td class=\"strongs\">".pstatus($res->confirmation)."</td>
-                       <td class=\"strongs\">".$res->log."</td>
+                       <td class=\"strongs\">".pstatus($res->status)."</td>
 				   </tr>";
 				   $i++;
 				}

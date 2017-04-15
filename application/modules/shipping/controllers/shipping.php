@@ -1,4 +1,5 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+require_once 'definer.php';
 
 class Shipping extends MX_Controller
 {
@@ -67,7 +68,7 @@ class Shipping extends MX_Controller
         $this->output
          ->set_status_header(200)
          ->set_content_type('application/json', 'utf-8')
-         ->set_output(json_encode($output, JSON_PRETTY_PRINT))
+         ->set_output(json_encode($output))
          ->_display();
          exit;  
         }
@@ -334,60 +335,15 @@ class Shipping extends MX_Controller
     }
     
     // Fungsi update untuk menset texfield dengan nilai dari database
-    function update($param=0)
+    function update($sid)
     {
-        $data['title'] = $this->properti['name'].' | Administrator  '.ucwords($this->modul['title']);
-        $data['h2title'] = 'Update '.$this->modul['title'];
-        $data['main_view'] = 'shipping_form';
-        $data['form_action'] = site_url($this->title.'/update_process/'.$param); 
-        $data['form_action_trans'] = site_url($this->title.'/add_item/'.$param); 
-        $data['form_action_shipping'] = site_url($this->title.'/shipping/'.$param); 
-        $data['counter'] = $param; 
-	
-        $data['link'] = array('link_back' => anchor($this->title,'Back', array('class' => 'btn btn-danger')));
-
-        $data['customer'] = $this->customer->combo();
-        $data['payment'] = $this->payment->combo();
-        $data['source'] = site_url($this->title.'/getdatatable');
-        $data['graph'] = site_url()."/shipping/chart/";
-        $data['city'] = $this->city->combo_city_combine();
-        $data['product'] = $this->product->combo();
+        $shipping = $this->Shipping_model->get_by_id($sid)->row();
+	$this->session->set_userdata('langid', $shipping->id);
         
-        $shipping = $this->Shipping_model->get_by_id($param)->row();
-        $customer = $this->customer->get_details($shipping->cust_id)->row();
-        $data['default']['customer'] = $shipping->cust_id;
-        $data['default']['email'] = $customer->email;
-        $data['default']['ship_address'] = $customer->shipping_address;
-        $data['default']['dates'] = $shipping->dates;
-        $data['default']['due_date'] = $shipping->due_date;
-        $data['default']['payment'] = $shipping->payment_id;
-        $data['total'] = $shipping->total;
-        $data['shipping'] = $shipping->shipping;
-        $data['tot_amt'] = intval($shipping->amount+$shipping->shipping);
+        $sales = $this->sales->get_detail_sales($shipping->sales_id);
         
-        // weight total
-        $total = $this->sitem->total($param);
-        $data['weight'] = round($total['weight']);
-        $data['tax']    = $shipping->tax;
-        
-        // shipping details
-        $shipping = $this->shipping->get_detail_based_shipping($param);
-        if ($shipping){
-           
-           $dst = array($shipping->dest_id,$shipping->dest); 
-           $pck = array($shipping->package, $shipping->rate);
-           
-           $data['default']['dest'] = implode('|', $dst);
-           $data['default']['dest_desc'] = $shipping->dest_desc; 
-           $data['package'] = implode('|', $pck);
-           $data['default']['courier'] = $shipping->courier;
-           $data['default']['package'] = $shipping->package;
-           $data['default']['rate'] = $shipping->rate;
-        }
-        
-        // transaction table
-        $data['items'] = $this->sitem->get_last_item($param)->result();
-        $this->load->view('template', $data);
+        echo $sid.'|'.$shipping->sales_id.'|'.tglin($sales->dates).'|'.strtoupper($shipping->courier).'|'.$shipping->package.'|'.$shipping->awb.'|'.
+             $shipping->dest.'|'.$shipping->dest_desc;
     }
     
         // Fungsi update untuk menset texfield dengan nilai dari database
@@ -449,7 +405,7 @@ class Shipping extends MX_Controller
         }
     }
     
-    function update_process($param)
+    function update_process($param=null)
     {
         if ($this->acl->otentikasi2($this->title,'ajax') == TRUE){
 
@@ -460,22 +416,17 @@ class Shipping extends MX_Controller
 	$data['link'] = array('link_back' => anchor('category/','<span>back</span>', array('class' => 'back')));
 
 	// Form validation
-        $this->form_validation->set_rules('ccustomer', 'Customer', 'required');
-        $this->form_validation->set_rules('tdates', 'Transaction Date', 'required');
-        $this->form_validation->set_rules('tduedates', 'Transaction Due Date', 'required');
-        $this->form_validation->set_rules('cpayment', 'Payment Type', 'required');
+        $this->form_validation->set_rules('taddress', 'Address', 'required|callback_valid_shipdate');
 
-        if ($this->form_validation->run($this) == TRUE && $this->valid_confirm($param) == TRUE)
+        if ($this->form_validation->run($this) == TRUE)
         {
-            $shipping = array('cust_id' => $this->input->post('ccustomer'),
-                           'due_date' => $this->input->post('tduedates'), 'payment_id' => $this->input->post('cpayment'), 
-                           'updated' => date('Y-m-d H:i:s'));
+            $shipping = array('dest_desc' => $this->input->post('taddress'),'updated' => date('Y-m-d H:i:s'));
 
-            $this->Shipping_model->update($param, $shipping);
+            $this->Shipping_model->update($this->session->userdata('langid'), $shipping);
             $this->session->set_flashdata('message', "One $this->title data successfully saved!");
             echo "true|One $this->title data successfully saved!|".$param;
         }
-        else{ echo "error|". validation_errors(); $this->session->set_flashdata('message', validation_errors()); }
+        else{ echo "error|". validation_errors(); }
         }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
         //redirect($this->title.'/update/'.$param);
     }
@@ -486,6 +437,32 @@ class Shipping extends MX_Controller
 	$this->session->set_userdata('langid', $shipping->id);
         
         echo $sid.'|'.$shipping->status.'|'.$shipping->shipdate;
+    }
+    
+    function paid_confirmation()
+    {
+        $nilai = $this->input->post('nilai');
+
+        if ($this->input->post('confirm') == 1)
+        {
+            for($i=0; $i < count($nilai); $i++)
+            {
+              if ($this->valid_shipdate($nilai[$i], 'ajax') == FALSE) 
+              {
+                 $shipping = array('paid_date' => $this->input->post('dates'),'status' => 1);
+                 $this->Shipping_model->update($nilai[$i], $shipping); 
+              }
+            }
+        }
+        else {
+            for($i=0; $i < count($nilai); $i++)
+            {
+              $shipping = array('paid_date' => null,'status' => 0);
+              $this->Shipping_model->update($nilai[$i], $shipping); 
+            }
+        }
+        
+        echo 'true|Paid Confirmation Progress Done..!';
     }
     
     function payment_confirmation()
@@ -507,7 +484,7 @@ class Shipping extends MX_Controller
                 $stts = 'confirmed!';
             }
             else { $shipping = array('shipdate' => null, 'updated' => date('Y-m-d H:i:s')); 
-                   $stts = 'unconfirmed!';   
+                $stts = 'unconfirmed!';   
             }   
                 
             // lakukan action email ke customer
@@ -517,6 +494,81 @@ class Shipping extends MX_Controller
         }
         else{ echo "error|". validation_errors(). '- Payment Status Already Confirmed'; }
         }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; } 
+    }
+    
+    function mail_invoice($pid,$type=null)
+    {   
+        // property display
+       $data['p_logo'] = $this->properti['logo'];
+       $data['p_name'] = $this->properti['name'];
+       $data['p_site_name'] = $this->properti['sitename'];
+       $data['p_address'] = $this->properti['address'];
+       $data['p_zip'] = $this->properti['zip'];
+       $data['p_city'] = $this->properti['city'];
+       $data['sites_url'] = constant("BASE_URL");
+       $data['p_phone']  = $this->properti['phone1'];
+       
+       $shipping = $this->Shipping_model->get_by_id($pid)->row();
+       $sales = $this->sales->get_detail_sales($shipping->sales_id);
+        
+       $data['title'] = $this->properti['name'].' | Invoice '.ucwords($this->modul['title']).' | SO-0'.$shipping->sales_id;
+        
+        if ($shipping != null && $shipping->shipdate != null){
+
+            // customer details
+            $customer = $this->customer->get_details($sales->cust_id)->row();
+            $data['c_name'] = strtoupper($customer->first_name.' '.$customer->last_name);
+            $data['c_email'] = $customer->email;
+            $data['c_address'] = $customer->shipping_address;
+            $data['c_phone'] = $customer->phone1.' / '.$customer->phone2;
+            $data['c_city'] = $this->city->get_name($customer->city);
+            $data['c_zip'] = $customer->zip;
+
+            // shipping
+            $data['so_no'] = 'DISO-0'.$shipping->sales_id;
+            $data['so_date'] = tglin($shipping->shipdate).' '. timein($shipping->shipdate);
+            $data['courier'] = strtoupper($shipping->courier);
+            $data['package'] = $shipping->package;
+            $data['awb'] = strtoupper($shipping->awb);
+            $data['rate'] = $shipping->rate;
+            $data['dest_desc'] = $shipping->dest_desc;
+            $data['dest'] = $shipping->dest;
+
+            $data['ship_address'] = $shipping->dest_desc;
+            $data['sub_total'] = num_format($sales->amount);
+            $data['shipping_amt'] = num_format($sales->shipping);
+            $data['total'] = num_format(floatval($sales->amount+$sales->shipping));
+
+            // weight total
+            $total = $this->sales->total($shipping->sales_id);
+            $data['weight'] = round($total['weight']);
+
+            // transaction table
+            $data['item'] = $this->sales->get_transaction_sales($shipping->sales_id)->result();
+            
+            $html = $this->load->view('shipping_order_email',$data,true);
+            $subject = 'Konfirmasi Pengiriman - '.$data['so_no'].' - '.$data['p_name'];
+            
+            // email send
+            $this->load->library('email');
+            $config['charset']  = 'utf-8';
+            $config['wordwrap'] = TRUE;
+            $config['mailtype'] = 'html';
+    
+            $this->email->initialize($config);
+            $this->email->from($this->properti['billing_email'], $this->properti['name']);
+            $this->email->to($customer->email);
+            $this->email->cc($this->properti['cc_email']); 
+    
+            $this->email->subject($subject);
+            $this->email->message($html);
+    //        $pdfFilePath = FCPATH."/downloads/".$no.".pdf";
+            
+            if ($type){ if (!$this->email->send()){ echo 'error|'.$this->email->print_debugger(); }else{ echo 'true|Shipping Confirmation Sent...!';  } }
+            else { if (!$this->email->send()){ return false; }else{ return true;  } }
+        }
+        else { echo 'error|Shipping Not Process...!!'; }
+       
     }
     
     function valid_product($id,$sid)
@@ -549,6 +601,17 @@ class Shipping extends MX_Controller
         else{ return TRUE; }
     }
     
+    function valid_shipdate($val=null,$type=null)
+    {
+        if (!$type){ $param = $this->session->userdata('langid'); }else { $param = $val; }
+        if ($this->Shipping_model->valid_shipdate($param) == FALSE)
+        {
+            $this->form_validation->set_message('valid_shipdate','Shipping Date Already Confirmed..!');
+            return FALSE;
+        }
+        else{ return TRUE; }
+    }
+    
     function report_process()
     {
         $this->acl->otentikasi2($this->title);
@@ -556,22 +619,29 @@ class Shipping extends MX_Controller
 
         $data['rundate'] = tglin(date('Y-m-d'));
         $data['log'] = $this->session->userdata('log');
-        $period = $this->input->post('reservation');  
-        $start = picker_between_split($period, 0);
-        $end = picker_between_split($period, 1);
+        $salesperiod = $this->input->post('salesperiod');  
+        $shippingperiod = $this->input->post('shippingperiod');  
+        
+        $sales_start = picker_between_split($salesperiod, 0);
+        $sales_end = picker_between_split($salesperiod, 1);
+        
+        $shipping_start = picker_between_split($shippingperiod, 0);
+        $shipping_end = picker_between_split($shippingperiod, 1);
+        
         $paid = $this->input->post('cpaid');
-        $shipped = $this->input->post('cshipped');
-        $confirm = $this->input->post('cconfirm');
 
-        $data['start'] = tglin($start);
-        $data['end'] = tglin($end);
+        $data['sales_start'] = tglin($sales_start);
+        $data['sales_end'] = tglin($sales_end);
+        
+        $data['shipping_start'] = tglin($shipping_start);
+        $data['shipping_end'] = tglin($shipping_end);
+        
         if (!$paid){ $data['paid'] = ''; }elseif ($paid == 1){ $data['paid'] = 'Paid'; }else { $data['paid'] = 'Unpaid'; }
-        if (!$confirm){ $data['confirm'] = ''; }elseif ($confirm == 1){ $data['confirm'] = 'Confirmed'; }else { $data['confirm'] = 'Unconfirmed'; }
         
 //        Property Details
         $data['company'] = $this->properti['name'];
-        $data['reports'] = $this->Shipping_model->report($start,$end,$paid,$shipped,$confirm)->result();
-//        
+        $data['reports'] = $this->Shipping_model->report($sales_start, $sales_end, $shipping_start, $shipping_end, $paid)->result();
+        
         if ($this->input->post('ctype') == 0){ $this->load->view('shipping_report', $data); }
         else { $this->load->view('shipping_pivot', $data); }
     }   

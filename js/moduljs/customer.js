@@ -34,14 +34,14 @@ $(document).ready(function (e) {
 	{	
 		e.preventDefault();
 		var value = $(this).val();
-		var url = sites_ajax+'/ajaxcombo_district/'+value;
+		var url = sites_ajax+'/ajaxcombo_district/';
 		
-		// // batas
+		console.log(value);
+		// batas
 		$.ajax({
 			type: 'POST',
 			url: url,
-    	    cache: false,
-			headers: { "cache-control": "no-cache" },
+    	    data: "value="+ value,
 			success: function(result) {
 			$('#cdistrict_update').hide();
 			$(".select_box").html(result);
@@ -145,9 +145,11 @@ $(document).ready(function (e) {
 										s[i][9],
 										s[i][12],
 										s[i][18],
+'<div class="btn-group" role"group">'+
 '<a href="" class="'+stts+' btn-xs primary_status" id="' +s[i][0]+ '" title="Primary Status"> <i class="fa fa-power-off"> </i> </a> '+
 '<a href="" class="btn btn-primary btn-xs text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a> '+
-'<a href="#" class="btn btn-danger btn-xs text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'
+'<a href="#" class="btn btn-danger btn-xs text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'+
+'</div>'
 										    ]);										
 											} // End For 
 											
@@ -196,9 +198,11 @@ $(document).ready(function (e) {
 										s[i][9],
 										s[i][12],
 										s[i][18],
+'<div class="btn-group" role"group">'+
 '<a href="" class="'+stts+' btn-xs primary_status" id="' +s[i][0]+ '" title="Primary Status"> <i class="fa fa-power-off"> </i> </a> '+
 '<a href="" class="btn btn-primary btn-xs text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a> '+
-'<a href="#" class="btn btn-danger btn-xs text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'
+'<a href="#" class="btn btn-danger btn-xs text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'+
+'</div>'
 										    ]);										
 											} // End For 
 											

@@ -46,17 +46,19 @@ class Shipping_model extends Custom_Model
         return $this->db->get(); 
     }
     
-    function report($start=null,$end=null,$paid=null,$confirm=null)
+    function report($sales_start=null,$sales_end=null,$shipping_start=null,$shipping_end=null,$status=null)
     {   
         $this->db->select($this->field);
-        $this->db->from($this->tableName); 
-        $this->db->where('deleted', $this->deleted);
-        $this->between('dates', $start, $end);
+        $this->db->from('sales, shipping');
+        $this->db->where('sales.id = shipping.sales_id');
+
+        $this->between('sales.dates', $sales_start, $sales_end);
+        $this->between('shipping.shipdate', $shipping_start, $shipping_end);
         
-        if ($paid == '1'){ $this->db->where('paid_date IS NOT NULL'); }
-        elseif ($paid == '0'){ $this->db->where('paid_date IS NULL'); }
-        $this->cek_null($confirm, 'confirmation');
-        $this->db->order_by('dates', 'desc'); 
+        if ($status == '1'){ $this->db->where('shipping.status',$status); }
+        elseif ($status == '0'){ $this->db->where('shipping.status',$status); }
+
+        $this->db->order_by('shipping.id', 'desc'); 
         return $this->db->get(); 
     }
     
@@ -72,6 +74,13 @@ class Shipping_model extends Custom_Model
        $this->db->where('id', $sid);
        $query = $this->db->get($this->tableName)->row();
        if ($query->status == 1){ return FALSE; }else{ return TRUE; }
+    }
+    
+    function valid_shipdate($sid)
+    {
+       $this->db->where('id', $sid);
+       $query = $this->db->get($this->tableName)->row();
+       if ($query->shipdate){ return FALSE; }else{ return TRUE; }
     }
     
     function get_sales_qty_based_category($cat=0,$month=null,$year=null)

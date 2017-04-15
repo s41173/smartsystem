@@ -58,7 +58,7 @@ class Product extends MX_Controller
         $this->output
          ->set_status_header(200)
          ->set_content_type('application/json', 'utf-8')
-         ->set_output(json_encode($output, JSON_PRETTY_PRINT))
+         ->set_output(json_encode($output))
          ->_display();
          exit;  
         }

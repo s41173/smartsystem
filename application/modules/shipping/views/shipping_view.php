@@ -39,7 +39,9 @@
 	var sites_del  = "<?php echo site_url('shipping/delete/');?>";
 	var sites_get  = "<?php echo site_url('shipping/update/');?>";
     var sites_confirmation  = "<?php echo site_url('shipping/confirmation/');?>";
+    var sites_payment_confirmation  = "<?php echo site_url('shipping/paid_confirmation/');?>";
     var sites_print_invoice  = "<?php echo site_url('shipping/invoice/');?>";
+    var sites_email_invoice  = "<?php echo site_url('shipping/mail_invoice/');?>";
     var sites_primary   = "<?php echo site_url('shipping/publish/');?>";
 	var sites_attribute = "<?php echo site_url('shipping/attribute/');?>";
 	var source = "<?php echo $source;?>";
@@ -150,7 +152,7 @@
         Check All : 
         <button type="submit" id="cekallbutton" class="btn btn-danger btn-xs"> <span class="glyphicon glyphicon-trash"></span>
         </button>
-        <button type="submit" title="Payment Confirmation" id="cekallbutton" class="btn btn-primary btn-xs"> 
+        <button id="bconfirm" data-target="#myModal4" title="Payment Confirmation" class="btn btn-primary btn-xs"> 
             <span class="glyphicon glyphicon-credit-card"></span>
         </button>
       </div>
@@ -160,6 +162,7 @@
 
             <!-- Trigger the modal with a button  -->
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal3"> Report  </button>
+            <button type="button" class="btn btn-primary" id="btest"> Test  </button>
                
                <!-- links -->
 	           <?php if (!empty($link)){foreach($link as $links){echo $links . '';}} ?>
@@ -176,14 +179,20 @@
       <!-- Modal Attribute -->
       <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	     
-		 <?php //$this->load->view('product_attribute_frame'); ?> 
+		 <?php $this->load->view('shipping_update'); ?> 
       </div>
       <!-- Modal Attribute -->
       
       
       <!-- Modal - Report Form -->
       <div class="modal fade" id="myModal3" role="dialog">
-         <?php //$this->load->view('sales_report_panel'); ?>    
+         <?php $this->load->view('shipping_report_panel'); ?>    
+      </div>
+      <!-- Modal - Report Form -->
+              
+      <!-- Modal - Report Form -->
+      <div class="modal fade" id="myModal4" role="dialog">
+         <?php $this->load->view('shipping_payment_confirmation'); ?>    
       </div>
       <!-- Modal - Report Form -->
       

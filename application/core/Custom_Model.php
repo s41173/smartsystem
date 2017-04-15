@@ -127,7 +127,7 @@ class Custom_Model extends CI_Model {
     {
         if ($start != null && $end != null)
         {
-            return $this->db->where($field." BETWEEN '".setnull($start)."' AND '".setnull($end)."'");
+            return $this->db->where("DATE(".$field.") BETWEEN '".setnull($start)."' AND '".setnull($end)."'");
         }
         else { return null; }
     }

@@ -188,11 +188,14 @@ $(document).ready(function (e) {
 										s[i][5],
 										"<p class='normal_p'>" +s[i][6] + "</p>" +  "<p class='discount_p'>" +s[i][10]+ "</p>" ,
 										s[i][7],
+'<div class="btn-group" role"group">'+
 '<a href="" class="'+stts+' btn-xs primary_status" id="' +s[i][0]+ '" title="Primary Status"> <i class="fa fa-wrench"> </i> </a> '+
 '<a href="" class="btn btn-default btn-xs text-attribute" id="' +s[i][0]+'/'+s[i][9]+ '" title="Attribute Status"> <i class="fa fa-cogs"> </i> </a> '+
 '<a href="" class="btn btn-default btn-xs text-img" id="'+s[i][0]+'" title="Product Image"> <i class="fa fa-picture-o"> </i> </a> '+
 '<a href="" class="btn btn-primary btn-xs text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a> '+
-'<a href="#" class="btn btn-danger btn-xs text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'
+'<a href="" class="btn btn-warning btn-xs text-ledger" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-book"> </i> </a> '+
+'<a href="#" class="btn btn-danger btn-xs text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'+
+'</div>'
 										    ]);										
 											} // End For 
 											
@@ -242,12 +245,14 @@ $(document).ready(function (e) {
 										s[i][5],
 										"<p class='normal_p'>" +s[i][6] + "</p>" +  "<p class='discount_p'>" +s[i][10]+ "</p>" ,
 										s[i][7],
+'<div class="btn-group" role"group">'+
 '<a href="" class="'+stts+' btn-xs primary_status" id="' +s[i][0]+ '" title="Primary Status"> <i class="fa fa-wrench"> </i> </a> '+
 '<a href="" class="btn btn-default btn-xs text-attribute" id="' +s[i][0]+'/'+s[i][9]+ '" title="Attribute Status"> <i class="fa fa-cogs"> </i> </a> '+
 '<a href="" class="btn btn-default btn-xs text-img" id="'+s[i][0]+'" title="Product Image"> <i class="fa fa-picture-o"> </i> </a> '+
 '<a href="" class="btn btn-primary btn-xs text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a> '+
-'<a href="" class="btn btn-primary btn-xs text-ledger" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-book"> </i> </a> '+
-'<a href="#" class="btn btn-danger btn-xs text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'
+'<a href="" class="btn btn-warning btn-xs text-ledger" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-book"> </i> </a> '+
+'<a href="#" class="btn btn-danger btn-xs text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'+
+'</div>'
 										    ]);										
 											} // End For 
 											

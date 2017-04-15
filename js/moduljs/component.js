@@ -110,7 +110,10 @@ $(document).ready(function (e) {
 										s[i][5],
 										s[i][6],
 										s[i][7],
-'<a href="" class="text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a> <a href="#" class="text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'
+'<div class="btn-group" role"group">'+
+'<a href="" class="btn btn-primary btn-xs text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a>'+
+'<a href="#" class="btn btn-danger btn-xs text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'+
+'</div>'
 										    ]);										
 											} // End For 
 											
@@ -140,12 +143,28 @@ $(document).ready(function (e) {
 				success: function(s) 
 				{   
 				       console.log(s);
-					  						oTable.fnClearTable();						$(".chkselect").remove()
-			$("#chkbox").append('<input type="checkbox" name="newsletter" value="accept1" onclick="cekall('+s.length+')" id="chkselect" class="chkselect">');														for(var i = 0; i < s.length; i++) {						  oTable.fnAddData([
-'<input type="checkbox" name="cek[]" value="'+s[i][0]+'" id="cek'+i+'" style="margin:0px"  />',										i+1,										s[i][1],										s[i][3],										s[i][4],										s[i][5],
+					  
+						oTable.fnClearTable();
+						$(".chkselect").remove()
+	
+		$("#chkbox").append('<input type="checkbox" name="newsletter" value="accept1" onclick="cekall('+s.length+')" id="chkselect" class="chkselect">');
+							
+							for(var i = 0; i < s.length; i++) {
+						  oTable.fnAddData([
+'<input type="checkbox" name="cek[]" value="'+s[i][0]+'" id="cek'+i+'" style="margin:0px"  />',
+										i+1,
+										s[i][1],
+										s[i][3],
+										s[i][4],
+										s[i][5],
 										s[i][6],
 										s[i][7],
-'<a href="" class="text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a> <a href="#" class="text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'										    ]);																					} // End For 
+'<div class="btn-group" role"group">'+
+'<a href="" class="btn btn-primary btn-xs text-primary" id="' +s[i][0]+ '" title=""> <i class="fa fas-2x fa-edit"> </i> </a>'+
+'<a href="#" class="btn btn-danger btn-xs text-danger" id="'+s[i][0]+'" title="delete"> <i class="fa fas-2x fa-trash"> </i> </a>'+
+'</div>'
+										    ]);										
+											} // End For 
 											
 				},
 				error: function(e){

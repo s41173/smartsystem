@@ -32,6 +32,38 @@ class Login extends MX_Controller {
 
         $this->load->view('login_view', $data);
     }
+    
+    function curl_function()
+    {
+        $user = 'admins';
+        $pass = 'admin';
+        $nilai = '{ "user":"'.$user.'", "pass": "'.$pass.'"}';
+        
+        $curl = curl_init();
+        $url = 'http://cms.delicaindonesia.com/index.php/login/login_process';
+        
+        curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => "",
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 30,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        CURLOPT_POSTFIELDS => $nilai,
+        CURLOPT_HTTPHEADER => array(
+        'Content-Type: application/json'
+        ),
+      ));
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+//        $data = json_decode($response, true); 
+
+        curl_close($curl);
+        if ($err) { echo $err; }
+        else { echo $response; }
+    }
 
     // function untuk memeriksa input user dari form sebagai admin
     function login_process()
@@ -73,7 +105,7 @@ class Login extends MX_Controller {
         $this->output
         ->set_status_header(201)
         ->set_content_type('application/json', 'utf-8')
-        ->set_output(json_encode($response, JSON_PRETTY_PRINT))
+        ->set_output(json_encode($response))
         ->_display();
         exit;
 

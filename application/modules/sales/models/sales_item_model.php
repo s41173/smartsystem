@@ -56,6 +56,13 @@ class Sales_item_model extends Custom_Model
        if ($query > 0){ return FALSE; }else{ return TRUE; }
     }
     
+    function valid_items($sid)
+    {
+       $this->db->where('sales_id', $sid); 
+       $query = $this->db->get($this->tableName)->num_rows();
+       if ($query > 0){ return TRUE; }else{ return FALSE; }
+    }
+    
 
 }
 

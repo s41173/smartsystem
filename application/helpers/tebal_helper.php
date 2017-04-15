@@ -41,5 +41,13 @@ if ( ! function_exists('position'))
     }
 }
 
+if (! function_exists('num_format'))
+{
+    function num_format($val)
+    {
+       return number_format($val,0,',','.');
+    }
+}
+
 /* End of file number_helper.php */
 /* Location: ./system/helpers/number_helper.php */

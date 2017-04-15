@@ -46,7 +46,7 @@ class Customer extends MX_Controller
         $this->output
          ->set_status_header(200)
          ->set_content_type('application/json', 'utf-8')
-         ->set_output(json_encode($output, JSON_PRETTY_PRINT))
+         ->set_output(json_encode($output))
          ->_display();
          exit;  
         }
@@ -65,7 +65,7 @@ class Customer extends MX_Controller
         $data['form_action_report'] = site_url($this->title.'/report_process');
         $data['link'] = array('link_back' => anchor('main/','Back', array('class' => 'btn btn-danger')));
 
-        $data['city'] = $this->city->combo_city_name();
+        $data['city'] = $this->city->combo_city_db();
         $data['array'] = array('','');
         
 	// ---------------------------------------- //
@@ -571,8 +571,9 @@ class Customer extends MX_Controller
         }else { echo "error|Sorry, you do not have the right to edit $this->title component..!"; }
     }
     
-    function ajaxcombo_district($cityid=null)
+    function ajaxcombo_district()
     {
+        $cityid = $this->input->post('value');
         if ($cityid != null){
             $district = $this->disctrict->combo_district_db($cityid);
             $js = "class='select2_single form-control' id='cdistrict' tabindex='-1' style='width:100%;' "; 

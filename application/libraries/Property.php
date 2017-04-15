@@ -26,6 +26,17 @@ class Property {
                     );
         return $val;
     }
+    
+    function combo_email($param=null)
+    {
+        if ($param){ $data['options'][null] = ' -- ';  }
+        $res = $this->ci->db->get($this->table)->row();
+        $data['options'][strtolower($res->email)] = ucfirst($res->email);
+        $data['options'][strtolower($res->billing_email)] = ucfirst($res->billing_email);
+        $data['options'][strtolower($res->technical_email)] = ucfirst($res->technical_email);
+        return $data;
+    }
+    
 }
 
 /* End of file Property.php */
